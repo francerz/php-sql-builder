@@ -1,0 +1,20 @@
+{
+    "name": "francerz/sql-builder",
+    "description": "SQL Builder",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Francerz",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Francerz\\SqlBuilder\\" : "src",
+            "Francerz\\SqlBuilder\\Compiler\\": "srcCompiler"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.4"
+    }
+}

@@ -1,0 +1,411 @@
+<?php
+
+namespace Francerz\SqlBuilder\Expressions\Logical;
+
+use Countable;
+use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
+use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
+use Francerz\SqlBuilder\Expressions\Comparison\BetweenExpression;
+use Francerz\SqlBuilder\Expressions\Comparison\ComparisonModes;
+use Francerz\SqlBuilder\Expressions\Comparison\InExpression;
+use Francerz\SqlBuilder\Expressions\Comparison\LikeExpression;
+use Francerz\SqlBuilder\Expressions\Comparison\NullExpression;
+use Francerz\SqlBuilder\Expressions\Comparison\RegexpExpression;
+use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
+use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
+use Francerz\SqlBuilder\Expressions\NegatableInterface;
+use Francerz\SqlBuilder\Query;
+use InvalidArgumentException;
+use Iterator;
+
+class ConditionList implements
+    BooleanResultInterface,
+    NegatableInterface,
+    Countable,
+    Iterator
+{
+    private $mode;
+    private $conditions = [];
+
+    private $negated = false;
+
+    public function __construct($mode = ComparisonModes::COLUMN_VALUE)
+    {
+        $this->setMode($mode);
+    }
+
+    private function setMode($mode)
+    {
+        if (!in_array($mode, array(
+            ComparisonModes::COLUMN_COLUMN,
+            ComparisonModes::COLUMN_VALUE,
+            ComparisonModes::VALUE_COLUMN,
+            ComparisonModes::VALUE_VALUE
+        ))) {
+            throw new InvalidArgumentException('Invalid condition mode.');
+        }
+        $this->mode = $mode;
+    }
+
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    public function negate(bool $negate = true)
+    {
+        $this->negated = $negate;
+    }
+    public function isNegated(): bool
+    {
+        return $this->negated;
+    }
+
+    public function rewind()
+    {
+        reset($this->conditions);
+    }
+    public function current() : ConditionItem
+    {
+        return current($this->conditions);
+    }
+    public function next()
+    {
+        return next($this->conditions);
+    }
+    public function key()
+    {
+        return key($this->conditions);
+    }
+    public function valid() : bool
+    {
+        return key($this->conditions) !== null;
+    }
+    public function count()
+    {
+        return count($this->conditions);
+    }
+
+    public function add(ConditionItem $item)
+    {
+        $this->conditions[] = $item;
+        return $this;
+    }
+
+    private function coarseModeFirst($operand)
+    {
+        if ($operand instanceof ComparableComponentInterface) {
+            return $operand;
+        }
+        switch ($this->mode) {
+            case ComparisonModes::COLUMN_COLUMN: case ComparisonModes::COLUMN_VALUE:
+                return Query::column($operand);
+            case ComparisonModes::VALUE_COLUMN: case ComparisonModes::VALUE_VALUE:
+                return Query::value($operand);
+        }
+    }
+    private function coarseModeSecond($operand)
+    {
+        if ($operand instanceof ComparableComponentInterface) {
+            return $operand;
+        }
+        switch ($this->mode) {
+            case ComparisonModes::COLUMN_COLUMN: case ComparisonModes::VALUE_COLUMN:
+                return Query::column($operand);
+            case ComparisonModes::COLUMN_VALUE: case ComparisonModes::VALUE_VALUE:
+                return Query::value($operand);
+        }
+    }
+
+    #region Relational operators
+    public function addRelational($operand1, $operand2, $operator = RelationalOperators::EQUALS, $connector = LogicConnectors::AND)
+    {
+        $operand1 = $this->coarseModeFirst($operand1);
+        $operand2 = $this->coarseModeSecond($operand2);
+        return $this->add(new ConditionItem(new RelationalExpression($operand1, $operand2, $operator), $connector));
+    }
+
+    #region Relational operators with operator
+    public function equals($operand1, $operand2, $connector = LogicConnectors::AND)
+    {
+        return $this->addRelational($operand1, $operand2, RelationalOperators::EQUALS, $connector);
+    }
+    public function lessThan($operand1, $operand2, $connector = LogicConnectors::AND)
+    {
+        return $this->addRelational($operand1, $operand2, RelationalOperators::LESS, $connector);
+    }
+    public function greaterThan($operand1, $operand2, $connector = LogicConnectors::AND)
+    {
+        return $this->addRelational($operand1, $operand2, RelationalOperators::GREATER, $connector);
+    }
+    public function lessEquals($operand1, $operand2, $connector = LogicConnectors::AND)
+    {
+        return $this->addRelational($operand1, $operand2, RelationalOperators::LESS_EQUALS, $connector);
+    }
+    public function greaterEquals($operand1, $operand2, $connector = LogicConnectors::AND)
+    {
+        return $this->addRelational($operand1, $operand2, RelationalOperators::GREATER_EQUALS, $connector);
+    }
+    public function notEquals($operand1, $operand2, $connector = LogicConnectors::AND)
+    {
+        return $this->addRelational($operand1, $operand2, RelationalOperators::NOT_EQUALS, $connector);
+    }
+    #endregion
+
+    #region Relational operators with connector
+    public function andEquals($operand1, $operand2)
+    {
+        return $this->equals($operand1, $operand2, LogicConnectors::AND);
+    }
+    public function orEquals($operand1, $operand2)
+    {
+        return $this->equals($operand1, $operand2, LogicConnectors::OR);
+    }
+    public function andLessThan($operand1, $operand2)
+    {
+        return $this->lessThan($operand1, $operand2, LogicConnectors::AND);
+    }
+    public function orLessThan($operand1, $operand2)
+    {
+        return $this->lessThan($operand1, $operand2, LogicConnectors::OR);
+    }
+    public function andGreaterThan($operand1, $operand2)
+    {
+        return $this->greaterThan($operand1, $operand2, LogicConnectors::AND);
+    }
+    public function orGreaterThan($operand1, $operand2)
+    {
+        return $this->greaterThan($operand1, $operand2, LogicConnectors::OR);
+    }
+    public function andLessEquals($operand1, $operand2)
+    {
+        return $this->lessEquals($operand1, $operand2, LogicConnectors::AND);
+    }
+    public function orLessEquals($operand1, $operand2)
+    {
+        return $this->lessEquals($operand1, $operand2, LogicConnectors::OR);
+    }
+    public function andGreaterEquals($operand1, $operand2)
+    {
+        return $this->greaterEquals($operand1, $operand2, LogicConnectors::AND);
+    }
+    public function orGreaterEquals($operand1, $operand2)
+    {
+        return $this->greaterEquals($operand1, $operand2, LogicConnectors::OR);
+    }
+    public function andNotEquals($operand1, $operand2)
+    {
+        return $this->notEquals($operand1, $operand2, LogicConnectors::AND);
+    }
+    public function orNotEquals($operand1, $operand2)
+    {
+        return $this->notEquals($operand1, $operand2, LogicConnectors::OR);
+    }
+    #endregion
+    
+    #endregion
+
+    #region LIKE
+    public function like($operand1, $operand2, $negated = false, $connector = LogicConnectors::AND)
+    {
+        $operand1 = $this->coarseModeFirst($operand1);
+        $operand2 = $this->coarseModeSecond($operand2);
+        return $this->add(new ConditionItem(new LikeExpression($operand1, $operand2, $negated), $connector));
+    }
+    
+    #region LIKE with connector and negation
+    public function notLike($operand1, $operand2)
+    {
+        return $this->like($operand1, $operand2, true);
+    }
+    public function andLike($operand1, $operand2)
+    {
+        return $this->like($operand1, $operand2, false, LogicConnectors::AND);
+    }
+    public function orLike($operand1, $operand2)
+    {
+        return $this->like($operand1, $operand2, false, LogicConnectors::OR);
+    }
+    public function andNotLike($operand1, $operand2)
+    {
+        return $this->like($operand1, $operand2, true, LogicConnectors::AND);
+    }
+    public function orNotLike($operand1, $operand2)
+    {
+        return $this->like($operand1, $operand2, true, LogicConnectors::OR);
+    }
+    #endregion
+
+    #endregion 
+
+    #region REGEXP
+    public function regexp($value, $pattern, $negated = false, $connector = LogicConnectors::AND)
+    {
+        $value = $this->coarseModeFirst($value);
+        $pattern = $this->coarseModeSecond($pattern);
+        return $this->add(new ConditionItem(new RegexpExpression($value, $pattern, $negated), $connector));
+    }
+
+    #region REGEXP with connector and negation
+    public function notRegexp($value, $pattern)
+    {
+        return $this->regexp($value, $pattern, true);
+    }
+    public function andRegexp($value, $pattern)
+    {
+        return $this->regexp($value, $pattern, false, LogicConnectors::AND);
+    }
+    public function orRegexp($value, $pattern)
+    {
+        return $this->regexp($value, $pattern, false, LogicConnectors::OR);
+    }
+    public function andNotRegexp($value, $pattern)
+    {
+        return $this->regexp($value, $pattern, true, LogicConnectors::AND);
+    }
+    public function orNotRegexp($value, $pattern)
+    {
+        return $this->regexp($value, $pattern, true, LogicConnectors::OR);
+    }
+    #endregion
+
+    #endregion
+
+    #region NULL
+    public function null($value, $negated = false, $connector = LogicConnectors::AND)
+    {
+        $value = $this->coarseModeFirst($value);
+        return $this->add(new ConditionItem(new NullExpression($value, $negated), $connector));
+    }
+
+    #region NULL with connector and negation
+    public function notNull($value)
+    {
+        return $this->null($value, true);
+    }
+    public function andNull($value)
+    {
+        return $this->null($value, false, LogicConnectors::AND);
+    }
+    public function orNull($value)
+    {
+        return $this->null($value, false, LogicConnectors::OR);
+    }
+    public function andNotNull($value)
+    {
+        return $this->null($value, true, LogicConnectors::AND);
+    }
+    public function orNotNull($value)
+    {
+        return $this->null($value, true, LogicConnectors::OR);
+    }
+    #endregion 
+
+    #endregion
+
+    #region BETWEEN
+    public function between($value, $minVal, $maxVal, $negated = false, $connector = LogicConnectors::AND)
+    {
+        $value = $this->coarseModeFirst($value);
+        $minVal = $this->coarseModeSecond($minVal);
+        $maxVal = $this->coarseModeSecond($maxVal);
+        return $this->add(new ConditionItem(new BetweenExpression($value, $minVal, $maxVal, $negated), $connector));
+    }
+
+    #region BETWEEN with connector and negation
+    public function notBetween($value, $minVal, $maxVal)
+    {
+        return $this->between($value, $minVal, $maxVal, true);
+    }
+    public function andBetween($value, $minVal, $maxVal)
+    {
+        return $this->between($value, $minVal, $maxVal, false, LogicConnectors::AND);
+    }
+    public function orBetween($value, $minVal, $maxVal)
+    {
+        return $this->between($value, $minVal, $maxVal, false, LogicConnectors::OR);
+    }
+    public function andNotBetween($value, $minVal, $maxVal)
+    {
+        return $this->between($value, $minVal, $maxVal, true, LogicConnectors::AND);
+    }
+    public function orNotBetween($value, $minVal, $maxVal)
+    {
+        return $this->between($value, $minVal, $maxVal, true, LogicConnectors::OR);
+    }
+    #endregion
+    
+    #endregion
+
+    #region IN
+    public function in($operand, $values, $negated = false, $connector = LogicConnectors::AND)
+    {
+        $operand = $this->coarseModeFirst($operand);
+        $values = Query::array($values);
+        return $this->add(new ConditionItem(new InExpression($operand, $values, $negated), $connector));
+    }
+
+    #region IN with connector and negation
+    public function notIn($operand, $values)
+    {
+        return $this->in($operand, $values, true);
+    }
+    public function andIn($operand, $values)
+    {
+        return $this->in($operand, $values, false, LogicConnectors::AND);
+    }
+    public function orIn($operand, $values)
+    {
+        return $this->in($operand, $values, false, LogicConnectors::OR);
+    }
+    public function andNotIn($operand, $values)
+    {
+        return $this->in($operand, $values, true, LogicConnectors::AND);
+    }
+    public function orNotIn($operand, $values)
+    {
+        return $this->in($operand, $values, true, LogicConnectors::OR);
+    }
+    #endregion
+
+    #endregion
+
+
+    public function addExpression($expression, $negated = false, $connector = LogicConnectors::AND)
+    {
+        if (is_callable($expression)) {
+            $expression = $this->getExpresionFromCallable($expression);
+        }
+        if (!$expression instanceof BooleanResultInterface) {
+            throw new InvalidArgumentException('Invalid condition expression');
+        }
+        if ($negated && $expression instanceof NegatableInterface) {
+            $expression->negate($negated);
+        }
+        $this->add(new ConditionItem($expression, $connector));
+    }
+
+    private function getExpresionFromCallable(callable $callable)
+    {
+        $conditions = new self($this->mode);
+        call_user_func($callable, $conditions);
+        return $conditions;
+    }
+
+    public function and($expression)
+    {
+        return $this->addExpression($expression, false, LogicConnectors::AND);
+    }
+    public function or($expression)
+    {
+        return $this->addExpression($expression, false, LogicConnectors::OR);
+    }
+    public function andNot($expression)
+    {
+        return $this->addExpression($expression, true, LogicConnectors::AND);
+    }
+    public function orNot($expression)
+    {
+        return $this->addExpression($expression, true, LogicConnectors::OR);
+    }
+}
