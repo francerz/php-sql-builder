@@ -26,7 +26,7 @@ use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
 use Francerz\SqlBuilder\UpdateQuery;
 
-class GenericCompiler
+class GenericCompiler implements CompilerInterface
 {
     private $values;
 
