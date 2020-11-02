@@ -19,6 +19,7 @@ use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
+use Francerz\SqlBuilder\InsertQuery;
 use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
 
@@ -34,7 +35,12 @@ class GenericCompiler
             $values = $this->getValues();
             return new CompiledQuery($sql, $values);
         }
-        return '';
+        if ($query instanceof InsertQuery) {
+            $sql = $this->compileInsert($query);
+            $values = $this->getValues();
+            return new CompiledQuery($sql, $values);
+        }
+        return null;
     }
 
     protected function clearValues()
@@ -74,6 +80,33 @@ class GenericCompiler
         // HAVING
         $query.= $this->compileConditionList($select->having(), ' HAVING ');
         // ORDER BY
+        return $query;
+    }
+
+    protected function compileInsert(InsertQuery $insert) : string
+    {
+        $query = 'INSERT INTO ';
+        $query.= $this->compileTable($insert->getTable(), false);
+        $columns = $insert->getColumns();
+        $query.= '(' . join(',', $columns) . ') ';
+        $values = $insert->getValues();
+        if ($values instanceof SelectQuery) {
+            $query.= $this->compileSelect($values);
+            return $query;
+        }
+        if (!is_array($values)) {
+            return $query;
+        }
+        $query.= 'VALUES ';
+        $rows = [];
+        foreach($values as $val) {
+            $row = [];
+            foreach ($columns as $col) {
+                $row[] = isset($val[$col]) ? ':'.$this->addValue($val[$col]) : 'NULL';
+            }
+            $rows[] = implode(',', $row);
+        }
+        $query.= '('.implode('),(', $rows).')';
         return $query;
     }
 
@@ -117,12 +150,12 @@ class GenericCompiler
         }
     }
 
-    protected function compileTable(Table $table) : string
+    protected function compileTable(Table $table, bool $withAlias = true) : string
     {
         $alias = $table->getAlias();
         
         $output = $this->compileTableSource($table->getSource(), $table->getDatabase());
-        if (isset($alias)) {
+        if ($withAlias && isset($alias)) {
             $output .= ' AS '.$this->compileTableAlias($alias);
         }
         return $output;
@@ -296,9 +329,19 @@ class GenericCompiler
         if ($source instanceof SelectQuery) {
             return '('.$this->compileSelect($source).')';
         }
-        $output = isset($table) ? $table.'.' : '';
-        $output.= $source;
+        $output = isset($table) ? $this->compileColumnTable($table).'.' : '';
+        $output.= $this->compileColumnName($source);
         return $output;
+    }
+
+    protected function compileColumnName(string $name)
+    {
+        return $name;
+    }
+
+    protected function compileColumnTable(string $table)
+    {
+        return $table;
     }
 
     protected function compileColumnAlias(string $alias)
