@@ -2,7 +2,8 @@
 
 namespace Francerz\SqlBuilder;
 
-use Francerz\SqlBuilder\Components\SqlValue;
+use Francerz\SqlBuilder\Components\Column;
+use Francerz\SqlBuilder\Components\Set;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
@@ -22,6 +23,31 @@ class UpdateQuery implements QueryInterface
         $this->setTable($table);
     }
 
+    public static function createUpdate($table, $data = null, array $matching = [], array $columns = [])
+    {
+        $query = new UpdateQuery($table);
+        if (empty($data)) {
+            return $query;
+        }
+        if (is_object($data)) {
+            $data = (array)$data;
+        }
+        foreach ($data as $k => $v) {
+            if (in_array($k, $matching)) {
+                $key = new Column($k, null, $query->getTable()->getAliasOrName());
+                $query->where()->equals($key, $v);
+                continue;
+            }
+            if (!empty($columns) && in_array($k, $columns)) {
+                $query->set($k, $v);
+                continue;
+            }
+            $query->set($k, $v);
+        }
+
+        return $query;
+    }
+
     public function setTable($table)
     {
         $this->table = Table::fromExpression($table);
@@ -37,7 +63,10 @@ class UpdateQuery implements QueryInterface
         if (!$value instanceof ComparableComponentInterface) {
             $value = Query::value($value);
         }
-        $this->sets[$column] = $value;
+        if (!$column instanceof Column) {
+            $column = new Column($column, null, $this->table->getAliasOrName());
+        }
+        $this->sets[] = new Set($column, $value);
     }
 
     public function getSets()

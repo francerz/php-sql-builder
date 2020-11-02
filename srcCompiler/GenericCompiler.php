@@ -5,6 +5,7 @@ namespace Francerz\SqlBuilder\Compiler;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
+use Francerz\SqlBuilder\Components\Set;
 use Francerz\SqlBuilder\Components\SqlValue;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
@@ -22,6 +23,7 @@ use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
 use Francerz\SqlBuilder\InsertQuery;
 use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
+use Francerz\SqlBuilder\UpdateQuery;
 
 class GenericCompiler
 {
@@ -37,6 +39,11 @@ class GenericCompiler
         }
         if ($query instanceof InsertQuery) {
             $sql = $this->compileInsert($query);
+            $values = $this->getValues();
+            return new CompiledQuery($sql, $values);
+        }
+        if ($query instanceof UpdateQuery) {
+            $sql = $this->compileUpdate($query);
             $values = $this->getValues();
             return new CompiledQuery($sql, $values);
         }
@@ -108,6 +115,32 @@ class GenericCompiler
         }
         $query.= '('.implode('),(', $rows).')';
         return $query;
+    }
+
+    protected function compileUpdate(UpdateQuery $update) : string
+    {
+        $query = 'UPDATE ';
+        $query.= $this->compileTable($update->getTable());
+        $query.= $this->compileSets($update->getSets(), ' SET ');
+        $query.= $this->compileConditionList($update->where(), ' WHERE ');
+        return $query;
+    }
+
+    protected function compileSets(array $sets, ?string $prefix = null) : string
+    {
+        $_sets = [];
+        foreach ($sets as $set) {
+            $_set = '';
+            if ($set instanceof Set) {
+                $_set = $this->compileColumn($set->getColumn());
+                $_set.= ' = ';
+                $_set.= $this->compileValue($set->getValue());
+            }
+            $_sets[] = $_set;
+        }
+        $output = isset($prefix) ? $prefix : '';
+        $output.= join(', ', $_sets);
+        return $output;
     }
 
     protected function compileColumns(array $columns)

@@ -36,25 +36,6 @@ abstract class Query
     }
     public static function update($table, $data = null, array $matching = [], array $columns = [])
     {
-        $query = new UpdateQuery($table);
-        if (empty($data)) {
-            return $query;
-        }
-        if (is_object($data)) {
-            $data = (array)$data;
-        }
-        foreach ($data as $k => $v) {
-            if (in_array($k, $matching)) {
-                $query->where()->equals($k, $v);
-                continue;
-            }
-            if (!empty($columns) && in_array($k, $columns)) {
-                $query->set($k, $v);
-                continue;
-            }
-            $query->set($k, $v);
-        }
-
-        return $query;
+        return UpdateQuery::createUpdate($table, $data, $matching, $columns);
     }
 }
