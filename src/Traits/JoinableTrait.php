@@ -54,6 +54,11 @@ Trait JoinableTrait
         return $this->joins;
     }
 
+    public function isJoined(string $aliasOrName)
+    {
+        return isset($this->joins[$aliasOrName]);
+    }
+
     public function on()
     {
         if (!$this->lastJoin instanceof Join) {

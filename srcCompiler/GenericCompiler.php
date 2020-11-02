@@ -8,6 +8,7 @@ use Francerz\SqlBuilder\Components\JoinTypes;
 use Francerz\SqlBuilder\Components\Set;
 use Francerz\SqlBuilder\Components\SqlValue;
 use Francerz\SqlBuilder\Components\Table;
+use Francerz\SqlBuilder\DeleteQuery;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\Comparison\BetweenExpression;
@@ -44,6 +45,11 @@ class GenericCompiler
         }
         if ($query instanceof UpdateQuery) {
             $sql = $this->compileUpdate($query);
+            $values = $this->getValues();
+            return new CompiledQuery($sql, $values);
+        }
+        if ($query instanceof DeleteQuery) {
+            $sql = $this->compileDelete($query);
             $values = $this->getValues();
             return new CompiledQuery($sql, $values);
         }
@@ -123,6 +129,17 @@ class GenericCompiler
         $query.= $this->compileTable($update->getTable());
         $query.= $this->compileSets($update->getSets(), ' SET ');
         $query.= $this->compileConditionList($update->where(), ' WHERE ');
+        return $query;
+    }
+
+    protected function compileDelete(DeleteQuery $delete) : string
+    {
+        $query = 'DELETE FROM ';
+        $query.= $this->compileTable($delete->getTable());
+        foreach ($delete->getJoins() as $join) {
+            $query.= $this->compileJoin($join);
+        }
+        $query.= $this->compileConditionList($delete->where(), ' WHERE ');
         return $query;
     }
 

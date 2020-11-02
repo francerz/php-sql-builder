@@ -42,6 +42,11 @@ class SelectQuery implements QueryInterface
         return $this->from;
     }
 
+    public function getTable() : Table
+    {
+        return $this->from->getTable();
+    }
+
     public function getAllColumns()
     {
         $columns = $this->from->getColumns();

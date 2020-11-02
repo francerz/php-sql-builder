@@ -56,7 +56,7 @@ class InsertQuery implements QueryInterface, Countable
         $this->columns = array_merge($this->columns, array_keys($values));
     }
 
-    public function getTable()
+    public function getTable() : Table
     {
         return $this->table;
     }

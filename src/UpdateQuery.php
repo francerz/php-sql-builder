@@ -53,7 +53,7 @@ class UpdateQuery implements QueryInterface
         $this->table = Table::fromExpression($table);
     }
 
-    public function getTable()
+    public function getTable() : Table
     {
         return $this->table;
     }

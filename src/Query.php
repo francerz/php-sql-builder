@@ -38,4 +38,8 @@ abstract class Query
     {
         return UpdateQuery::createUpdate($table, $data, $matching, $columns);
     }
+    public static function deleteFrom($table, $filter = [])
+    {
+        return DeleteQuery::createFiltered($table, $filter);
+    }
 }
