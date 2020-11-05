@@ -2,6 +2,8 @@
 
 namespace Francerz\SqlBuilder\Compiler;
 
+use Francerz\SqlBuilder\CompiledQuery;
+use Francerz\SqlBuilder\CompilerInterface;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
@@ -36,22 +38,22 @@ class GenericCompiler implements CompilerInterface
         if ($query instanceof SelectQuery) {
             $sql = $this->compileSelect($query);
             $values = $this->getValues();
-            return new CompiledQuery($sql, $values);
+            return new CompiledQuery($sql, $values, $query);
         }
         if ($query instanceof InsertQuery) {
             $sql = $this->compileInsert($query);
             $values = $this->getValues();
-            return new CompiledQuery($sql, $values);
+            return new CompiledQuery($sql, $values, $query);
         }
         if ($query instanceof UpdateQuery) {
             $sql = $this->compileUpdate($query);
             $values = $this->getValues();
-            return new CompiledQuery($sql, $values);
+            return new CompiledQuery($sql, $values, $query);
         }
         if ($query instanceof DeleteQuery) {
             $sql = $this->compileDelete($query);
             $values = $this->getValues();
-            return new CompiledQuery($sql, $values);
+            return new CompiledQuery($sql, $values, $query);
         }
         return null;
     }
