@@ -44,7 +44,8 @@ class SelectQueryTest extends TestCase
                 $where
                     ->equals('pe.id_carrera', $id_carrera)
                     ->orNull('pe.id_plan_estudio');
-            });
+            })
+            ->equalsOrNull('pe.id_carrera', $id_carrera);
         
         $expected = "SELECT g.*
         FROM siitecdb.grupos AS g
@@ -57,13 +58,14 @@ class SelectQueryTest extends TestCase
         WHERE
             :v1 BETWEEN p.inicio AND p.fin
             AND (pe.id_carrera = :v2
-                OR pe.id_plan_estudio IS NULL)";
+                OR pe.id_plan_estudio IS NULL)
+            AND (pe.id_carrera = :v3 OR pe.id_carrera IS NULL)";
 
         $compiler = new GenericCompiler();
         $compiled = $compiler->compile($query);
         
         $this->assertEquals(preg_replace('/\s+/',' ', $expected), $compiled->getQuery());
-        $this->assertEquals(['v1'=>date('Y-m-d'),'v2'=>$id_carrera], $compiled->getValues());
+        $this->assertEquals(['v1'=>date('Y-m-d'),'v2'=>$id_carrera,'v3'=>$id_carrera], $compiled->getValues());
     }
 
     public function testCompilingTest()

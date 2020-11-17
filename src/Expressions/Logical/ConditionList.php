@@ -2,6 +2,7 @@
 
 namespace Francerz\SqlBuilder\Expressions\Logical;
 
+use ArrayAccess;
 use Countable;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
@@ -15,6 +16,7 @@ use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
 use Francerz\SqlBuilder\Query;
+use Francerz\SqlBuilder\Components\SqlValue;
 use InvalidArgumentException;
 use Iterator;
 
@@ -22,7 +24,8 @@ class ConditionList implements
     BooleanResultInterface,
     NegatableInterface,
     Countable,
-    Iterator
+    Iterator,
+    ArrayAccess
 {
     private $mode;
     private $conditions = [];
@@ -84,6 +87,28 @@ class ConditionList implements
     public function count()
     {
         return count($this->conditions);
+    }
+
+    public function offsetExists($offset)
+    {
+        return array_key_exists($offset, $this->conditions);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->conditions[$offset];
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (!$value instanceof ConditionItem) {
+            throw new InvalidArgumentException('ConditionList element must be type ConditionItem.');
+        }
+        $this->conditions[$offset] = $value;
+    }
+    public function offsetUnset($offset)
+    {
+        unset($this->conditions[$offset]);
     }
 
     public function add(ConditionItem $item)
@@ -303,6 +328,31 @@ class ConditionList implements
 
     #endregion
 
+    #region Equals OR NULL
+    public function equalsOrNull($expression, $value, $connector = LogicConnectors::AND)
+    {
+        $expression = $this->coarseModeFirst($expression);
+        $value = $value instanceof SqlValue ? $value : Query::value($value);
+        return $this->addExpression(function($conditions) use ($expression, $value) {
+            $conditions->equals($expression, $value);
+            $conditions->orNull($expression);
+        }, false, $connector);
+    }
+
+    #region Equals OR NULL with connector
+    public function andEqualsOrNull($expression, $value)
+    {
+        return $this->equalsOrNull($expression, $value, LogicConnectors::AND);
+    }
+
+    public function orEqualsOrNull($expression, $value)
+    {
+        return $this->equalsOrNull($expression, $value, LogicConnectors::OR);
+    }
+    #endregion
+
+    #endregion
+
     #region BETWEEN
     public function between($value, $minVal, $maxVal, $negated = false, $connector = LogicConnectors::AND)
     {
@@ -382,7 +432,7 @@ class ConditionList implements
         if ($negated && $expression instanceof NegatableInterface) {
             $expression->negate($negated);
         }
-        $this->add(new ConditionItem($expression, $connector));
+        return $this->add(new ConditionItem($expression, $connector));
     }
 
     private function getExpresionFromCallable(callable $callable)

@@ -18,8 +18,8 @@ class SelectQuery implements QueryInterface
         GroupableTrait::__construct as private Groupable__construct;
     }
 
-    private $from;
-    private $columns;
+    protected $from;
+    protected $columns;
 
     public function __construct($table = null, ?array $columns = null)
     {
@@ -36,6 +36,7 @@ class SelectQuery implements QueryInterface
             $table = Table::fromExpression($table);
         }
         $this->from = new TableReference($table, $columns);
+        return $this;
     }
 
     public function getFrom()

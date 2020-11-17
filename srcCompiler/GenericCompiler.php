@@ -330,7 +330,8 @@ class GenericCompiler implements CompilerInterface
     {
         $output = $this->compileComparable($expr->getOperand1());
         $output.= $expr->isNegated() ? ' NOT IN ' : ' IN ';
-        return '';
+        $output.= $this->compileComparable($expr->getOperand2());
+        return $output;
     }
 
     protected function compileNullExpression(NullExpression $expr) : string

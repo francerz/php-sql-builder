@@ -2,9 +2,9 @@
 
 namespace Francerz\SqlBuilder\Results;
 
-use Francerz\SqlBuilder\Compiler\CompiledQuery;
+use Francerz\SqlBuilder\CompiledQuery;
 
-class AbstractResult
+class AbstractResult implements QueryResultInterface
 {
     protected $query;
     protected $numRows;

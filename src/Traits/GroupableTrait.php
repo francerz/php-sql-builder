@@ -6,7 +6,7 @@ use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 
 trait GroupableTrait
 {
-    private $having;
+    protected $having;
 
     public function __construct()
     {
@@ -15,7 +15,7 @@ trait GroupableTrait
 
     public function groupBy($group)
     {
-        
+        return $this;
     }
 
     public function having()

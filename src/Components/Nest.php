@@ -2,17 +2,17 @@
 
 namespace Francerz\SqlBuilder\Components;
 
-use Francerz\SqlBuilder\SelectQuery;
+use Francerz\SqlBuilder\Nesting\NestedSelect;
 
 class Nest
 {
-    private $alias, $query, $callback;
+    private $alias, $nested, $callback;
 
-    public function __construct(string $alias, callable $callback, ?SelectQuery $query = null)
+    public function __construct(string $alias, callable $callback, ?NestedSelect $nested = null)
     {
         $this->alias = $alias;
         $this->callback = $callback;
-        $this->query = $query;
+        $this->nested = $nested;
     }
 
     public function getAlias()
@@ -25,8 +25,8 @@ class Nest
         return $this->callback;
     }
 
-    public function getQuery()
+    public function getNested()
     {
-        return $this->query;
+        return $this->nested;
     }
 }

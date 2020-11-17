@@ -7,7 +7,7 @@ use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 
 trait WhereableTrait
 {
-    private $where;
+    protected $where;
 
     public function __construct()
     {

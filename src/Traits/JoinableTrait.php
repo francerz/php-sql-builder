@@ -10,8 +10,8 @@ use LogicException;
 
 Trait JoinableTrait
 {
-    private $joins = [];
-    private $lastJoin;
+    protected $joins = [];
+    protected $lastJoin;
 
     public function join($table, array $columns = [], $joinType = JoinTypes::INNER_JOIN)
     {

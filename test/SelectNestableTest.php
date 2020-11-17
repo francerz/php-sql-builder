@@ -1,24 +1,107 @@
 <?php
 
+use Francerz\SqlBuilder\Compiler\GenericCompiler;
+use Francerz\SqlBuilder\Components\Nest;
+use Francerz\SqlBuilder\Nesting\NestedQuery;
+use Francerz\SqlBuilder\Nesting\NestedSelect;
+use Francerz\SqlBuilder\Nesting\NestTranslator;
+use Francerz\SqlBuilder\Nesting\RowProxy;
+use Francerz\SqlBuilder\Nesting\SelectProxy;
 use Francerz\SqlBuilder\Query;
+use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\SelectQuery;
 use PHPUnit\Framework\TestCase;
 
 class SelectNestableTest extends TestCase
 {
-    public function testNestable()
+    public function getGroupsQuery() 
     {
-        $queryEstudiantes = Query::selectFrom(['e'=>'estudiantes']);
-        $queryEstudiantes
-            ->innerJoin(['ge'=>'grupos_estudiantes'], ['id_grupo'])
-            ->on()->equals('e.id_estudiante', 'ge.id_estudiante');
+        /*
+            SQL:
+            SELECT g.group_id, g.subject, g.teacher FROM groups AS g WHERE g.group_id IN (3, 7 , 11)
+        */
+        $query = Query::selectFrom(['g'=>'groups'], ['group_id', 'subject', 'teacher']);
+        $query->where()->in('g.group_id', [3, 7, 11]);
 
-        $query = Query::selectFrom(['g'=>'grupos']);
+        /*
+            SQL:
+            SELECT s.*, gs.group_id
+            FROM students AS s
+            INNER JOIN groups_students AS gs ON s.student_id = gs.student_id
+            WHERE gs.group_id IN (3, 7, 11)
+        */
+        $studentsQuery = Query::selectFrom(['s'=>'students']);
+        $query->nest(['Students'=>$studentsQuery], function(NestedSelect $nest, RowProxy $row) {
+            // common structure for nesting,
+            $nest->getSelect()
+                ->innerJoin(['gs'=>'groups_students'],['group_id'])
+                ->on()->equals('s.student_id', 'gs.student_id');
 
-        $query->nest(['Estudiantes'=>$queryEstudiantes], function (SelectQuery $query, $row) {
-            $query->where()->equals('id_grupo', $row->id_grupo);
+            // result varies per $row values.
+            $nest->getSelect()
+                ->where()->equals('gs.group_id', $row->group_id);
         });
 
-        $this->assertEquals(1, count($query->getNests()));
+        return $query;
+    }
+
+    public function getGroupsExpectedResult(SelectQuery $query)
+    {
+        $compiler = new GenericCompiler();
+        $grupos = array(
+            ["group_id"=>3],
+            ["group_id"=>7],
+            ["group_id"=>11]
+        );
+        return new SelectResult(
+            $compiler->compile($query),
+            json_decode(json_encode($grupos))
+        );
+    }
+
+    public function getStudentsExpectedResult(SelectQuery $query)
+    {
+        $compiler = new GenericCompiler();
+        $students = array(
+            ['group_id'=> 3, 'student_id'=>13, 'name'=>'John Doe'],
+            ['group_id'=>11, 'student_id'=>17, 'name'=>'Janne Doe'],
+            ['group_id'=> 7, 'student_id'=>19, 'name'=>'James Doe'],
+            ['group_id'=> 7, 'student_id'=>23, 'name'=>'Judy Doe']
+        );
+        return new SelectResult(
+            $compiler->compile($query),
+            json_decode(json_encode($students))
+        );
+    }
+
+    public function testNestable()
+    {
+        $nestTranslator = new NestTranslator();
+        $compiler = new GenericCompiler();
+
+        $query = $this->getGroupsQuery();
+        $groups = $this->getGroupsExpectedResult($query);
+
+        $nests = $query->getNests();
+        $this->assertEquals(1, count($nests));
+
+        $nest = $nests[0];
+        if (!$nest instanceof Nest) return;
+
+        $callback = $nest->getCallback();
+        $nestQuery= $nest->getNested();
+        call_user_func($callback, $nestQuery, new RowProxy());
+        $nestTranslate = $nestTranslator->translate($nestQuery->getSelect(), $groups);
+
+        $nestCompiled = $compiler->compile($nestTranslate);
+        $expected = 'SELECT s.*, gs.group_id FROM students AS s INNER JOIN groups_students AS gs ON s.student_id = gs.student_id WHERE gs.group_id IN :v1';
+        $this->assertEquals($expected, $nestCompiled->getQuery());
+        $this->assertEquals(['v1'=>[3, 7, 11]], $nestCompiled->getValues());
+
+        $students = $this->getStudentsExpectedResult($nestQuery->getSelect());
+
+        $this->assertEquals(4, count($students));
+
+
     }
 }

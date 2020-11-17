@@ -3,11 +3,11 @@
 namespace Francerz\SqlBuilder\Traits;
 
 use Francerz\SqlBuilder\Components\Nest;
-use Francerz\SqlBuilder\SelectQuery;
+use Francerz\SqlBuilder\Nesting\NestedSelect;
 
 trait NestableTrait
 {
-    private $nests;
+    protected $nests;
 
     public function __construct()
     {
@@ -16,14 +16,16 @@ trait NestableTrait
 
     public function nest($alias, callable $callback)
     {
+        $query = null;
         if (is_array($alias)) {
             $query = current($alias);
             $alias = key($alias);
         }
-        if (!$query instanceof SelectQuery) {
-            $query = new SelectQuery();
+        if (!$query instanceof NestedSelect) {
+            $query = new NestedSelect($query);
         }
         $this->nests[] = new Nest($alias, $callback, $query);
+        return $this;
     }
 
     public function getNests()

@@ -2,7 +2,7 @@
 
 namespace Francerz\SqlBuilder\Results;
 
-use Francerz\SqlBuilder\Compiler\CompiledQuery;
+use Francerz\SqlBuilder\CompiledQuery;
 
 class InsertResult extends AbstractResult
 {

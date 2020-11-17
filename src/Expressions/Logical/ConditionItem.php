@@ -15,6 +15,11 @@ class ConditionItem
         $this->connector = $connector;
     }
 
+    public function setCondition(BooleanResultInterface $condition)
+    {
+        $this->condition = $condition;
+    }
+    
     public function getCondition()
     {
         return $this->condition;
