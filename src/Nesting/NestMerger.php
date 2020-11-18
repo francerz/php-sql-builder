@@ -107,8 +107,8 @@ class NestMerger
     {
         if ($bool instanceof ConditionList) {
             return $this->mergeConditionList($bool);
-        } elseif ($bool instanceof ValueProxyResolverInterface) {
-            return $bool->resolve();
+        } elseif ($bool instanceof NestOperationResolverInterface) {
+            return $bool->nestResolve();
         }
         return false;
     }

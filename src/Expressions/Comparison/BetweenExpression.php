@@ -2,15 +2,21 @@
 
 namespace Francerz\SqlBuilder\Expressions\Comparison;
 
+use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
 use Francerz\SqlBuilder\Expressions\ThreeOperandsInterface;
+use Francerz\SqlBuilder\Nesting\NestOperationResolverInterface;
+use Francerz\SqlBuilder\Nesting\NestTranslator;
+use Francerz\SqlBuilder\Nesting\ValueProxy;
+use Francerz\SqlBuilder\Results\SelectResult;
 use InvalidArgumentException;
 
 class BetweenExpression implements
     ComparisonOperationInterface,
     NegatableInterface,
-    ThreeOperandsInterface
+    ThreeOperandsInterface,
+    NestOperationResolverInterface
 {
     private $operand1;
     private $operand2;
@@ -72,5 +78,21 @@ class BetweenExpression implements
     public function isNegated(): bool
     {
         return $this->negated;
+    }
+
+    public function nestTransform(SelectResult $parentResult): ?ComparisonOperationInterface
+    {
+        if ($this->operand1 instanceof ValueProxy && $this->operand2 instanceof ValueProxy) {
+            if (!$this->negated) {
+                $this->operand1 = NestTranslator::valueProxyToMin($this->operand1, $parentResult);
+                $this->operand2 = NestTranslator::valueProxyToMax($this->oprand2, $parentResult);
+                return $this;
+            }
+        }
+        return null;
+    }
+    public function nestResolve(): bool
+    {
+        return true;
     }
 }

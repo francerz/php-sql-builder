@@ -4,15 +4,17 @@ namespace Francerz\SqlBuilder\Expressions\Comparison;
 
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\TwoOperandsInterface;
+use Francerz\SqlBuilder\Nesting\NestOperationResolverInterface;
+use Francerz\SqlBuilder\Nesting\NestTranslator;
 use Francerz\SqlBuilder\Nesting\ValueProxy;
-use Francerz\SqlBuilder\Nesting\ValueProxyResolverInterface;
+use Francerz\SqlBuilder\Results\SelectResult;
 use InvalidArgumentException;
 use RuntimeException;
 
 class RelationalExpression implements
     ComparisonOperationInterface,
     TwoOperandsInterface,
-    ValueProxyResolverInterface
+    NestOperationResolverInterface
 {
 
     private $operand1;
@@ -69,7 +71,46 @@ class RelationalExpression implements
         return $this->operator;
     }
 
-    public function resolve(): bool
+    public function nestTransform(SelectResult $parentResult): ?ComparisonOperationInterface
+    {
+        if (in_array($this->operator, [RelationalOperators::EQUALS, RelationalOperators::NOT_EQUALS])) {
+            if ($this->operand1 instanceof ValueProxy) {
+                return new InExpression(
+                    $this->operand2,
+                    NestTranslator::valueProxyToArray($this->operand1, $parentResult),
+                    $this->operator === RelationalOperators::NOT_EQUALS
+                );
+            }
+            if ($this->operand2 instanceof ValueProxy) {
+                return new InExpression(
+                    $this->operand1,
+                    NestTranslator::valueProxyToArray($this->operand2, $parentResult),
+                    $this->operator === RelationalOperators::NOT_EQUALS
+                );
+            }
+        }
+        if (in_array($this->operator, [RelationalOperators::LESS, RelationalOperators::LESS_EQUALS])) {
+            if ($this->operand1 instanceof ValueProxy) {
+                $this->operand1 = NestTranslator::valueProxyToMin($this->operand1, $parentResult);
+            }
+            if ($this->operand2 instanceof ValueProxy) {
+                $this->operand2 = NestTranslator::valueProxyToMax($this->operand2, $parentResult);
+            }
+            return $this;
+        }
+        if (in_array($this->operator, [RelationalOperators::GREATER, RelationalOperators::GREATER_EQUALS])) {
+            if ($this->operand1 instanceof ValueProxy) {
+                $this->operand1 = NestTranslator::valueProxyToMax($this->operand1, $parentResult);
+            }
+            if ($this->operand2 instanceof ValueProxy) {
+                $this->operand2 = NestTranslator::valueProxyToMin($this->operand2, $parentResult);
+            }
+            return $this;
+        }
+        return null;
+    }
+
+    public function nestResolve(): bool
     {
         if (!$this->operand1 instanceof ValueProxy) {
             throw new RuntimeException('Invalid operand1 for ValueProxyResolver');
