@@ -35,8 +35,8 @@ class NestTranslator
                 $cnd = $cnd->nestTransform($parentResult);
                 if (isset($cnd)) {
                     $cond->setCondition($cnd);
+                    continue;
                 }
-                continue;
             }
             unset($list[$k]);
         }
