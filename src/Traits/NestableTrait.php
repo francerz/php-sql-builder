@@ -24,7 +24,9 @@ trait NestableTrait
         if (!$query instanceof NestedSelect) {
             $query = new NestedSelect($query);
         }
-        $this->nests[] = new Nest($alias, $callback, $query);
+        $nest = new Nest($alias, $callback, $query);
+        $nest->init();
+        $this->nests[] = $nest;
         return $this;
     }
 

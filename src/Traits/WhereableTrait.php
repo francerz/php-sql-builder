@@ -18,4 +18,9 @@ trait WhereableTrait
     {
         return $this->where;
     }
+
+    protected function __clone()
+    {
+        $this->where = clone $this->where;
+    }
 }

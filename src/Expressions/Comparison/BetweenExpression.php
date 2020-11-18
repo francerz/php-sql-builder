@@ -4,11 +4,13 @@ namespace Francerz\SqlBuilder\Expressions\Comparison;
 
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
+use Francerz\SqlBuilder\Expressions\ThreeOperandsInterface;
 use InvalidArgumentException;
 
 class BetweenExpression implements
     ComparisonOperationInterface,
-    NegatableInterface
+    NegatableInterface,
+    ThreeOperandsInterface
 {
     private $operand1;
     private $operand2;

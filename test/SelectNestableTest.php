@@ -2,11 +2,10 @@
 
 use Francerz\SqlBuilder\Compiler\GenericCompiler;
 use Francerz\SqlBuilder\Components\Nest;
-use Francerz\SqlBuilder\Nesting\NestedQuery;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
+use Francerz\SqlBuilder\Nesting\NestMerger;
 use Francerz\SqlBuilder\Nesting\NestTranslator;
 use Francerz\SqlBuilder\Nesting\RowProxy;
-use Francerz\SqlBuilder\Nesting\SelectProxy;
 use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\SelectQuery;
@@ -74,10 +73,32 @@ class SelectNestableTest extends TestCase
         );
     }
 
+    public function getGroupsNestedResult(SelectQuery $query)
+    {
+        $compiler = new GenericCompiler();
+        $groups = array(
+            ["group_id"=>3,'Students'=>[
+                ['group_id'=> 3, 'student_id'=>13, 'name'=>'John Doe']
+            ]],
+            ["group_id"=>7,'Students'=>[
+                ['group_id'=> 7, 'student_id'=>19, 'name'=>'James Doe'],
+                ['group_id'=> 7, 'student_id'=>23, 'name'=>'Judy Doe']
+            ]],
+            ["group_id"=>11,'Students'=>[
+                ['group_id'=>11, 'student_id'=>17, 'name'=>'Janne Doe']
+            ]]
+        );
+        return new SelectResult(
+            $compiler->compile($query),
+            json_decode(json_encode($groups))
+        );
+    }
+
     public function testNestable()
     {
         $nestTranslator = new NestTranslator();
         $compiler = new GenericCompiler();
+        $merger = new NestMerger();
 
         $query = $this->getGroupsQuery();
         $groups = $this->getGroupsExpectedResult($query);
@@ -88,20 +109,20 @@ class SelectNestableTest extends TestCase
         $nest = $nests[0];
         if (!$nest instanceof Nest) return;
 
-        $callback = $nest->getCallback();
-        $nestQuery= $nest->getNested();
-        call_user_func($callback, $nestQuery, new RowProxy());
-        $nestTranslate = $nestTranslator->translate($nestQuery->getSelect(), $groups);
+        $nested= $nest->getNested();
+        $nestSelect = $nested->getSelect();
+        $nestTranslate = $nestTranslator->translate($nestSelect, $groups);
 
         $nestCompiled = $compiler->compile($nestTranslate);
-        $expected = 'SELECT s.*, gs.group_id FROM students AS s INNER JOIN groups_students AS gs ON s.student_id = gs.student_id WHERE gs.group_id IN :v1';
+        $expected = 'SELECT s.*, gs.group_id FROM students AS s INNER JOIN groups_students AS gs ON s.student_id = gs.student_id WHERE gs.group_id IN (:v1, :v2, :v3)';
         $this->assertEquals($expected, $nestCompiled->getQuery());
-        $this->assertEquals(['v1'=>[3, 7, 11]], $nestCompiled->getValues());
+        $this->assertEquals(['v1'=>3,'v2'=>7,'v3'=>11], $nestCompiled->getValues());
 
-        $students = $this->getStudentsExpectedResult($nestQuery->getSelect());
+        $students = $this->getStudentsExpectedResult($nestTranslate);
 
-        $this->assertEquals(4, count($students));
+        $merger->merge($groups, $students, $nest);
+        $groupsNested = $this->getGroupsNestedResult($query);
 
-
+        $this->assertEquals($groupsNested, $groups);
     }
 }

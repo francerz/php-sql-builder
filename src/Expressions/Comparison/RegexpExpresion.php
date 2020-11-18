@@ -4,11 +4,13 @@ namespace Francerz\SqlBuilder\Expressions\Comparison;
 
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
+use Francerz\SqlBuilder\Expressions\TwoOperandsInterface;
 use InvalidArgumentException;
 
 class RegexpExpression implements
     ComparisonOperationInterface,
-    NegatableInterface
+    NegatableInterface,
+    TwoOperandsInterface
 {
 
     private $operand1;

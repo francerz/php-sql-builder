@@ -29,4 +29,9 @@ class ConditionItem
     {
         return $this->connector;
     }
+
+    public function __clone()
+    {
+        $this->condition = clone $this->condition;
+    }
 }

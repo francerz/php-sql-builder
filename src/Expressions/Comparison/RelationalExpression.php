@@ -3,10 +3,16 @@
 namespace Francerz\SqlBuilder\Expressions\Comparison;
 
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
+use Francerz\SqlBuilder\Expressions\TwoOperandsInterface;
+use Francerz\SqlBuilder\Nesting\ValueProxy;
+use Francerz\SqlBuilder\Nesting\ValueProxyResolverInterface;
 use InvalidArgumentException;
+use RuntimeException;
 
 class RelationalExpression implements
-    ComparisonOperationInterface
+    ComparisonOperationInterface,
+    TwoOperandsInterface,
+    ValueProxyResolverInterface
 {
 
     private $operand1;
@@ -61,5 +67,33 @@ class RelationalExpression implements
     public function getOperator()
     {
         return $this->operator;
+    }
+
+    public function resolve(): bool
+    {
+        if (!$this->operand1 instanceof ValueProxy) {
+            throw new RuntimeException('Invalid operand1 for ValueProxyResolver');
+        }
+        if (!$this->operand2 instanceof ValueProxy) {
+            throw new RuntimeException('Invalid operand2 for ValueProxyResolver');
+        }
+        $op1 = $this->operand1->getValue();
+        $op2 = $this->operand2->getValue();
+
+        switch ($this->operator) {
+            case RelationalOperators::EQUALS:
+                return $op1 == $op2;
+            case RelationalOperators::NOT_EQUALS:
+                return $op1 != $op2;
+            case RelationalOperators::GREATER:
+                return $op1 > $op2;
+            case RelationalOperators::GREATER_EQUALS:
+                return $op1 >= $op2;
+            case RelationalOperators::LESS:
+                return $op1 < $op2;
+            case RelationalOperators::LESS_EQUALS:
+                return $op1 <= $op2;
+        }
+        return false;
     }
 }

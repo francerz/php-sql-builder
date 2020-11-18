@@ -16,6 +16,8 @@ class SelectQuery implements QueryInterface
     use JoinableTrait, WhereableTrait, NestableTrait, GroupableTrait, LimitableTrait {
         WhereableTrait::__construct as private Whereable__construct;
         GroupableTrait::__construct as private Groupable__construct;
+        WhereableTrait::__clone as private WhereableTrait__clone;
+        GroupableTrait::__clone as private GroupableTrait__clone;
     }
 
     protected $from;
@@ -47,6 +49,12 @@ class SelectQuery implements QueryInterface
     public function getTable() : Table
     {
         return $this->from->getTable();
+    }
+
+    public function __clone()
+    {
+        $this->WhereableTrait__clone();
+        $this->GroupableTrait__clone();
     }
 
     public function getAllColumns()

@@ -37,6 +37,15 @@ class ConditionList implements
         $this->setMode($mode);
     }
 
+    public function __clone()
+    {
+        $newConds = [];
+        foreach ($this->conditions as &$c) {
+            $newConds[] = clone $c;
+        }
+        $this->conditions = $newConds;
+    }
+
     private function setMode($mode)
     {
         if (!in_array($mode, array(

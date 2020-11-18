@@ -4,11 +4,13 @@ namespace Francerz\SqlBuilder\Expressions\Comparison;
 
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
+use Francerz\SqlBuilder\Expressions\OneOperandInterface;
 use InvalidArgumentException;
 
 class NullExpression implements
     ComparisonOperationInterface,
-    NegatableInterface
+    NegatableInterface,
+    OneOperandInterface
 {
     private $negated = false;
     private $operand;

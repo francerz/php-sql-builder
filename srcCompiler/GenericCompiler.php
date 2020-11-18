@@ -9,6 +9,7 @@ use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
 use Francerz\SqlBuilder\Components\Set;
 use Francerz\SqlBuilder\Components\SqlValue;
+use Francerz\SqlBuilder\Components\SqlValueArray;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\DeleteQuery;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
@@ -404,6 +405,13 @@ class GenericCompiler implements CompilerInterface
 
     protected function compileValue(SqlValue $value) : string
     {
+        if ($value instanceof SqlValueArray) {
+            $vals = [];
+            foreach ($value->getValue() as $val) {
+                $vals[] = ':'.$this->addValue($val);
+            }
+            return '('.join(', ', $vals).')';
+        }
         return ':'.$this->addValue($value->getValue());
     }
 }

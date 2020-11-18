@@ -90,4 +90,11 @@ class Column implements ComparableComponentInterface
     {
         return $this->alias;
     }
+    public function getAliasOrName()
+    {
+        if (isset($this->alias)) {
+            return $this->alias;
+        }
+        return $this->column;
+    }
 }

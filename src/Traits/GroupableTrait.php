@@ -22,4 +22,9 @@ trait GroupableTrait
     {
         return $this->having;
     }
+
+    protected function __clone()
+    {
+        $this->having = clone $this->having;
+    }
 }
