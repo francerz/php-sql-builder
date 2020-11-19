@@ -467,4 +467,14 @@ class ConditionList implements
     {
         return $this->addExpression($expression, true, LogicConnectors::OR);
     }
+
+    public function __invoke($expression)
+    {
+        return $this->addExpression($expression);
+    }
+
+    public function not($expression)
+    {
+        return $this->addExpression($expression, true);
+    }
 }
