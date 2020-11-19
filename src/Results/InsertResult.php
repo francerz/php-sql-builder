@@ -8,9 +8,9 @@ class InsertResult extends AbstractResult
 {
     private $firstId;
 
-    public function __construct(CompiledQuery $query, int $numRows = 0, $firstId = null)
+    public function __construct(CompiledQuery $query, int $numRows = 0, $firstId = null, bool $success = true)
     {
-        parent::__construct($query, $numRows);
+        parent::__construct($query, $numRows, $success);
         $this->firstId = $firstId;
     }
 
