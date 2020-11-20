@@ -10,7 +10,7 @@ class ConnectParams
     private $port;
     private $database;
 
-    public function __construct(string $host, string $user, string $password, string $database, int $port)
+    public function __construct(string $host, ?string $user = null, ?string $password = null, ?string $database = null, ?int $port = null)
     {
         $this->host = $host;
         $this->user = $user;
@@ -31,7 +31,7 @@ class ConnectParams
     {
         $this->user = $user;
     }
-    public function getUser() : string
+    public function getUser() : ?string
     {
         return $this->user;
     }
@@ -39,7 +39,7 @@ class ConnectParams
     {
         $this->password = $password;
     }
-    public function getPassword() : string
+    public function getPassword() : ?string
     {
         return $this->password;
     }
@@ -47,7 +47,7 @@ class ConnectParams
     {
         $this->database = $database;
     }
-    public function getDatabase()
+    public function getDatabase() : ?string
     {
         return $this->database;
     }
@@ -56,7 +56,7 @@ class ConnectParams
     {
         $this->port = $port;
     }
-    public function getPort()
+    public function getPort() : ?int
     {
         return $this->port;
     }
