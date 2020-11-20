@@ -44,6 +44,22 @@ class SelectResult extends AbstractResult implements
         next($this->rows);
     }
 
+    public function first()
+    {
+        $first = reset($this->rows);
+        if ($first !== false) {
+            return $first;
+        }
+    }
+
+    public function last()
+    {
+        $last = end($this->rows);
+        if ($last !== false) {
+            return $last;
+        }
+    }
+
     public function getColumnValues($column)
     {
         return array_unique(array_column($this->rows, $column));
