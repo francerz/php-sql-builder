@@ -1,6 +1,6 @@
 <?php
 
-use Francerz\SqlBuilder\Compiler\GenericCompiler;
+use Francerz\SqlBuilder\GenericCompiler;
 use Francerz\SqlBuilder\Query;
 use PHPUnit\Framework\TestCase;
 

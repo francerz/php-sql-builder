@@ -1,6 +1,6 @@
 <?php
 
-namespace Francerz\SqlBuilder\Compiler;
+namespace Francerz\SqlBuilder;
 
 use Francerz\SqlBuilder\CompiledQuery;
 use Francerz\SqlBuilder\CompilerInterface;

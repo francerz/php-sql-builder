@@ -10,8 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Francerz\\SqlBuilder\\" : "src",
-            "Francerz\\SqlBuilder\\Compiler\\": "srcCompiler"
+            "Francerz\\SqlBuilder\\" : "src"
         }
     },
     "require-dev": {

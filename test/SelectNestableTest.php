@@ -1,6 +1,6 @@
 <?php
 
-use Francerz\SqlBuilder\Compiler\GenericCompiler;
+use Francerz\SqlBuilder\GenericCompiler;
 use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
 use Francerz\SqlBuilder\Nesting\NestMerger;
