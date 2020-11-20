@@ -17,6 +17,7 @@ class SelectQuery implements QueryInterface
         GroupableTrait::__construct as private Groupable__construct;
         WhereableTrait::__clone as private WhereableTrait__clone;
         GroupableTrait::__clone as private GroupableTrait__clone;
+        NestableTrait::__construct as private Nestable__construct;
     }
 
     protected $from;
@@ -26,6 +27,7 @@ class SelectQuery implements QueryInterface
     {
         $this->Whereable__construct();
         $this->Groupable__construct();
+        $this->Nestable__construct();
         if (isset($table)) {
             $this->from($table, $columns);
         }
