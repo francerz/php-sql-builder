@@ -3,6 +3,7 @@
 use Francerz\SqlBuilder\GenericCompiler;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Table;
+use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\SelectQuery;
@@ -61,8 +62,8 @@ class SelectQueryTest extends TestCase
                 OR pe.id_plan_estudio IS NULL)
             AND (pe.id_carrera = :v3 OR pe.id_carrera IS NULL)";
 
-        $compiler = new GenericCompiler();
-        $compiled = $compiler->compile($query);
+        $compiler = new QueryCompiler();
+        $compiled = $compiler->compileQuery($query);
         
         $this->assertEquals(preg_replace('/\s+/',' ', $expected), $compiled->getQuery());
         $this->assertEquals(['v1'=>date('Y-m-d'),'v2'=>$id_carrera,'v3'=>$id_carrera], $compiled->getValues());
@@ -70,10 +71,10 @@ class SelectQueryTest extends TestCase
 
     public function testCompilingTest()
     {
-        $compiler = new GenericCompiler();
+        $compiler = new QueryCompiler();
 
         $query = Query::selectFrom(['t'=>'table']);
-        $compiled = $compiler->compile($query);
+        $compiled = $compiler->compileQuery($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t', $compiled->getQuery());
         $this->assertEquals([], $compiled->getValues());
@@ -81,7 +82,7 @@ class SelectQueryTest extends TestCase
         // --------
 
         $query->crossJoin(['t2'=>'table2']);
-        $compiled = $compiler->compile($query);
+        $compiled = $compiler->compileQuery($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t, table2 AS t2', $compiled->getQuery());
         $this->assertEquals([], $compiled->getValues());
@@ -92,7 +93,7 @@ class SelectQueryTest extends TestCase
         $query->innerJoin(['t3'=>$subquery])->on()
             ->equals('t3.col','t2.col')
             ->andLessEquals('t3.col2','t.c');
-        $compiled = $compiler->compile($query);
+        $compiled = $compiler->compileQuery($query);
 
         $this->assertEquals(
             'SELECT t.* FROM table AS t, table2 AS t2 '.
@@ -105,7 +106,7 @@ class SelectQueryTest extends TestCase
         // --------
 
         $query->where()->notBetween('t.alpha', 16, 80);
-        $compiled = $compiler->compile($query);
+        $compiled = $compiler->compileQuery($query);
 
         $expected = "SELECT t.* FROM table AS t, table2 AS t2 
             INNER JOIN (SELECT a.* FROM table_a AS a) AS t3 

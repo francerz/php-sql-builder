@@ -1,5 +1,6 @@
 <?php
 
+use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\GenericCompiler;
 use Francerz\SqlBuilder\Query;
 use PHPUnit\Framework\TestCase;
@@ -11,7 +12,7 @@ class UpdateQueryTest extends TestCase
     public function __construct()
     {
         parent::__construct();
-        $this->compiler = new GenericCompiler();    
+        $this->compiler = new QueryCompiler();    
     }
 
     public function testUpdateSimple()
@@ -23,7 +24,7 @@ class UpdateQueryTest extends TestCase
 
         $query = Query::update(['t1'=>'table'], $obj, ['pk_id']);
 
-        $compiled = $this->compiler->compile($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals(
             "UPDATE table AS t1 SET t1.attr1 = :v1, t1.attr2 = :v2 WHERE t1.pk_id = :v3",

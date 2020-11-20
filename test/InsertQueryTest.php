@@ -1,6 +1,6 @@
 <?php
 
-use Francerz\SqlBuilder\GenericCompiler;
+use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\InsertQuery;
 use Francerz\SqlBuilder\Query;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +12,7 @@ class InsertQueryTest extends TestCase
     public function __construct()
     {
         parent::__construct();
-        $this->compiler = new GenericCompiler();
+        $this->compiler = new QueryCompiler();
     }
     public function testInsertQueryAssoc()
     {
@@ -21,7 +21,7 @@ class InsertQueryTest extends TestCase
         $this->assertInstanceOf(InsertQuery::class, $query);
         $this->assertEquals(1, count($query));
 
-        $compiled = $this->compiler->compile($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals('INSERT INTO grupos(periodo_id,materia_id) VALUES (:v1,:v2)', $compiled->getQuery());
         $this->assertEquals(['v1'=>80,'v2'=>2312], $compiled->getValues());
@@ -38,7 +38,7 @@ class InsertQueryTest extends TestCase
         $this->assertInstanceOf(InsertQuery::class, $query);
         $this->assertEquals(1, count($query));
 
-        $compiled = $this->compiler->compile($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals('INSERT INTO grupos(periodo_id,materia_id) VALUES (:v1,:v2)', $compiled->getQuery());
         $this->assertEquals(['v1'=>80,'v2'=>2312], $compiled->getValues());
@@ -60,7 +60,7 @@ class InsertQueryTest extends TestCase
         $this->assertEquals(2, count($query));
         $this->assertEquals(['periodo_id','materia_id','base_grupo_id'], $query->getColumns());
         
-        $compiled = $this->compiler->compile($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals(
             'INSERT INTO grupos(periodo_id,materia_id,base_grupo_id) VALUES '.

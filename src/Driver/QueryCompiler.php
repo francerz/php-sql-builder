@@ -1,9 +1,8 @@
 <?php
 
-namespace Francerz\SqlBuilder;
+namespace Francerz\SqlBuilder\Driver;
 
 use Francerz\SqlBuilder\CompiledQuery;
-use Francerz\SqlBuilder\CompilerInterface;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
@@ -29,11 +28,11 @@ use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
 use Francerz\SqlBuilder\UpdateQuery;
 
-class GenericCompiler implements CompilerInterface
+class QueryCompiler implements QueryCompilerInterface
 {
     private $values;
 
-    public function compile(QueryInterface $query) : ?CompiledQuery
+    public function compileQuery(QueryInterface $query) : ?CompiledQuery
     {
         $this->clearValues();
         if ($query instanceof SelectQuery) {

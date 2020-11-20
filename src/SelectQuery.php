@@ -2,7 +2,6 @@
 
 namespace Francerz\SqlBuilder;
 
-use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Components\TableReference;
 use Francerz\SqlBuilder\Traits\GroupableTrait;
