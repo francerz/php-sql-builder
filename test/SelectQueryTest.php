@@ -129,10 +129,13 @@ class SelectQueryTest extends TestCase
         $query->where(function(ConditionList $where) {
             $where->in('group_id', [3, 5, 7, 11]);
         });
+        $query->where('a','b')
+            ->and('c','NULL')
+            ->or('d','BETWEEN','e', 'f');
 
         $compiled = $this->compiler->compileQuery($query);
 
-        $expected = "SELECT groups.* FROM groups WHERE (group_id IN (:v1, :v2, :v3, :v4))";
+        $expected = "SELECT groups.* FROM groups WHERE (group_id IN (:v1, :v2, :v3, :v4)) AND a = :v5 AND c IS NULL OR d BETWEEN :v6 AND :v7";
 
         $this->assertEquals($expected, $compiled->getQuery());
     }

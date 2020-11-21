@@ -152,11 +152,15 @@ class ConditionList implements
     }
 
     #region Relational operators
-    public function addRelational($operand1, $operand2, $operator = RelationalOperators::EQUALS, $connector = LogicConnectors::AND)
+    private function genRelationalExpression($operand1, $operand2, $operator = RelationalOperators::EQUALS)
     {
         $operand1 = $this->coarseModeFirst($operand1);
         $operand2 = $this->coarseModeSecond($operand2);
-        return $this->add(new ConditionItem(new RelationalExpression($operand1, $operand2, $operator), $connector));
+        return new RelationalExpression($operand1, $operand2, $operator);
+    }
+    public function addRelational($operand1, $operand2, $operator = RelationalOperators::EQUALS, $connector = LogicConnectors::AND)
+    {
+        return $this->add(new ConditionItem($this->genRelationalExpression($operand1, $operand2, $operator), $connector));
     }
 
     #region Relational operators with operator
@@ -240,11 +244,15 @@ class ConditionList implements
     #endregion
 
     #region LIKE
-    public function like($operand1, $operand2, $negated = false, $connector = LogicConnectors::AND)
+    private function genLikeExpression($operand1, $operand2, $negated = false)
     {
         $operand1 = $this->coarseModeFirst($operand1);
         $operand2 = $this->coarseModeSecond($operand2);
-        return $this->add(new ConditionItem(new LikeExpression($operand1, $operand2, $negated), $connector));
+        return new LikeExpression($operand1, $operand2, $negated);
+    }
+    public function like($operand1, $operand2, $negated = false, $connector = LogicConnectors::AND)
+    {
+        return $this->add(new ConditionItem($this->genLikeExpression($operand1, $operand2, $negated), $connector));
     }
     
     #region LIKE with connector and negation
@@ -273,11 +281,15 @@ class ConditionList implements
     #endregion 
 
     #region REGEXP
-    public function regexp($value, $pattern, $negated = false, $connector = LogicConnectors::AND)
+    private function genRegexpExpression($value, $pattern, $negated = false)
     {
         $value = $this->coarseModeFirst($value);
         $pattern = $this->coarseModeSecond($pattern);
-        return $this->add(new ConditionItem(new RegexpExpression($value, $pattern, $negated), $connector));
+        return new RegexpExpression($value, $pattern, $negated);
+    }
+    public function regexp($value, $pattern, $negated = false, $connector = LogicConnectors::AND)
+    {
+        return $this->add(new ConditionItem($this->genRegexpExpression($value, $pattern, $negated), $connector));
     }
 
     #region REGEXP with connector and negation
@@ -306,10 +318,14 @@ class ConditionList implements
     #endregion
 
     #region NULL
-    public function null($value, $negated = false, $connector = LogicConnectors::AND)
+    private function genNullExpression($value, $negated = false)
     {
         $value = $this->coarseModeFirst($value);
-        return $this->add(new ConditionItem(new NullExpression($value, $negated), $connector));
+        return new NullExpression($value, $negated);
+    }
+    public function null($value, $negated = false, $connector = LogicConnectors::AND)
+    {
+        return $this->add(new ConditionItem($this->genNullExpression($value, $negated), $connector));
     }
 
     #region NULL with connector and negation
@@ -363,12 +379,16 @@ class ConditionList implements
     #endregion
 
     #region BETWEEN
-    public function between($value, $minVal, $maxVal, $negated = false, $connector = LogicConnectors::AND)
+    private function genBetweenExpression($value, $minVal, $maxVal, $negated = false)
     {
         $value = $this->coarseModeFirst($value);
         $minVal = $this->coarseModeSecond($minVal);
         $maxVal = $this->coarseModeSecond($maxVal);
-        return $this->add(new ConditionItem(new BetweenExpression($value, $minVal, $maxVal, $negated), $connector));
+        return new BetweenExpression($value, $minVal, $maxVal, $negated);
+    }
+    public function between($value, $minVal, $maxVal, $negated = false, $connector = LogicConnectors::AND)
+    {
+        return $this->add(new ConditionItem($this->genBetweenExpression($value, $minVal, $maxVal, $negated), $connector));
     }
 
     #region BETWEEN with connector and negation
@@ -397,11 +417,15 @@ class ConditionList implements
     #endregion
 
     #region IN
-    public function in($operand, $values, $negated = false, $connector = LogicConnectors::AND)
+    private function genInExpression($operand, $values, $negated = false)
     {
         $operand = $this->coarseModeFirst($operand);
         $values = Query::array($values);
-        return $this->add(new ConditionItem(new InExpression($operand, $values, $negated), $connector));
+        return new InExpression($operand, $values, $negated);
+    }
+    public function in($operand, $values, $negated = false, $connector = LogicConnectors::AND)
+    {
+        return $this->add(new ConditionItem($this->genInExpression($operand, $values, $negated), $connector));
     }
 
     #region IN with connector and negation
@@ -453,28 +477,65 @@ class ConditionList implements
 
     public function and($expression)
     {
+        $expression = $this->multiArgsToExpression(func_get_args());
         return $this->addExpression($expression, false, LogicConnectors::AND);
     }
     public function or($expression)
     {
+        $expression = $this->multiArgsToExpression(func_get_args());
         return $this->addExpression($expression, false, LogicConnectors::OR);
     }
     public function andNot($expression)
     {
+        $expression = $this->multiArgsToExpression(func_get_args());
         return $this->addExpression($expression, true, LogicConnectors::AND);
     }
     public function orNot($expression)
     {
+        $expression = $this->multiArgsToExpression(func_get_args());
         return $this->addExpression($expression, true, LogicConnectors::OR);
     }
 
     public function __invoke($expression)
     {
+        $expression = $this->multiArgsToExpression(func_get_args());
         return $this->addExpression($expression);
     }
 
     public function not($expression)
     {
         return $this->addExpression($expression, true);
+    }
+
+    private function multiArgsToExpression($args)
+    {
+        if (empty($args)) return null;
+
+        if (count($args) == 1) {
+            return reset($args);
+        }
+
+        $first = current($args);
+        $operator = next($args);
+        $second = next($args);
+        $third = next($args);
+
+        switch (strtoupper($operator)) {
+            case RelationalOperators::EQUALS:
+            case RelationalOperators::NOT_EQUALS:
+            case RelationalOperators::LESS:
+            case RelationalOperators::LESS_EQUALS:
+            case RelationalOperators::GREATER:
+            case RelationalOperators::GREATER_EQUALS:
+                return $this->genRelationalExpression($first, $second, $operator);
+            case 'LIKE':
+                return $this->genLikeExpression($first, $second);
+            case 'BETWEEN':
+                return $this->genBetweenExpression($first, $second, $third);
+            case 'NULL':
+                return $this->genNullExpression($first);
+            default:
+                return $this->genRelationalExpression($first, $operator, RelationalOperators::EQUALS);
+        }
     }
 }
