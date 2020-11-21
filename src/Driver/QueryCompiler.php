@@ -7,6 +7,7 @@ use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
 use Francerz\SqlBuilder\Components\Set;
+use Francerz\SqlBuilder\Components\SqlRaw;
 use Francerz\SqlBuilder\Components\SqlValue;
 use Francerz\SqlBuilder\Components\SqlValueArray;
 use Francerz\SqlBuilder\Components\Table;
@@ -363,6 +364,9 @@ class QueryCompiler implements QueryCompilerInterface
     {
         if ($comp instanceof Column) {
             return $this->compileColumn($comp);
+        }
+        if ($comp instanceof SqlRaw) {
+            return $comp->getContent();
         }
         return $this->compileValue($comp);
     }
