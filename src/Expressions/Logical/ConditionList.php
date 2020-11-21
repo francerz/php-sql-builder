@@ -520,6 +520,10 @@ class ConditionList implements
         $second = next($args);
         $third = next($args);
 
+        if ($operator instanceof ComparableComponentInterface) {
+            return $this->genRelationalExpression($first, $operator, RelationalOperators::EQUALS);
+        }
+
         switch (strtoupper($operator)) {
             case RelationalOperators::EQUALS:
             case RelationalOperators::NOT_EQUALS:
