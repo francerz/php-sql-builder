@@ -2,6 +2,7 @@
 
 namespace Francerz\SqlBuilder;
 
+use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Components\TableReference;
 use Francerz\SqlBuilder\Traits\GroupableTrait;
@@ -28,6 +29,7 @@ class SelectQuery implements QueryInterface
         $this->Whereable__construct();
         $this->Groupable__construct();
         $this->Nestable__construct();
+        $this->columns = [];
         if (isset($table)) {
             $this->from($table, $columns);
         }
@@ -58,9 +60,27 @@ class SelectQuery implements QueryInterface
         $this->GroupableTrait__clone();
     }
 
+    public function columns($column, ...$moreColumns)
+    {
+        if (is_array($column)) {
+            $column = Column::fromArray($column);
+            $this->columns = array_merge($this->columns, $column);
+        } elseif (is_string($column)) {
+            $this->columns[] = Column::fromString($column);
+        } elseif ($column instanceof Column) {
+            $this->columns[] = $column;
+        }
+        if (!empty($moreColumns)) {
+            foreach($moreColumns as $c) {
+                $this->columns($c);
+            }
+        }
+        return $this;
+    }
+
     public function getAllColumns()
     {
-        $columns = $this->from->getColumns();
+        $columns = array_merge($this->columns, $this->from->getColumns());
         $joins = $this->getJoins();
         foreach ($joins as $join) {
             $columns = array_merge($columns, $join->getTableReference()->getColumns());
