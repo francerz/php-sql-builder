@@ -64,6 +64,11 @@ Trait JoinableTrait
         if (!$this->lastJoin instanceof Join) {
             throw new LogicException('Cannot use \'on\' clause without join.');
         }
-        return $this->lastJoin->getOn();
+        $on = $this->lastJoin->getOn();
+        $args = func_get_args();
+        if (!empty($args)) {
+            call_user_func_array($on, $args);
+        }
+        return $on;
     }
 }

@@ -16,7 +16,12 @@ trait WhereableTrait
 
     public function where()
     {
-        return $this->where;
+        $where = $this->where;
+        $args = func_get_args();
+        if (!empty($args)) {
+            call_user_func_array($where, $args);
+        }
+        return $where;
     }
 
     protected function __clone()

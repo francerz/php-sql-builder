@@ -11,6 +11,14 @@ use PHPUnit\Framework\TestCase;
 
 class SelectQueryTest extends TestCase
 {
+
+    private $compiler;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->compiler = new QueryCompiler();
+    }
     public function testCreateSelectQuery()
     {
         $query = new SelectQuery('table1', ['column1', 'column2']);
@@ -62,8 +70,7 @@ class SelectQueryTest extends TestCase
                 OR pe.id_plan_estudio IS NULL)
             AND (pe.id_carrera = :v3 OR pe.id_carrera IS NULL)";
 
-        $compiler = new QueryCompiler();
-        $compiled = $compiler->compileQuery($query);
+        $compiled = $this->compiler->compileQuery($query);
         
         $this->assertEquals(preg_replace('/\s+/',' ', $expected), $compiled->getQuery());
         $this->assertEquals(['v1'=>date('Y-m-d'),'v2'=>$id_carrera,'v3'=>$id_carrera], $compiled->getValues());
@@ -71,10 +78,8 @@ class SelectQueryTest extends TestCase
 
     public function testCompilingTest()
     {
-        $compiler = new QueryCompiler();
-
         $query = Query::selectFrom(['t'=>'table']);
-        $compiled = $compiler->compileQuery($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t', $compiled->getQuery());
         $this->assertEquals([], $compiled->getValues());
@@ -82,7 +87,7 @@ class SelectQueryTest extends TestCase
         // --------
 
         $query->crossJoin(['t2'=>'table2']);
-        $compiled = $compiler->compileQuery($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t, table2 AS t2', $compiled->getQuery());
         $this->assertEquals([], $compiled->getValues());
@@ -93,7 +98,7 @@ class SelectQueryTest extends TestCase
         $query->innerJoin(['t3'=>$subquery])->on()
             ->equals('t3.col','t2.col')
             ->andLessEquals('t3.col2','t.c');
-        $compiled = $compiler->compileQuery($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals(
             'SELECT t.* FROM table AS t, table2 AS t2 '.
@@ -106,7 +111,7 @@ class SelectQueryTest extends TestCase
         // --------
 
         $query->where()->notBetween('t.alpha', 16, 80);
-        $compiled = $compiler->compileQuery($query);
+        $compiled = $this->compiler->compileQuery($query);
 
         $expected = "SELECT t.* FROM table AS t, table2 AS t2 
             INNER JOIN (SELECT a.* FROM table_a AS a) AS t3 
@@ -115,5 +120,20 @@ class SelectQueryTest extends TestCase
 
         $this->assertEquals(preg_replace('/\s+/', ' ', $expected), $compiled->getQuery());
         $this->assertEquals(['v1'=>16,'v2'=>80], $compiled->getValues());
+    }
+
+    public function testWhereArgs()
+    {
+        $query = Query::selectFrom('groups');
+
+        $query->where(function(ConditionList $where) {
+            $where->in('group_id', [3, 5, 7, 11]);
+        });
+
+        $compiled = $this->compiler->compileQuery($query);
+
+        $expected = "SELECT groups.* FROM groups WHERE (group_id IN (:v1, :v2, :v3, :v4))";
+
+        $this->assertEquals($expected, $compiled->getQuery());
     }
 }

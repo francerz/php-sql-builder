@@ -20,7 +20,12 @@ trait GroupableTrait
 
     public function having()
     {
-        return $this->having;
+        $having = $this->having;
+        $args = func_get_args();
+        if (!empty($args)) {
+            call_user_func_array($having, $args);
+        }
+        return $having;
     }
 
     protected function __clone()
