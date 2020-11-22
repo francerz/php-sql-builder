@@ -389,6 +389,8 @@ class QueryCompiler implements QueryCompilerInterface
         $output = isset($table) ? $this->compileColumnTable($table).'.' : '';
         if ($source instanceof SqlRaw) {
             $output.= $source->getContent();
+        } elseif ($source === '*') {
+            $output.= '*';
         } else {
             $output.= $this->compileColumnName($source);
         }
