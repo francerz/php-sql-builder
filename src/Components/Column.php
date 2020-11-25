@@ -51,9 +51,12 @@ class Column implements ComparableComponentInterface
 
         foreach ($array as $k => $item) {
             $alias = is_string($k) ? $k : null;
-            if (is_string($item)) {
+            if (is_string($item) && is_string($table)) {
                 static::getColTable($item, $column, $table);
                 $item = new Column($column, $alias, $table);
+            } elseif (is_string($item)) {
+                $item = static::fromString($item);
+                $item->alias = $alias;
             } elseif ($item instanceof SelectQuery) {
                 if ($item->getLimit() !== 1 || count($item->getAllColumns()) !== 1) {
                     throw new InvalidArgumentException(
