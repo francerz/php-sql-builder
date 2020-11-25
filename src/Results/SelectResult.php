@@ -5,10 +5,12 @@ namespace Francerz\SqlBuilder\Results;
 use Countable;
 use Francerz\SqlBuilder\CompiledQuery;
 use Iterator;
+use JsonSerializable;
 
 class SelectResult extends AbstractResult implements
     Countable,
-    Iterator
+    Iterator,
+    JsonSerializable
 {
     private $rows;
     
@@ -63,5 +65,10 @@ class SelectResult extends AbstractResult implements
     public function getColumnValues($column)
     {
         return array_unique(array_column($this->rows, $column));
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->rows;
     }
 }
