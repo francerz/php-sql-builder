@@ -24,10 +24,10 @@ use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
-use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\InsertQuery;
 use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
+use Francerz\SqlBuilder\Traits\LimitableInterface;
 use Francerz\SqlBuilder\UpdateQuery;
 
 class QueryCompiler implements QueryCompilerInterface
@@ -430,7 +430,7 @@ class QueryCompiler implements QueryCompilerInterface
         return ':'.$this->addValue($value->getValue());
     }
 
-    protected function compileLimit(LimitableTrait $limitable)
+    protected function compileLimit(LimitableInterface $limitable)
     {
         $limit = $limitable->getLimit();
         if (is_null($limit)) return '';

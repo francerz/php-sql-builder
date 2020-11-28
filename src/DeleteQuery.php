@@ -4,10 +4,11 @@ namespace Francerz\SqlBuilder;
 
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
+use Francerz\SqlBuilder\Traits\LimitableInterface;
 use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\Traits\WhereableTrait;
 
-class DeleteQuery implements QueryInterface
+class DeleteQuery implements QueryInterface, LimitableInterface
 {
     use JoinableTrait, WhereableTrait, LimitableTrait {
         WhereableTrait::__construct as private _whereableTraitConstruct;

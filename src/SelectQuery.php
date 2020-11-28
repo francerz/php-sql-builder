@@ -7,11 +7,12 @@ use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Components\TableReference;
 use Francerz\SqlBuilder\Traits\GroupableTrait;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
+use Francerz\SqlBuilder\Traits\LimitableInterface;
 use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\Traits\NestableTrait;
 use Francerz\SqlBuilder\Traits\WhereableTrait;
 
-class SelectQuery implements QueryInterface
+class SelectQuery implements QueryInterface, LimitableInterface
 {
     use JoinableTrait, WhereableTrait, NestableTrait, GroupableTrait, LimitableTrait {
         WhereableTrait::__construct as private Whereable__construct;
