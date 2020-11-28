@@ -24,6 +24,7 @@ use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
+use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\InsertQuery;
 use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
@@ -96,6 +97,9 @@ class QueryCompiler implements QueryCompilerInterface
         // HAVING
         $query.= $this->compileConditionList($select->having(), ' HAVING ');
         // ORDER BY
+        // LIMIT
+        $query.= $this->compileLimit($select);
+
         return $query;
     }
 
@@ -132,6 +136,7 @@ class QueryCompiler implements QueryCompilerInterface
         $query.= $this->compileTable($update->getTable());
         $query.= $this->compileSets($update->getSets(), ' SET ');
         $query.= $this->compileConditionList($update->where(), ' WHERE ');
+        $query.= $this->compileLimit($update);
         return $query;
     }
 
@@ -143,6 +148,7 @@ class QueryCompiler implements QueryCompilerInterface
             $query.= $this->compileJoin($join);
         }
         $query.= $this->compileConditionList($delete->where(), ' WHERE ');
+        $query.= $this->compileLimit($delete);
         return $query;
     }
 
@@ -422,5 +428,16 @@ class QueryCompiler implements QueryCompilerInterface
             return '('.join(', ', $vals).')';
         }
         return ':'.$this->addValue($value->getValue());
+    }
+
+    protected function compileLimit(LimitableTrait $limitable)
+    {
+        $limit = $limitable->getLimit();
+        if (is_null($limit)) return '';
+        $offset = $limitable->getLimitOffset();
+
+        $output = ' LIMIT '.$limit;
+        $output.= $offset > 0 ? ', '.$offset : '';
+        return $output;
     }
 }

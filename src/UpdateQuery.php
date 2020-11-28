@@ -7,11 +7,12 @@ use Francerz\SqlBuilder\Components\Set;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
+use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\Traits\WhereableTrait;
 
 class UpdateQuery implements QueryInterface
 {
-    use JoinableTrait, WhereableTrait {
+    use JoinableTrait, WhereableTrait, LimitableTrait {
         WhereableTrait::__construct as private _whereableTraitConstruct;
     }
     private $table;
