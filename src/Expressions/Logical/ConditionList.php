@@ -523,6 +523,9 @@ class ConditionList implements
         if ($operator instanceof ComparableComponentInterface) {
             return $this->genRelationalExpression($first, $operator, RelationalOperators::EQUALS);
         }
+        if (is_array($operator)) {
+            return $this->genInExpression($first, $operator);
+        }
 
         switch (strtoupper($operator)) {
             case RelationalOperators::EQUALS:
@@ -544,9 +547,6 @@ class ConditionList implements
                 }
                 return $this->genRelationalExpression($first, $operator, RelationalOperators::NOT_EQUALS);
             default:
-                if (is_array($operator)) {
-                    return $this->genInExpression($first, $operator);
-                }
                 return $this->genRelationalExpression($first, $operator, RelationalOperators::EQUALS);
         }
     }
