@@ -545,7 +545,7 @@ class ConditionList implements
                 if (is_array($second)) {
                     return $this->genInExpression($first, $second, true);
                 }
-                return $this->genRelationalExpression($first, $operator, RelationalOperators::NOT_EQUALS);
+                return $this->genRelationalExpression($first, $second, RelationalOperators::NOT_EQUALS);
             default:
                 return $this->genRelationalExpression($first, $operator, RelationalOperators::EQUALS);
         }
