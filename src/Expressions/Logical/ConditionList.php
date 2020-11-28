@@ -538,7 +538,15 @@ class ConditionList implements
                 return $this->genBetweenExpression($first, $second, $third);
             case 'NULL':
                 return $this->genNullExpression($first);
+            case 'NOT':
+                if (is_array($second)) {
+                    return $this->genInExpression($first, $second, true);
+                }
+                return $this->genRelationalExpression($first, $operator, RelationalOperators::NOT_EQUALS);
             default:
+                if (is_array($operator)) {
+                    return $this->genInExpression($first, $operator);
+                }
                 return $this->genRelationalExpression($first, $operator, RelationalOperators::EQUALS);
         }
     }
