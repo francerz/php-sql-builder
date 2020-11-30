@@ -6,6 +6,7 @@ use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Components\TableReference;
+use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use LogicException;
 
 Trait JoinableTrait
@@ -59,7 +60,7 @@ Trait JoinableTrait
         return isset($this->joins[$aliasOrName]);
     }
 
-    public function on()
+    public function on() : ConditionList
     {
         if (!$this->lastJoin instanceof Join) {
             throw new LogicException('Cannot use \'on\' clause without join.');

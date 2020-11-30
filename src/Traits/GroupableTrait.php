@@ -18,7 +18,7 @@ trait GroupableTrait
         return $this;
     }
 
-    public function having()
+    public function having() : ConditionList
     {
         $having = $this->having;
         $args = func_get_args();
