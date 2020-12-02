@@ -28,6 +28,7 @@ use Francerz\SqlBuilder\InsertQuery;
 use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
 use Francerz\SqlBuilder\Traits\LimitableInterface;
+use Francerz\SqlBuilder\Traits\SortableInterface;
 use Francerz\SqlBuilder\UpdateQuery;
 
 class QueryCompiler implements QueryCompilerInterface
@@ -97,6 +98,7 @@ class QueryCompiler implements QueryCompilerInterface
         // HAVING
         $query.= $this->compileConditionList($select->having(), ' HAVING ');
         // ORDER BY
+        $query.= $this->compileOrderBy($select);
         // LIMIT
         $query.= $this->compileLimit($select);
 
@@ -428,6 +430,24 @@ class QueryCompiler implements QueryCompilerInterface
             return '('.join(', ', $vals).')';
         }
         return ':'.$this->addValue($value->getValue());
+    }
+
+    protected function compileOrderBy(SortableInterface $sortable)
+    {
+        $orderBy = $sortable->getOrderBy();
+        if (empty($orderBy)) {
+            return '';
+        }
+
+        $output = ' ORDER BY ';
+        $orders = [];
+        foreach ($orderBy as $ob) {
+            $col = $ob[0];
+            $mode = $ob[1];
+            $orders[] = "{$this->compileComparable($col)} {$mode}";
+        }
+        $output.= implode(', ', $orders);
+        return $output;
     }
 
     protected function compileLimit(LimitableInterface $limitable)

@@ -10,11 +10,13 @@ use Francerz\SqlBuilder\Traits\JoinableTrait;
 use Francerz\SqlBuilder\Traits\LimitableInterface;
 use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\Traits\NestableTrait;
+use Francerz\SqlBuilder\Traits\SortableInterface;
+use Francerz\SqlBuilder\Traits\SortableTrait;
 use Francerz\SqlBuilder\Traits\WhereableTrait;
 
-class SelectQuery implements QueryInterface, LimitableInterface
+class SelectQuery implements QueryInterface, LimitableInterface, SortableInterface
 {
-    use JoinableTrait, WhereableTrait, NestableTrait, GroupableTrait, LimitableTrait {
+    use JoinableTrait, WhereableTrait, NestableTrait, GroupableTrait, LimitableTrait, SortableTrait {
         WhereableTrait::__construct as private Whereable__construct;
         GroupableTrait::__construct as private Groupable__construct;
         WhereableTrait::__clone as private WhereableTrait__clone;

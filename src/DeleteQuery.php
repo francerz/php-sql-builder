@@ -6,11 +6,13 @@ use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
 use Francerz\SqlBuilder\Traits\LimitableInterface;
 use Francerz\SqlBuilder\Traits\LimitableTrait;
+use Francerz\SqlBuilder\Traits\SortableInterface;
+use Francerz\SqlBuilder\Traits\SortableTrait;
 use Francerz\SqlBuilder\Traits\WhereableTrait;
 
-class DeleteQuery implements QueryInterface, LimitableInterface
+class DeleteQuery implements QueryInterface, LimitableInterface, SortableInterface
 {
-    use JoinableTrait, WhereableTrait, LimitableTrait {
+    use JoinableTrait, WhereableTrait, LimitableTrait, SortableTrait {
         WhereableTrait::__construct as private _whereableTraitConstruct;
     }
 

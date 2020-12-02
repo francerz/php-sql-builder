@@ -55,6 +55,7 @@ class SelectQueryTest extends TestCase
                     ->orNull('pe.id_plan_estudio');
             })
             ->equalsOrNull('pe.id_carrera', $id_carrera);
+        $query->orderBy('g.id_grupo');
         
         $expected = "SELECT g.*
         FROM siitecdb.grupos AS g
@@ -68,7 +69,8 @@ class SelectQueryTest extends TestCase
             :v1 BETWEEN p.inicio AND p.fin
             AND (pe.id_carrera = :v2
                 OR pe.id_plan_estudio IS NULL)
-            AND (pe.id_carrera = :v3 OR pe.id_carrera IS NULL)";
+            AND (pe.id_carrera = :v3 OR pe.id_carrera IS NULL)
+        ORDER BY g.id_grupo ASC";
 
         $compiled = $this->compiler->compileQuery($query);
         
