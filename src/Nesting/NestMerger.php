@@ -23,6 +23,7 @@ class NestMerger
         $alias = $nest->getAlias();
         $query = $nest->getNested()->getSelect();
         $query = $this->placeholdSelect($query, $childRow);
+        $mode = $nest->getMode();
 
         foreach($parents as $parent) {
             $childs = [];
@@ -32,8 +33,15 @@ class NestMerger
                 if ($this->mergeConditionList($query->where()) &&
                     $this->mergeConditionList($query->having())
                 ) {
+                    if ($mode === NestMode::SINGLE_FIRST) {
+                        $childs = $child;
+                        break;
+                    }
                     $childs[] = $child;
                 }
+            }
+            if ($mode === NestMode::SINGLE_LAST) {
+                $childs = end($childs);
             }
             $parent->$alias = $childs;
         }

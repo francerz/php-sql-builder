@@ -4,6 +4,7 @@ namespace Francerz\SqlBuilder\Traits;
 
 use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
+use Francerz\SqlBuilder\Nesting\NestMode;
 
 trait NestableTrait
 {
@@ -14,7 +15,7 @@ trait NestableTrait
         $this->nests = [];
     }
 
-    public function nest($alias, callable $callback)
+    public function nest($alias, callable $callback, $mode = NestMode::COLLECTION)
     {
         $query = null;
         if (is_array($alias)) {
@@ -24,7 +25,7 @@ trait NestableTrait
         if (!$query instanceof NestedSelect) {
             $query = new NestedSelect($query);
         }
-        $nest = new Nest($alias, $callback, $query);
+        $nest = new Nest($alias, $callback, $query, $mode);
         $nest->init();
         $this->nests[] = $nest;
         return $this;

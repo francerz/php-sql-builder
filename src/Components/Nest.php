@@ -3,17 +3,19 @@
 namespace Francerz\SqlBuilder\Components;
 
 use Francerz\SqlBuilder\Nesting\NestedSelect;
+use Francerz\SqlBuilder\Nesting\NestMode;
 use Francerz\SqlBuilder\Nesting\RowProxy;
 
 class Nest
 {
-    private $alias, $nested, $callback, $rowProxy;
+    private $alias, $nested, $callback, $rowProxy, $mode;
 
-    public function __construct(string $alias, callable $callback, ?NestedSelect $nested = null)
+    public function __construct(string $alias, callable $callback, ?NestedSelect $nested = null, $mode = NestMode::COLLECTION)
     {
         $this->alias = $alias;
         $this->callback = $callback;
         $this->nested = $nested;
+        $this->mode = $mode;
     }
 
     public function init()
@@ -40,5 +42,10 @@ class Nest
     public function getRowProxy() : ?RowProxy
     {
         return $this->rowProxy;
+    }
+
+    public function getMode()
+    {
+        return $this->mode;
     }
 }
