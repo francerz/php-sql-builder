@@ -36,23 +36,3 @@ class ExecuteQueryException extends Exception
         return $this->compiledQuery->getValues();
     }
 }
-
-class ExecuteSelectException extends ExecuteQueryException
-{
-
-}
-
-class ExecuteInsertException extends ExecuteQueryException
-{
-
-}
-
-class ExecuteUpdateException extends ExecuteQueryException
-{
-
-}
-
-class ExecuteDeleteException extends ExecuteQueryException
-{
-    
-}
