@@ -56,8 +56,12 @@ class SelectQueryTest extends TestCase
             })
             ->equalsOrNull('pe.id_carrera', $id_carrera);
         $query->orderBy('g.id_grupo');
+
+        $query->columns([
+            'nombre' => Query::func('COALESCE', Query::column('g.nombre'), Query::column('a.nombre'))
+        ]);
         
-        $expected = "SELECT g.*
+        $expected = "SELECT COALESCE(g.nombre, a.nombre) AS nombre, g.*
         FROM siitecdb.grupos AS g
         INNER JOIN asignaturas AS a
             ON a.id_asignatura = g.id_asignatura

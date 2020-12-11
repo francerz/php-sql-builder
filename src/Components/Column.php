@@ -66,6 +66,8 @@ class Column implements ComparableComponentInterface
                 $item = new Column($item, $alias);
             } elseif ($item instanceof SqlRaw) {
                 $item = new Column($item, $alias);
+            } elseif ($item instanceof SqlFunction) {
+                $item = new Column($item, $alias);
             }
             if (!$item instanceof Column) {
                 continue;

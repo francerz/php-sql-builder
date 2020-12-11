@@ -398,6 +398,12 @@ class QueryCompiler implements QueryCompilerInterface
         if ($source instanceof SelectQuery) {
             return '('.$this->compileSelect($source).')';
         }
+        if ($source instanceof SqlFunction) {
+            return $this->compileFunction($source);
+        }
+        if ($source instanceof ComparableComponentInterface) {
+            return '('.$this->compileComparable($source).')';
+        }
         $output = isset($table) ? $this->compileColumnTable($table).'.' : '';
         if ($source instanceof SqlRaw) {
             $output.= $source->getContent();

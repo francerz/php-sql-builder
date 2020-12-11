@@ -27,7 +27,7 @@ abstract class Query
     {
         return new SqlRaw($content);
     }
-    public static function func($name, $args)
+    public static function func(string $name, ...$args)
     {
         return new SqlFunction($name, $args);
     }

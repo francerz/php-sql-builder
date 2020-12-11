@@ -10,7 +10,7 @@ class SqlFunction implements ComparableComponentInterface
     private $name;
     private $args;
 
-    public function __construct($name, array $args = [])
+    public function __construct(string $name, array $args = [])
     {
         $this->name = $name;
         $this->setArgs($args);
