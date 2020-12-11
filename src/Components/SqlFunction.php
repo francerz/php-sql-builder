@@ -2,6 +2,7 @@
 
 namespace Francerz\SqlBuilder\Components;
 
+use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Query;
 
@@ -20,7 +21,7 @@ class SqlFunction implements ComparableComponentInterface
     {
         $this->args = [];
         foreach ($args as $arg) {
-            if ($arg instanceof ComparableComponentInterface) {
+            if ($arg instanceof ComparableComponentInterface || $arg instanceof BooleanResultInterface) {
                 $this->args[] = $arg;
                 continue;
             }

@@ -59,10 +59,14 @@ class SelectQueryTest extends TestCase
         $query->orderBy('g.id_grupo');
 
         $query->columns([
-            'nombre' => Q::f('COALESCE', Q::c('g.nombre'), Q::c('a.nombre'))
+            'nombre' => Q::f('COALESCE', Q::c('g.nombre'), Q::c('a.nombre')),
+            'other' => Q::f('IF',Q::cond()->null('g.base_grupo_id'), 0, 1)
         ]);
         
-        $expected = "SELECT COALESCE(g.nombre, a.nombre) AS nombre, g.*
+        $expected = "SELECT
+            COALESCE(g.nombre, a.nombre) AS nombre,
+            IF((g.base_grupo_id IS NULL), :v1, :v2) AS other,
+            g.*
         FROM siitecdb.grupos AS g
         INNER JOIN asignaturas AS a
             ON a.id_asignatura = g.id_asignatura
@@ -71,16 +75,16 @@ class SelectQueryTest extends TestCase
         LEFT JOIN planes_estudios AS pe
             ON pe.id_plan_estudio = g.id_plan_estudio
         WHERE
-            :v1 BETWEEN p.inicio AND p.fin
-            AND (pe.id_carrera = :v2
+            :v3 BETWEEN p.inicio AND p.fin
+            AND (pe.id_carrera = :v4
                 OR pe.id_plan_estudio IS NULL)
-            AND (pe.id_carrera = :v3 OR pe.id_carrera IS NULL)
+            AND (pe.id_carrera = :v5 OR pe.id_carrera IS NULL)
         ORDER BY g.id_grupo ASC";
 
         $compiled = $this->compiler->compileQuery($query);
         
+        $this->assertEquals(['v1'=>0,'v2'=>1,'v3'=>date('Y-m-d'),'v4'=>$id_carrera,'v5'=>$id_carrera], $compiled->getValues());
         $this->assertEquals(preg_replace('/\s+/',' ', $expected), $compiled->getQuery());
-        $this->assertEquals(['v1'=>date('Y-m-d'),'v2'=>$id_carrera,'v3'=>$id_carrera], $compiled->getValues());
     }
 
     public function testCompilingTest()

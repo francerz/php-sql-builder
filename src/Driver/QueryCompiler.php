@@ -374,14 +374,14 @@ class QueryCompiler implements QueryCompilerInterface
         if ($comp instanceof Column) {
             return $this->compileColumn($comp);
         }
-        if ($comp instanceof SqlRaw) {
-            return $comp->getContent();
-        }
         if ($comp instanceof SqlFunction) {
             return $this->compileFunction($comp);
         }
         if ($comp instanceof BooleanResultInterface) {
             return $this->compileBooleanExpression($comp);
+        }
+        if ($comp instanceof SqlRaw) {
+            return $comp->getContent();
         }
         return $this->compileValue($comp);
     }
@@ -438,7 +438,14 @@ class QueryCompiler implements QueryCompilerInterface
         $output = $function->getName().'(';
         $args = [];
         foreach($function->getArgs() as $arg) {
-            $args[] = $this->compileComparable($arg);
+            if ($arg instanceof ComparableComponentInterface) {
+                $args[] = $this->compileComparable($arg);
+                continue;
+            }
+            if ($arg instanceof BooleanResultInterface) {
+                $args[] = $this->compileBooleanExpression($arg);
+                continue;
+            }
         }
         return $output.implode(', ', $args).')';
     }
