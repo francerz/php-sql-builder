@@ -7,6 +7,7 @@ use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
 use Francerz\SqlBuilder\Components\Set;
+use Francerz\SqlBuilder\Components\SqlFunction;
 use Francerz\SqlBuilder\Components\SqlRaw;
 use Francerz\SqlBuilder\Components\SqlValue;
 use Francerz\SqlBuilder\Components\SqlValueArray;
@@ -376,6 +377,9 @@ class QueryCompiler implements QueryCompilerInterface
         if ($comp instanceof SqlRaw) {
             return $comp->getContent();
         }
+        if ($comp instanceof SqlFunction) {
+            return $this->compileFunction($comp);
+        }
         return $this->compileValue($comp);
     }
 
@@ -418,6 +422,16 @@ class QueryCompiler implements QueryCompilerInterface
     protected function compileColumnAlias(string $alias)
     {
         return $alias;
+    }
+
+    protected function compileFunction(SqlFunction $function)
+    {
+        $output = $function->getName().'(';
+        $args = [];
+        foreach($function->getArgs() as $arg) {
+            $args[] = $this->compileComparable($arg);
+        }
+        return $output.implode(', ', $args).')';
     }
 
     protected function compileValue(SqlValue $value) : string

@@ -3,6 +3,7 @@
 namespace Francerz\SqlBuilder;
 
 use Francerz\SqlBuilder\Components\Column;
+use Francerz\SqlBuilder\Components\SqlFunction;
 use Francerz\SqlBuilder\Components\SqlRaw;
 use Francerz\SqlBuilder\Components\SqlValue;
 use Francerz\SqlBuilder\Components\SqlValueArray;
@@ -26,6 +27,11 @@ abstract class Query
     {
         return new SqlRaw($content);
     }
+    public static function func($name, $args)
+    {
+        return new SqlFunction($name, $args);
+    }
+
     public static function selectFrom($table, ?array $columns = null)
     {
         return new SelectQuery(Table::fromExpression($table), $columns);
