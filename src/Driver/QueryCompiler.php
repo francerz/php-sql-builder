@@ -380,6 +380,9 @@ class QueryCompiler implements QueryCompilerInterface
         if ($comp instanceof SqlFunction) {
             return $this->compileFunction($comp);
         }
+        if ($comp instanceof BooleanResultInterface) {
+            return $this->compileBooleanExpression($comp);
+        }
         return $this->compileValue($comp);
     }
 
