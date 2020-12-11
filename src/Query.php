@@ -13,6 +13,7 @@ use Francerz\SqlBuilder\Expressions\Comparison\ComparisonModes;
 use Francerz\SqlBuilder\Expressions\Comparison\NullExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
+use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 
 abstract class Query
 {
@@ -78,48 +79,11 @@ abstract class Query
     }
     #endregion
 
-    #region Operations
-    private static function coarseModeFirst($operand, $mode)
+    #region Conditions
+    public static function cond($mode = ComparisonModes::COLUMN_VALUE) : ConditionList
     {
-        if ($operand instanceof ComparableComponentInterface) {
-            return $operand;
-        }
-        if ($mode & 0x10 > 0) {
-            return static::value($operand);
-        }
-        return static::column($operand);
-    }
-    private static function coarseModeSecond($operand, $mode)
-    {
-        if ($operand instanceof ComparableComponentInterface) {
-            return $operand;
-        }
-        if ($mode & 0x01 > 0) {
-            return static::value($operand);
-        }
-        return static::column($operand);
-    }
-
-    public static function isNull($expr, $negated = false)
-    {
-        $expr = static::coarseModeFirst($expr, ComparisonModes::COLUMN_COLUMN);
-        return new NullExpression($expr, $negated);
-    }
-
-    public static function isNotNull($expr) : NullExpression
-    {
-        return call_user_func_array([Query::class, 'isNull'], func_get_args());;
-    }
-
-    public static function equals($operand1, $operand2, $mode = ComparisonModes::COLUMN_VALUE)
-    {
-        $operand1 = static::coarseModeFirst($operand1, $mode);
-        $operand2 = static::coarseModeSecond($operand2, $mode);
-        return new RelationalExpression($operand1, $operand2, RelationalOperators::EQUALS);
-    }
-    public static function eq($operand1, $operand2, $mode = ComparisonModes::COLUMN_VALUE) : RelationalExpression
-    {
-        return call_user_func_array([Query::class, 'equals'], func_get_args());
+        $cond = new ConditionList($mode);
+        return $cond;
     }
     #endregion
 }
