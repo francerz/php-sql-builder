@@ -15,21 +15,41 @@ abstract class Query
     {
         return Column::fromString($name);
     }
+    public static function c($name) : Column
+    {
+        return call_user_func_array([Query::class, 'column'], func_get_args());
+    }
     public static function value($value)
     {
         return new SqlValue($value);
+    }
+    public static function v($name) : Column
+    {
+        return call_user_func_array([Query::class, 'value'], func_get_args());
     }
     public static function array(array $array)
     {
         return new SqlValueArray($array);
     }
+    public static function a($name) : Column
+    {
+        return call_user_func_array([Query::class, 'array'], func_get_args());
+    }
     public static function raw($content)
     {
         return new SqlRaw($content);
     }
+    public static function r($content)
+    {
+        return call_user_func_array([Query::class, 'raw'], func_get_args());
+    }
     public static function func(string $name, ...$args)
     {
         return new SqlFunction($name, $args);
+    }
+    public static function f(string $name, ...$args)
+    {
+        return call_user_func_array([Query::class, 'func'], func_get_args());
     }
 
     public static function selectFrom($table, ?array $columns = null)

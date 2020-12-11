@@ -5,6 +5,7 @@ use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
+use Francerz\SqlBuilder\Q;
 use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\SelectQuery;
 use PHPUnit\Framework\TestCase;
@@ -58,7 +59,7 @@ class SelectQueryTest extends TestCase
         $query->orderBy('g.id_grupo');
 
         $query->columns([
-            'nombre' => Query::func('COALESCE', Query::column('g.nombre'), Query::column('a.nombre'))
+            'nombre' => Q::f('COALESCE', Q::c('g.nombre'), Q::c('a.nombre'))
         ]);
         
         $expected = "SELECT COALESCE(g.nombre, a.nombre) AS nombre, g.*
