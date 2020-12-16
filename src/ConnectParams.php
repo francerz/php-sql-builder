@@ -9,14 +9,22 @@ class ConnectParams
     private $password;
     private $port;
     private $database;
+    private $encoding;
 
-    public function __construct(string $host, ?string $user = null, ?string $password = null, ?string $database = null, ?int $port = null)
-    {
+    public function __construct(
+        string $host,
+        ?string $user = null,
+        ?string $password = null,
+        ?string $database = null,
+        ?int $port = null,
+        ?string $encoding = null
+    ) {
         $this->host = $host;
         $this->user = $user;
         $this->password = $password;
         $this->database = $database;
         $this->port = $port;
+        $this->encoding = $encoding;
     }
 
     public function setHost(string $host)
@@ -59,5 +67,14 @@ class ConnectParams
     public function getPort() : ?int
     {
         return $this->port;
+    }
+
+    public function setEncoding(string $encoding)
+    {
+        $this->encoding = $encoding;
+    }
+    public function getEncoding() : ?string
+    {
+        return $this->encoding;
     }
 }

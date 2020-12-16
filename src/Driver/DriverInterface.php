@@ -11,9 +11,55 @@ use Francerz\SqlBuilder\Results\UpdateResult;
 
 interface DriverInterface
 {
+    /**
+     * Connects to driver with given parameters.
+     *
+     * @param ConnectParams $params
+     * @return void
+     */
     public function connect(ConnectParams $params);
+
+    /**
+     * Retrieves a QueryCompilerInstance compatible object.
+     *
+     * @return QueryCompilerInterface|null
+     */
     public function getCompiler() : ?QueryCompilerInterface;
+
+    /**
+     * Retrieves a QueryTranslatorInterface compatible object.
+     *
+     * @return QueryTranslatorInterface|null
+     */
     public function getTranslator() : ?QueryTranslatorInterface;
+
+    /**
+     * Returns default host address or name for given driver.
+     *
+     * @return string host name
+     */
+    public function getDefaultHost() : string;
+
+    /**
+     * Returns default port number for given driver.
+     *
+     * @return integer port number
+     */
+    public function getDefaultPort() : int;
+
+    /**
+     * Returns default user name for given driver.
+     *
+     * @return string user name
+     */
+    public function getDefaultUser() : string;
+
+    /**
+     * Returns default password string for given driver.
+     *
+     * @return string password string
+     */
+    public function getDefaultPswd() : string;
     
     /**
      * Executes given SELECT CompiledQuery and returns the result.
