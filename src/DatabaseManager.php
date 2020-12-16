@@ -3,10 +3,11 @@
 namespace Francerz\SqlBuilder;
 
 use LogicException;
+use SebastianBergmann\Type\StaticType;
 
 class DatabaseManager
 {
-    public function connect(string $alias = 'default', ?array $env = null) : DatabaseHandler
+    public static function connect(string $alias = 'default', ?array $env = null) : DatabaseHandler
     {
         $env = is_null($env) ? $_ENV : $env;
 
