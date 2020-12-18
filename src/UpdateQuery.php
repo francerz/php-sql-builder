@@ -42,11 +42,13 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
                 $query->where()->equals($key, $v);
                 continue;
             }
-            if (!empty($columns) && in_array($k, $columns)) {
+            if (empty($columns)) {
                 $query->set($k, $v);
                 continue;
             }
-            $query->set($k, $v);
+            if (in_array($k, $columns)) {
+                $query->set($k, $v);
+            }
         }
 
         return $query;
