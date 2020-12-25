@@ -9,7 +9,9 @@ class DatabaseManager
     {
         $env = is_null($env) ? $_ENV : $env;
 
-        $driverKey = "database.{$alias}.driver";
+        $alias = strtoupper($alias);
+
+        $driverKey = "DATABASE_{$alias}_DRIVER";
         if (!array_key_exists($driverKey, $env)) {
             throw new LogicException("Missing {$driverKey} setting in `.env` file.");
         }
@@ -19,12 +21,12 @@ class DatabaseManager
             throw new LogicException("Unknown '{$env[$driverKey]}' driver.");
         }
 
-        $hostKey = "database.{$alias}.host";
-        $portKey = "database.{$alias}.port";
-        $userKey = "database.{$alias}.user";
-        $pswdKey = "database.{$alias}.pswd";
-        $nameKey = "database.{$alias}.name";
-        $encdKey = "database.{$alias}.encd";
+        $hostKey = "DATABASE_{$alias}_HOST";
+        $portKey = "DATABASE_{$alias}_PORT";
+        $userKey = "DATABASE_{$alias}_USER";
+        $pswdKey = "DATABASE_{$alias}_PSWD";
+        $nameKey = "DATABASE_{$alias}_NAME";
+        $encdKey = "DATABASE_{$alias}_ENCD";
 
         $host = array_key_exists($hostKey, $env) ? $env[$hostKey] : $driver->getDefaultHost();
         $port = array_key_exists($portKey, $env) ? $env[$portKey] : $driver->getDefaultPort();
