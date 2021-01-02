@@ -30,7 +30,7 @@ abstract class Query
     {
         return new SqlValue($value);
     }
-    public static function v($name) : Column
+    public static function v($name) : SqlValue
     {
         return call_user_func_array([Query::class, 'value'], func_get_args());
     }
@@ -38,7 +38,7 @@ abstract class Query
     {
         return new SqlValueArray($array);
     }
-    public static function a($name) : Column
+    public static function a($name) : SqlValueArray
     {
         return call_user_func_array([Query::class, 'array'], func_get_args());
     }
@@ -46,7 +46,7 @@ abstract class Query
     {
         return new SqlRaw($content);
     }
-    public static function r($content)
+    public static function r($content) : SqlRaw
     {
         return call_user_func_array([Query::class, 'raw'], func_get_args());
     }
@@ -54,7 +54,7 @@ abstract class Query
     {
         return new SqlFunction($name, $args);
     }
-    public static function f(string $name, ...$args)
+    public static function f(string $name, ...$args) : SqlFunction
     {
         return call_user_func_array([Query::class, 'func'], func_get_args());
     }
