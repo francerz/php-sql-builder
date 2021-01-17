@@ -6,6 +6,7 @@ use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\SqlFunction;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Components\TableReference;
+use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Traits\GroupableTrait;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
 use Francerz\SqlBuilder\Traits\LimitableInterface;
@@ -90,5 +91,14 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
             $columns = array_merge($columns, $join->getTableReference()->getColumns());
         }
         return $columns;
+    }
+
+    public function whereSingle($column, ...$args) : ConditionList
+    {
+        $value = end($args);
+        if (is_scalar($value)) {
+            $this->limit(1);
+        }
+        return call_user_func_array([$this, 'where'], func_get_args());
     }
 }
