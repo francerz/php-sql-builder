@@ -65,9 +65,9 @@ abstract class Query
     {
         return new SelectQuery(Table::fromExpression($table), $columns);
     }
-    public static function insertInto($table, $values = null)
+    public static function insertInto($table, $values = null, ?array $columns = null)
     {
-        return new InsertQuery(Table::fromExpression($table), $values);
+        return new InsertQuery(Table::fromExpression($table), $values, $columns);
     }
     public static function update($table, $data = null, array $matching = [], array $columns = [])
     {

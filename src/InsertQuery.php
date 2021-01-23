@@ -11,13 +11,13 @@ class InsertQuery implements QueryInterface, Countable
     private $values = [];
     private $columns = [];
 
-    public function __construct($table = null, $values = [])
+    public function __construct($table = null, $values = [], ?array $columns = null)
     {
         if (isset($table)) {
             $this->setTable($table);
         }
         if (!empty($values)) {
-            $this->setValues($values);
+            $this->setValues($values, $columns);
         }
     }
 
@@ -34,11 +34,11 @@ class InsertQuery implements QueryInterface, Countable
         return count($this->values);
     }
 
-    public function setValues($values, ?callable $objectParser = null)
+    public function setValues($values, ?array $columns = null)
     {
         if (is_array($values) && count(array_filter(array_keys($values), 'is_int')) > 0) {
             foreach ($values as $row) {
-                $this->setValues($row, $objectParser);
+                $this->setValues($row, $columns);
             }
             return;
         }
@@ -47,10 +47,12 @@ class InsertQuery implements QueryInterface, Countable
             return;
         }
         if (is_object($values)) {
-            if (isset($objectParser)) {
-                $values = call_user_func($objectParser, $values);
-            }
             $values = (array)$values;
+            if (is_array($columns)) {
+                $values = array_filter($values, function($k) use ($columns) {
+                    return in_array($k, $columns);
+                }, ARRAY_FILTER_USE_KEY);
+            }
         }
         $this->values[] = $values;
         $this->columns = array_merge($this->columns, array_keys($values));
