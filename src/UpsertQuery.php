@@ -6,7 +6,7 @@ class UpsertQuery extends InsertQuery
 {
     private $keys = [];
 
-    public function __construct($table = null, $values = [], ?array $columns = null, array $keys = [])
+    public function __construct($table = null, $values = [], array $keys = [], ?array $columns = null)
     {
         parent::__construct($table, $values, $columns);
         $this->keys = $keys;
