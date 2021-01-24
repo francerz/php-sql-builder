@@ -2,18 +2,31 @@
 
 namespace Francerz\SqlBuilder;
 
+use Iterator;
+
 class UpsertQuery extends InsertQuery
 {
     private $keys = [];
 
-    public function __construct($table = null, $values = [], array $keys = [], ?array $columns = null)
+    public function __construct($table = null, $value = null, array $keys = [], ?array $columns = null)
     {
-        parent::__construct($table, $values, $columns);
+        parent::__construct($table, $value, $columns);
         $this->keys = $keys;
     }
 
-    public function getUpdateQuery() : UpdateQuery
+    public function getUpdateQuery() : array
     {
-        return UpdateQuery::createUpdate($this->getTable(), $this->getValues(), $this->keys, $this->getColumns());
+        $values = $this->getValues();
+        if ($values instanceof SelectQuery) {
+            throw new \Exception('Upsert with SelectQuery not yet supported.');
+        }
+        if (!is_array($values) && !$values instanceof Iterator) {
+            throw new \Exception('Invalid values for upserting.');
+        }
+        $updates = [];
+        foreach ($values as $row) {
+            $updates[] = UpdateQuery::createUpdate($this->getTable(), $row, $this->keys, $this->getColumns());
+        }
+        return $updates;
     }
 }

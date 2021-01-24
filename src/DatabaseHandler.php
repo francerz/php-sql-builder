@@ -122,8 +122,11 @@ class DatabaseHandler
         try {
             $result = $this->driver->executeInsert($compiled);
         } catch (DuplicateEntryException $dex) {
-            $compiled = $this->prepareQuery($query->getUpdateQuery());
-            $result = $this->driver->executeUpdate($compiled);
+            $updates = $query->getUpdateQuery();
+            foreach ($updates as $update) {
+                $compiled = $this->prepareQuery($update);
+                $result = $this->driver->executeUpdate($compiled);
+            }
         }
         return $result;
     }
