@@ -7,6 +7,7 @@ use Francerz\SqlBuilder\Driver\DriverInterface;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Driver\QueryCompilerInterface;
 use Francerz\SqlBuilder\Driver\QueryTranslatorInterface;
+use Francerz\SqlBuilder\Exceptions\DuplicateEntryException;
 use Francerz\SqlBuilder\Nesting\NestMerger;
 use Francerz\SqlBuilder\Nesting\NestTranslator;
 use Francerz\SqlBuilder\Results\DeleteResult;
@@ -112,6 +113,18 @@ class DatabaseHandler
     {
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeUpdate($compiled);
+        return $result;
+    }
+
+    public function executeUpsert(UpsertQuery $query) : QueryResultInterface
+    {
+        $compiled = $this->prepareQuery($query);
+        try {
+            $result = $this->driver->executeInsert($compiled);
+        } catch (DuplicateEntryException $dex) {
+            $compiled = $this->prepareQuery($query->getUpdateQuery());
+            $result = $this->driver->executeUpdate($compiled);
+        }
         return $result;
     }
 
