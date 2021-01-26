@@ -504,6 +504,7 @@ class ConditionList implements
 
     public function not($expression)
     {
+        $expression = $this->multiArgsToExpression(func_get_args());
         return $this->addExpression($expression, true);
     }
 
