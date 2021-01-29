@@ -15,6 +15,7 @@ use Francerz\SqlBuilder\Results\InsertResult;
 use Francerz\SqlBuilder\Results\QueryResultInterface;
 use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\Results\UpdateResult;
+use Francerz\SqlBuilder\Results\UpsertResult;
 use InvalidArgumentException;
 
 class DatabaseHandler
@@ -116,17 +117,21 @@ class DatabaseHandler
         return $result;
     }
 
-    public function executeUpsert(UpsertQuery $query) : QueryResultInterface
+    public function executeUpsert(UpsertQuery $query) : UpsertResult
     {
         $compiled = $this->prepareQuery($query);
         try {
             $result = $this->driver->executeInsert($compiled);
+            return UpsertResult::fromInsertResult($result);
         } catch (DuplicateEntryException $dex) {
             $updates = $query->getUpdateQuery();
+            $count = 0;
             foreach ($updates as $update) {
                 $compiled = $this->prepareQuery($update);
                 $result = $this->driver->executeUpdate($compiled);
+                $count += $result->getNumRows();
             }
+            return UpsertResult::fromUpdateResult($result, $count);
         }
         return $result;
     }
