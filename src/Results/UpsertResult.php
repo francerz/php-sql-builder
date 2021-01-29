@@ -28,13 +28,13 @@ class UpsertResult extends InsertResult
         );
     }
 
-    public static function fromUpdateResult(UpdateResult $result, ?int $numRows = null)
+    public static function fromUpdateResult(UpdateResult $result, ?int $numRows = null, $firstId = null)
     {
         return new static(
             static::ACTION_UPDATE,
             $result->getQuery(),
             is_null($numRows) ? $result->getNumRows() : $numRows,
-            null,
+            $firstId,
             $result->success()
         );
     }

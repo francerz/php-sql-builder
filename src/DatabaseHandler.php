@@ -126,12 +126,17 @@ class DatabaseHandler
         } catch (DuplicateEntryException $dex) {
             $updates = $query->getUpdateQuery();
             $count = 0;
+            $firstId = null;
+            if (count($updates)) {
+                $matches = $updates[0]->getMatches();
+                $firstId = count($matches) === 1 ? current($matches) : null;
+            }
             foreach ($updates as $update) {
                 $compiled = $this->prepareQuery($update);
                 $result = $this->driver->executeUpdate($compiled);
                 $count += $result->getNumRows();
             }
-            return UpsertResult::fromUpdateResult($result, $count);
+            return UpsertResult::fromUpdateResult($result, $count, $firstId);
         }
         return $result;
     }

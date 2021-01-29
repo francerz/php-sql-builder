@@ -20,6 +20,7 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
     }
     private $table;
     private $sets;
+    private $matches = [];
 
     public function __construct($table)
     {
@@ -40,6 +41,7 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
             if (in_array($k, $matching)) {
                 $key = new Column($k, null, $query->getTable()->getAliasOrName());
                 $query->where()->equals($key, $v);
+                $query->matches[$k] = $v;
                 continue;
             }
             if (empty($columns)) {
@@ -78,5 +80,10 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
     public function getSets()
     {
         return $this->sets;
+    }
+
+    public function getMatches()
+    {
+        return $this->matches;
     }
 }
