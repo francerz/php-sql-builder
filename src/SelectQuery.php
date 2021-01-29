@@ -101,4 +101,18 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         }
         return call_user_func_array([$this, 'where'], func_get_args());
     }
+
+    #region After Excecute
+    private $actions = [];
+
+    public function afterExecute(callable $action)
+    {
+        $this->actions[] = $action;
+    }
+
+    public function getAfterExecuteActions()
+    {
+        return $this->actions;
+    }
+    #endregion
 }

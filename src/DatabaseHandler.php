@@ -100,6 +100,12 @@ class DatabaseHandler
             $this->nestMerger->merge($result, $nestResult, $nest);
         }
 
+        foreach ($query->getAfterExecuteActions() as $action) {
+            foreach ($result as $row) {
+                call_user_func($action, $row);
+            }
+        }
+
         return $result;
     }
 
