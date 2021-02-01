@@ -6,36 +6,34 @@ use Francerz\SqlBuilder\CompiledQuery;
 
 class UpsertResult extends InsertResult
 {
-    const ACTION_INSERT = 1;
-    const ACTION_UPDATE = 2;
+    private $insertRows = 0, $updateRows = 0;
 
-    private $action;
-
-    public function __construct(int $action, CompiledQuery $query, int $numRows = 0, $firstId = null, bool $success = true)
+    public function __construct(CompiledQuery $query, int $insertRows = 0, int $updateRows = 0, $firstId = null, bool $success = true)
     {
-        parent::__construct($query, $numRows, $firstId, $success);
-        $this->action = $action;
+        parent::__construct($query, $insertRows + $updateRows, $firstId, $success);
+        $this->insertRows = $insertRows;
+        $this->updateRows = $updateRows;
     }
 
     public static function fromInsertResult(InsertResult $result)
     {
         return new static(
-            static::ACTION_INSERT,
             $result->getQuery(),
             $result->getNumRows(),
+            0,
             $result->getFirstId(),
             $result->success()
         );
     }
 
-    public static function fromUpdateResult(UpdateResult $result, ?int $numRows = null, $firstId = null)
+    public static function fromResult(QueryResultInterface $result, int $insertRows = 0, int $updateRows = 0, $firstId = null)
     {
         return new static(
-            static::ACTION_UPDATE,
             $result->getQuery(),
-            is_null($numRows) ? $result->getNumRows() : $numRows,
+            $insertRows,
+            $updateRows,
             $firstId,
-            $result->success()
+            true
         );
     }
 
@@ -44,13 +42,13 @@ class UpsertResult extends InsertResult
         return $this->action;
     }
 
-    public function isInsert() : bool
+    public function getInsertRows()
     {
-        return $this->action === static::ACTION_INSERT;
+        return $this->insertRows;
     }
 
-    public function isUpdate() : bool
+    public function getUpdateRows()
     {
-        return $this->action === static::ACTION_UPDATE;
+        return $this->updateRows;
     }
 }

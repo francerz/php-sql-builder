@@ -6,6 +6,7 @@ use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\SqlFunction;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Components\TableReference;
+use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Traits\GroupableTrait;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
@@ -38,6 +39,19 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         if (isset($table)) {
             $this->from($table, $columns);
         }
+    }
+
+    public static function createSelect($table = null, ?array $columns = null, array $matches = [])
+    {
+        $select = new static($table, $columns);
+        foreach ($matches as $key => $value) {
+            if ($value instanceof ComparableComponentInterface) {
+                $select->where($value);
+                continue;
+            }
+            $select->where($key, $value);
+        }
+        return $select;
     }
 
     public function from($table, ?array $columns = null)

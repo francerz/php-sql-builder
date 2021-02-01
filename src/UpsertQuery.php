@@ -3,6 +3,8 @@
 namespace Francerz\SqlBuilder;
 
 use Iterator;
+use LogicException;
+use Traversable;
 
 class UpsertQuery extends InsertQuery
 {
@@ -14,7 +16,12 @@ class UpsertQuery extends InsertQuery
         $this->keys = $keys;
     }
 
-    public function getUpdateQuery() : array
+    public function getKeys() : array
+    {
+        return $this->keys;
+    }
+
+    public function getUpdateQuery() : UpdateQuery
     {
         $values = $this->getValues();
         if ($values instanceof SelectQuery) {
@@ -23,10 +30,10 @@ class UpsertQuery extends InsertQuery
         if (!is_array($values) && !$values instanceof Iterator) {
             throw new \Exception('Invalid values for upserting.');
         }
-        $updates = [];
-        foreach ($values as $row) {
-            $updates[] = UpdateQuery::createUpdate($this->getTable(), $row, $this->keys, $this->getColumns());
+        if (count($values) !== 1) {
+            throw new LogicException('Only can get UpdateQuery from single row');
         }
-        return $updates;
+        $update = UpdateQuery::createUpdate($this->getTable(), $values[0], $this->keys, $this->getColumns());
+        return $update;
     }
 }

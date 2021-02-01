@@ -17,6 +17,7 @@ use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\Results\UpdateResult;
 use Francerz\SqlBuilder\Results\UpsertResult;
 use InvalidArgumentException;
+use LogicException;
 
 class DatabaseHandler
 {
@@ -130,21 +131,42 @@ class DatabaseHandler
             $result = $this->driver->executeInsert($compiled);
             return UpsertResult::fromInsertResult($result);
         } catch (DuplicateEntryException $dex) {
-            $updates = $query->getUpdateQuery();
-            $count = 0;
-            $firstId = null;
-            if (count($updates)) {
-                $matches = $updates[0]->getMatches();
-                $firstId = count($matches) === 1 ? current($matches) : null;
-            }
-            foreach ($updates as $update) {
-                $compiled = $this->prepareQuery($update);
-                $result = $this->driver->executeUpdate($compiled);
-                $count += $result->getNumRows();
-            }
-            return UpsertResult::fromUpdateResult($result, $count, $firstId);
+            return $this->executeUpsertByRow($query);
         }
         return $result;
+    }
+
+    public function executeUpsertByRow(UpsertQuery $query)
+    {
+        $rows = $query->getValues();
+        $inserts = 0;
+        $updates = 0;
+        $firstId = null;
+        if (empty($rows)) {
+            throw new LogicException('Empty rows set.');
+        }
+        foreach ($rows as $row) {
+            $upsert = new UpsertQuery($query->getTable(), $row, $query->getKeys(), $query->getColumns());
+            $result = $this->executeUpsertRow($upsert);
+            if ($result instanceof InsertResult) {
+                $firstId = is_null($firstId) ? $result->getFirstId() : $firstId;
+                $inserts += $result->getNumRows();
+            } elseif ($result instanceof UpdateResult) {
+                $updates += $result->getNumRows();
+            }
+        }
+        return UpsertResult::fromResult($result, $inserts, $updates, $firstId);
+    }
+
+    private function executeUpsertRow(UpsertQuery $query)
+    {
+        try {
+            $compiled = $this->prepareQuery($query);
+            return $this->driver->executeInsert($compiled);
+        } catch (DuplicateEntryException $dex) {
+            $compiled = $this->prepareQuery($query->getUpdateQuery());
+            return $this->driver->executeUpdate($compiled);
+        }
     }
 
     public function executeDelete(DeleteQuery $query) : DeleteResult

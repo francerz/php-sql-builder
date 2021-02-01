@@ -61,9 +61,9 @@ abstract class Query
     #endregion
 
     #region Queries
-    public static function selectFrom($table, ?array $columns = null)
+    public static function selectFrom($table, ?array $columns = null, array $matches = [])
     {
-        return new SelectQuery(Table::fromExpression($table), $columns);
+        return SelectQuery::createSelect(Table::fromExpression($table), $columns, $matches);
     }
     public static function insertInto($table, $values = null, ?array $columns = null)
     {
