@@ -42,7 +42,6 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
                 $key = new Column($k, null, $query->getTable()->getAliasOrName());
                 $query->where()->equals($key, $v);
                 $query->matches[$k] = $v;
-                continue;
             }
             if (empty($columns)) {
                 $query->set($k, $v);
