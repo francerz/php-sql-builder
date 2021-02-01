@@ -27,7 +27,7 @@ class UpdateQueryTest extends TestCase
         $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals(
-            "UPDATE table AS t1 SET t1.attr1 = :v1, t1.attr2 = :v2 WHERE t1.pk_id = :v3",
+            "UPDATE table AS t1 SET t1.attr1 = :v1, t1.attr2 = :v2, t1.pk_id = :v3 WHERE t1.pk_id = :v4",
             $compiled->getQuery()
         );
 
