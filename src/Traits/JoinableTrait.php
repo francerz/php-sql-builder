@@ -14,7 +14,7 @@ Trait JoinableTrait
     protected $joins = [];
     protected $lastJoin;
 
-    public function join($table, array $columns = [], $joinType = JoinTypes::INNER_JOIN)
+    public function join($table, ?array $columns = [], $joinType = JoinTypes::INNER_JOIN)
     {
         if (!$table instanceof Table) {
             $table = Table::fromExpression($table);
@@ -25,27 +25,27 @@ Trait JoinableTrait
         $this->lastJoin = $join;
         return $this;
     }
-    public function crossJoin($table, array $columns = [])
+    public function crossJoin($table, ?array $columns = [])
     {
         return $this->join($table, $columns, JoinTypes::CROSS_JOIN);   
     }
-    public function innerJoin($table, array $columns = [])
+    public function innerJoin($table, ?array $columns = [])
     {
         return $this->join($table, $columns, JoinTypes::INNER_JOIN);
     }
-    public function leftJoin($table, array $columns = [])
+    public function leftJoin($table, ?array $columns = [])
     {
         return $this->join($table, $columns, JoinTypes::LEFT_JOIN);
     }
-    public function rightJoin($table, array $columns = [])
+    public function rightJoin($table, ?array $columns = [])
     {
         return $this->join($table, $columns, JoinTypes::RIGHT_JOIN);
     }
-    public function leftOuterJoin($table, array $columns = [])
+    public function leftOuterJoin($table, ?array $columns = [])
     {
         return $this->join($table, $columns, JoinTypes::LEFT_OUTER_JOIN);
     }
-    public function rightOuterJoin($table, array $columns = [])
+    public function rightOuterJoin($table, ?array $columns = [])
     {
         return $this->join($table, $columns, JoinTypes::RIGHT_OUTER_JOIN);
     }
