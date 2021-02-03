@@ -120,7 +120,7 @@ class ConditionList implements
         unset($this->conditions[$offset]);
     }
 
-    public function add(ConditionItem $item)
+    public function add(ConditionItem $item) : ConditionList
     {
         $this->conditions[] = $item;
         return $this;

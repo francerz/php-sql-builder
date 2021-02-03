@@ -93,6 +93,10 @@ class DatabaseHandler
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeSelect($compiled);
 
+        if (count($result) === 0) {
+            return $result;
+        }
+
         foreach ($query->getNests() as $nest) {
             if (!$nest instanceof Nest) return null;
             $nestSelect = $nest->getNested()->getSelect();
