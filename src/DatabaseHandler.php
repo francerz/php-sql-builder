@@ -149,13 +149,16 @@ class DatabaseHandler
         if (empty($rows)) {
             throw new LogicException('Empty rows set.');
         }
-        foreach ($rows as $row) {
+        $keys = $query->getKeys();
+        $keyName = count($keys) === 1 ? reset($keys) : null;
+        foreach ($rows as $i => $row) {
             $upsert = new UpsertQuery($query->getTable(), $row, $query->getKeys(), $query->getColumns());
             $result = $this->executeUpsertRow($upsert);
             if ($result instanceof InsertResult) {
-                $firstId = is_null($firstId) ? $result->getFirstId() : $firstId;
+                $firstId = $i === 0 ? $result->getFirstId() : $firstId;
                 $inserts += $result->getNumRows();
             } elseif ($result instanceof UpdateResult) {
+                $firstId = $i === 0 && isset($keyName) ? $row[$keyName] : $firstId;
                 $updates += $result->getNumRows();
             }
         }
