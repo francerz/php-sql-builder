@@ -96,6 +96,7 @@ class QueryCompiler implements QueryCompilerInterface
         // WHERE
         $query.= $this->compileConditionList($select->where(), ' WHERE ');
         // GROUP BY
+        $query.= $this->compileGroupBy($select);
         // HAVING
         $query.= $this->compileConditionList($select->having(), ' HAVING ');
         // ORDER BY
@@ -477,6 +478,22 @@ class QueryCompiler implements QueryCompilerInterface
             $orders[] = "{$this->compileComparable($col)} {$mode}";
         }
         $output.= implode(', ', $orders);
+        return $output;
+    }
+
+    protected function compileGroupBy(SelectQuery $select) : string
+    {
+        $groupBy = $select->getGroupBy();
+        if (empty($groupBy)) {
+            return '';
+        }
+
+        $output = ' GROUP BY ';
+        $groups = [];
+        foreach ($groupBy as $g) {
+            $groups[] = $this->compileComparable($g);
+        }
+        $output.= implode(', ', $groups);
         return $output;
     }
 
