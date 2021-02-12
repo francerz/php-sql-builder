@@ -9,6 +9,7 @@ use Francerz\SqlBuilder\Expressions\Comparison\InExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
 use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
+use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
 use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\SelectQuery;
 
@@ -27,6 +28,7 @@ class NestTranslator
     {
         foreach($list as $k => $cond) {
             $cnd = $cond->getCondition();
+            $cond->setConnector(LogicConnectors::OR);
             if ($cnd instanceof ConditionList) {
                 $this->translateConditionList($cnd, $parentResult);
                 continue;

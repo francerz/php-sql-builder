@@ -3,6 +3,7 @@
 namespace Francerz\SqlBuilder\Expressions\Logical;
 
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
+use InvalidArgumentException;
 
 class ConditionItem
 {
@@ -28,6 +29,14 @@ class ConditionItem
     public function getConnector()
     {
         return $this->connector;
+    }
+
+    public function setConnector($connector)
+    {
+        if (!in_array($connector, [LogicConnectors::AND, LogicConnectors::OR])) {
+            throw new InvalidArgumentException('Invalid condition connector');
+        }
+        $this->connector = $connector;
     }
 
     public function __clone()
