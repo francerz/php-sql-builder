@@ -62,9 +62,18 @@ class SelectResult extends AbstractResult implements
         }
     }
 
-    public function getColumnValues($column)
+    public function toArray()
     {
-        return array_unique(array_column($this->rows, $column));
+        return $this->rows;
+    }
+
+    public function getColumnValues($column, bool $unique = true)
+    {
+        $values = array_column($this->rows, $column);
+        if ($unique) {
+            $values = array_unique($values);
+        }
+        return $values;
     }
 
     public function jsonSerialize()

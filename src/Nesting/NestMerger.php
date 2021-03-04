@@ -51,6 +51,7 @@ class NestMerger
     {
         $query = clone $query;
         $this->placeholdConditionList($query->where(), $rowProxy);
+        $this->placeholdConditionList($query->having(), $rowProxy);
         return $query;
     }
 
