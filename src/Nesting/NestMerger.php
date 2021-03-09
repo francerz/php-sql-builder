@@ -40,8 +40,10 @@ class NestMerger
                     $childs[] = $child;
                 }
             }
-            if ($mode === NestMode::SINGLE_LAST) {
-                $childs = end($childs);
+            if ($mode === NestMode::SINGLE_FIRST && empty($childs)) {
+                $childs = null;
+            } elseif ($mode === NestMode::SINGLE_LAST) {
+                $childs = empty($childs) ? null : end($childs);
             }
             $parent->$alias = $childs;
         }
