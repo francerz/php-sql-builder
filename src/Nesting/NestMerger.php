@@ -25,6 +25,8 @@ class NestMerger
         $query = $this->placeholdSelect($query, $childRow);
         $mode = $nest->getMode();
 
+        
+
         foreach($parents as $parent) {
             $childs = [];
             $parentRow->setCurrent($parent);

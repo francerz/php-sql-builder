@@ -8,6 +8,7 @@ class ValueProxy implements ComparableComponentInterface
 {
     private $row;
     private $name;
+    private $isParent = false;
 
     public function __construct(RowProxy $row, string $name)
     {
@@ -23,6 +24,16 @@ class ValueProxy implements ComparableComponentInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    public function isParent(bool $isParent = true)
+    {
+        $this->isParent = $isParent;
+    }
+    
+    public function getIsParent() : bool
+    {
+        return $this->isParent;
     }
 
     public function getValue()
