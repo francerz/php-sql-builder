@@ -2,14 +2,18 @@
 
 namespace Francerz\SqlBuilder\Results;
 
+use ArrayAccess;
 use Countable;
+use Exception;
 use Francerz\SqlBuilder\CompiledQuery;
 use Iterator;
 use JsonSerializable;
+use LogicException;
 
 class SelectResult extends AbstractResult implements
     Countable,
     Iterator,
+    ArrayAccess,
     JsonSerializable
 {
     private $rows;
@@ -44,6 +48,28 @@ class SelectResult extends AbstractResult implements
     public function next()
     {
         next($this->rows);
+    }
+
+    public function offsetExists($offset)
+    {
+        return array_key_exists($offset, $this->rows);
+    }
+
+    public function offsetGet($offset)
+    {
+        if ($this->offsetExists($offset)) {
+            return $this->rows[$offset];
+        }
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new LogicException("Read Only access.");
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new LogicException('Read Only access.');
     }
 
     public function first()
