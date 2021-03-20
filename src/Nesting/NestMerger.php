@@ -158,9 +158,9 @@ class NestMerger
             $intersect = array_intersect($intersect, $keys);
         }
 
-        $children = array_filter($children->toArray(), function($k) use ($intersect) {
-            return in_array($k, $intersect);
-        }, ARRAY_FILTER_USE_KEY);
+        if (!count($intersect)) return [];
+
+        $children = array_intersect_key($children->toArray(), $intersect);
 
         return $children;
     }
