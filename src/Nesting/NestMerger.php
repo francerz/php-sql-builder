@@ -25,6 +25,7 @@ class NestMerger
         $query = $this->placeholdSelect($query, $childRow);
         $mode = $nest->getMode();
 
+
         $matches = $nest->getNested()->getMatches();
         $indexes = static::createIndexesFromSelectResult($children, array_keys($matches));
 
