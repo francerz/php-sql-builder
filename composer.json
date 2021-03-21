@@ -15,5 +15,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5"
+    },
+    "require": {
+        "francerz/php-power-data": "^0.1.8"
     }
 }

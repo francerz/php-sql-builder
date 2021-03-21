@@ -4,8 +4,45 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99045099635e6082af3930b829aca263",
-    "packages": [],
+    "content-hash": "030975c4fe7803b1422315a154e8d770",
+    "packages": [
+        {
+            "name": "francerz/php-power-data",
+            "version": "v0.1.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/francerz/php-power-data.git",
+                "reference": "b6a21b69e7ac53c8ef3fc98c951c402e742dd7e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/francerz/php-power-data/zipball/b6a21b69e7ac53c8ef3fc98c951c402e742dd7e2",
+                "reference": "b6a21b69e7ac53c8ef3fc98c951c402e742dd7e2",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Francerz\\PowerData\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Fran CZ"
+                }
+            ],
+            "description": "PHP data structures for complex data handling",
+            "support": {
+                "issues": "https://github.com/francerz/php-power-data/issues",
+                "source": "https://github.com/francerz/php-power-data/tree/v0.1.9"
+            },
+            "time": "2021-03-21T01:59:31+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "doctrine/instantiator",

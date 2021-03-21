@@ -101,7 +101,7 @@ class DatabaseHandler
             if (!$nest instanceof Nest) return null;
             $nestSelect = $nest->getNested()->getSelect();
             $nestTranslation = $this->nestTranslator->translate($nestSelect, $result);
-            $nestResult = $this->execute($nestTranslation);
+            $nestResult = $this->executeSelect($nestTranslation);
             $this->nestMerger->merge($result, $nestResult, $nest);
         }
 

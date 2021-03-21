@@ -2,6 +2,8 @@
 
 namespace Francerz\SqlBuilder\Nesting;
 
+use Francerz\PowerData\Arrays;
+use Francerz\PowerData\Index;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
@@ -25,14 +27,13 @@ class NestMerger
         $query = $this->placeholdSelect($query, $childRow);
         $mode = $nest->getMode();
 
-
         $matches = $nest->getNested()->getMatches();
-        $indexes = static::createIndexesFromSelectResult($children, array_keys($matches));
+        $index = new Index($children->toArray(), $matches);
 
         foreach($parents as $parent) {
             $childs = [];
             $parentRow->setCurrent($parent);
-            $subchildren = static::childMatchFilter($parent, $children, $matches, $indexes);
+            $subchildren = static::findMatchedChildren($index, $parent, $matches);
             foreach ($subchildren as $child) {
                 $childRow->setCurrent($child);
                 if ($this->mergeConditionList($query->where()) &&
@@ -129,39 +130,12 @@ class NestMerger
         return false;
     }
 
-    private static function createIndex(array $values)
+    private static function findMatchedChildren(Index $index, object $parent, array $matches)
     {
-        $index = [];
-        foreach ($values as $k => $v) {
-            $index[$v][] = $k;
-        }
-        return $index;
-    }
-
-    private static function createIndexesFromSelectResult(SelectResult $result, array $columns)
-    {
-        $indexes = [];
-        foreach ($columns as $col) {
-            $indexes[$col] = static::createIndex($result->getColumnValues($col, false));
-        }
-        return $indexes;
-    }
-
-    private static function childMatchFilter(object $parent, SelectResult $children, array $matches, array $indexes) : iterable
-    {
-        if (empty($matches)) return $children;
-
-        $intersect = array_keys($children->toArray());
-        foreach ($matches as $childCol => $parentCol) {
-            $index = $indexes[$childCol];
-            $keys = $index[$parent->$parentCol] ?? [];
-            $intersect = array_intersect($intersect, $keys);
-        }
-
-        if (!count($intersect)) return [];
-
-        $children = array_intersect_key($children->toArray(), $intersect);
-
-        return $children;
+        return $index->findAll(Arrays::replaceKeys(
+            (array)$parent,
+            array_keys($matches),
+            array_values($matches)
+        ));
     }
 }

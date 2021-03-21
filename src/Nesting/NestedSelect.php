@@ -18,7 +18,7 @@ class NestedSelect
 
     public function match($childCol, $parentCol)
     {
-        $this->matches[$childCol] = $parentCol;
+        $this->matches[$parentCol] = $childCol;
     }
 
     public function getMatches() : array
