@@ -29,7 +29,7 @@ class NestMerger
         $query = $this->placeholdSelect($query, $childRow);
         $mode = $nest->getMode();
 
-        $matches = static::getMatches($query);
+        $query = static::getMatches($query, $matches);
         $index = new Index($children->toArray(), $matches);
 
         foreach($parents as $parent) {
@@ -138,37 +138,32 @@ class NestMerger
         return false;
     }
 
-    private static function getMatchesFromConditionList(ConditionList $conds) : array
+    private static function getMatchesFromConditionList(ConditionList $conds, ?array &$matches = []) : ConditionList
     {
-        $matches = [];
+        $newConds = new ConditionList();
         foreach ($conds as $cond) {
-            if ($cond->getConnector() !== LogicConnectors::AND) continue;
-            $cnd = $cond->getCondition();
-
-            // Would like an guard clause, but Intelliphense shows it as errors. :/
-            // if (!$cnd instanceof RelationalExpression) continue;
-            // if ($cnd->getOperator() !== RelationalOperators::EQUALS) continue;
-
-            if ($cnd instanceof RelationalExpression && $cnd->getOperator() === RelationalOperators::EQUALS) {
-                $op1 = $cnd->getOperand1();
-                $op2 = $cnd->getOperand2();
-                
-                if ($op1 instanceof ValueProxy && $op2 instanceof ValueProxy) {
-                    $matches[$op2->getName()] = $op1->getName();
+            if ($cond->getConnector() === LogicConnectors::AND) {
+                $cnd = $cond->getCondition();
+                if ($cnd instanceof RelationalExpression && $cnd->getOperator() === RelationalOperators::EQUALS) {
+                    $op1 = $cnd->getOperand1();
+                    $op2 = $cnd->getOperand2();
+                    if ($op1 instanceof ValueProxy && $op2 instanceof ValueProxy) {
+                        $matches[$op2->getName()] = $op1->getName();
+                        continue;
+                    }
                 }
+
             }
+            $newConds->add($cond);
         }
-        return $matches;
+        return $newConds;
     }
 
-    private static function getMatches(SelectQuery $query) : array
+    private static function getMatches(SelectQuery $query, ?array &$matches = []) : SelectQuery
     {
-        $matches = array_merge(
-            static::getMatchesFromConditionList($query->where()),
-            static::getMatchesFromConditionList($query->having())
-        );
-
-        return $matches;
+        $query->setWhere(static::getMatchesFromConditionList($query->where(), $matches));
+        $query->setHaving(static::getMatchesFromConditionList($query->having(), $matches));
+        return $query;
     }
 
     private static function findMatchedChildren(Index $index, object $parent, array $matches)
