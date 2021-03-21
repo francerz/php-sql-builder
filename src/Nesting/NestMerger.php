@@ -7,6 +7,8 @@ use Francerz\PowerData\Index;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
+use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
+use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
@@ -27,7 +29,7 @@ class NestMerger
         $query = $this->placeholdSelect($query, $childRow);
         $mode = $nest->getMode();
 
-        $matches = $nest->getNested()->getMatches();
+        $matches = static::getMatches($query);
         $index = new Index($children->toArray(), $matches);
 
         foreach($parents as $parent) {
@@ -58,34 +60,40 @@ class NestMerger
     public function placeholdSelect(SelectQuery $query, RowProxy $rowProxy)
     {
         $query = clone $query;
-        $this->placeholdConditionList($query->where(), $rowProxy);
-        $this->placeholdConditionList($query->having(), $rowProxy);
+        $query->setWhere($this->placeholdConditionList($query->where(), $rowProxy));
+        $query->setHaving($this->placeholdConditionList($query->having(), $rowProxy));
         return $query;
     }
 
     public function placeholdConditionList(ConditionList $conditions, RowProxy $rowProxy)
     {
+        $newConds = new ConditionList();
         foreach ($conditions as $cond) {
             $cnd = $cond->getCondition();
             if ($cnd instanceof ConditionList) {
                 $this->placeholdConditionList($cnd, $rowProxy);
             } elseif ($cnd instanceof OneOperandInterface) {
                 $op = $this->placeholdOperand($cnd->getOperand(), $rowProxy);
+                if (!isset($op)) continue;
                 $cnd->setOperand($op);
             } elseif ($cnd instanceof TwoOperandsInterface) {
                 $op1 = $this->placeholdOperand($cnd->getOperand1(), $rowProxy);
                 $op2 = $this->placeholdOperand($cnd->getOperand2(), $rowProxy);
+                if (!isset($op1, $op2)) continue;
                 $cnd->setOperand1($op1);
                 $cnd->setOperand2($op2);
             } elseif ($cnd instanceof ThreeOperandsInterface) {
                 $op1 = $this->placeholdOperand($cnd->getOperand1(), $rowProxy);
                 $op2 = $this->placeholdOperand($cnd->getOperand2(), $rowProxy);
                 $op3 = $this->placeholdOperand($cnd->getOperand3(), $rowProxy);
+                if (!isset($op1, $op2, $op3)) continue;
                 $cnd->setOperand1($op1);
                 $cnd->setOperand2($op2);
                 $cnd->setOperand3($op3);
             }
+            $newConds->add($cond);
         }
+        return $newConds;
     }
 
     public function placeholdOperand($operand, RowProxy $rowProxy)
@@ -128,6 +136,39 @@ class NestMerger
             return $bool->nestResolve();
         }
         return false;
+    }
+
+    private static function getMatchesFromConditionList(ConditionList $conds) : array
+    {
+        $matches = [];
+        foreach ($conds as $cond) {
+            if ($cond->getConnector() !== LogicConnectors::AND) continue;
+            $cnd = $cond->getCondition();
+
+            // Would like an guard clause, but Intelliphense shows it as errors. :/
+            // if (!$cnd instanceof RelationalExpression) continue;
+            // if ($cnd->getOperator() !== RelationalOperators::EQUALS) continue;
+
+            if ($cnd instanceof RelationalExpression && $cnd->getOperator() === RelationalOperators::EQUALS) {
+                $op1 = $cnd->getOperand1();
+                $op2 = $cnd->getOperand2();
+                
+                if ($op1 instanceof ValueProxy && $op2 instanceof ValueProxy) {
+                    $matches[$op2->getName()] = $op1->getName();
+                }
+            }
+        }
+        return $matches;
+    }
+
+    private static function getMatches(SelectQuery $query) : array
+    {
+        $matches = array_merge(
+            static::getMatchesFromConditionList($query->where()),
+            static::getMatchesFromConditionList($query->having())
+        );
+
+        return $matches;
     }
 
     private static function findMatchedChildren(Index $index, object $parent, array $matches)

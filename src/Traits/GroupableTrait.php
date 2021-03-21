@@ -17,6 +17,11 @@ trait GroupableTrait
         $this->having = new ConditionList();
     }
 
+    public function setHaving(ConditionList $having)
+    {
+        $this->having = $having;
+    }
+
     public function groupBy($group)
     {
         if (is_string($group)) {

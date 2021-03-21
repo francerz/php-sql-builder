@@ -14,6 +14,11 @@ trait WhereableTrait
         $this->where = new ConditionList(ComparisonModes::COLUMN_VALUE);
     }
 
+    public function setWhere(ConditionList $where)
+    {
+        $this->where = $where;
+    }
+
     public function where() : ConditionList
     {
         $where = $this->where;

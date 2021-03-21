@@ -15,16 +15,6 @@ class NestedSelect
     {
         $this->select = isset($select) ? $select : new SelectQuery();
     }
-
-    public function match($childCol, $parentCol)
-    {
-        $this->matches[$parentCol] = $childCol;
-    }
-
-    public function getMatches() : array
-    {
-        return $this->matches;
-    }
     
     public function getSelect()
     {

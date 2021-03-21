@@ -14,9 +14,10 @@ class NestMegerTest extends TestCase
     {
         $query = Query::selectFrom('table1');
         $nested = Query::selectFrom('table2');
+        $nested->where()->lessEquals('childId', 4);
 
         $query->nest(['Nest'=>$nested], function(NestedSelect $nest, RowProxy $row) {
-            $nest->match('childCol','parentId');
+            $nest->getSelect()->where('childCol', $row->parentId);
         });
 
         $parents = new SelectResult(new CompiledQuery('',[], $query), json_decode(json_encode(array(
