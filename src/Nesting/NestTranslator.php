@@ -4,10 +4,6 @@ namespace Francerz\SqlBuilder\Nesting;
 
 use Francerz\SqlBuilder\Components\SqlValue;
 use Francerz\SqlBuilder\Components\SqlValueArray;
-use Francerz\SqlBuilder\Expressions\Comparison\BetweenExpression;
-use Francerz\SqlBuilder\Expressions\Comparison\InExpression;
-use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
-use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
 use Francerz\SqlBuilder\Results\SelectResult;
@@ -19,29 +15,28 @@ class NestTranslator
     {
         $newQuery = clone $nestedQuery;
 
-        $this->translateConditionList($newQuery->where(), $parentResult);
+        $newQuery->setWhere($this->translateConditionList($newQuery->where(), $parentResult));
+        $newQuery->setHaving($this->translateConditionList($newQuery->having(), $parentResult));
 
         return $newQuery;
     }
 
     private function translateConditionList(ConditionList $list, SelectResult $parentResult)
     {
-        foreach($list as $k => $cond) {
+        $new = new ConditionList();
+        foreach($list as $cond) {
             $cnd = $cond->getCondition();
             $cond->setConnector(LogicConnectors::OR);
             if ($cnd instanceof ConditionList) {
-                $this->translateConditionList($cnd, $parentResult);
-                continue;
-            }
-            if ($cnd instanceof NestOperationResolverInterface) {
+                $cond->setCondition($this->translateConditionList($cnd, $parentResult));
+            } elseif ($cnd instanceof NestOperationResolverInterface) {
                 $cnd = $cnd->nestTransform($parentResult);
-                if (isset($cnd)) {
-                    $cond->setCondition($cnd);
-                    continue;
-                }
+                if (!isset($cnd)) continue;
+                $cond->setCondition($cnd);
             }
-            unset($list[$k]);
+            $new->add($cond);
         }
+        return $new;
     }
 
     public static function valueProxyToArray(ValueProxy $proxy, SelectResult $parentResult) : SqlValueArray
