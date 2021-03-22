@@ -29,7 +29,6 @@ class NestTranslator
             if ($cnd instanceof ConditionList) {
                 $cond->setCondition($this->translateConditionList($cnd, $parentResult));
             } elseif ($cnd instanceof NestOperationResolverInterface && $cnd->requiresTransform()) {
-                $cond->setConnector(LogicConnectors::OR);
                 $cnd = $cnd->nestTransform($parentResult);
                 $cond->setCondition($cnd);
             }
