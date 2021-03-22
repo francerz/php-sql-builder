@@ -30,26 +30,24 @@ class NestMerger
         $mode = $nest->getMode();
 
         $query = static::getMatches($query, $matches);
-        $index = new Index($children->toArray(), $matches);
+        $childIndex = new Index($children->toArray(), $matches);
+        // $parentIndex= new Index($parents->toArray(), array_keys($matches));
 
         foreach($parents as $parent) {
             $childs = [];
             $parentRow->setCurrent($parent);
-            $subchildren = static::findMatchedChildren($index, $parent, $matches);
+            $subchildren = static::findMatchedChildren($childIndex, $parent, $matches);
             foreach ($subchildren as $child) {
                 $childRow->setCurrent($child);
                 if ($this->mergeConditionList($query->where()) &&
                     $this->mergeConditionList($query->having())
                 ) {
-                    if ($mode === NestMode::SINGLE_FIRST) {
-                        $childs = $child;
-                        break;
-                    }
                     $childs[] = $child;
+                    if ($mode === NestMode::SINGLE_FIRST) break;
                 }
             }
-            if ($mode === NestMode::SINGLE_FIRST && empty($childs)) {
-                $childs = null;
+            if ($mode === NestMode::SINGLE_FIRST) {
+                $childs = empty($childs) ? null : reset($childs);
             } elseif ($mode === NestMode::SINGLE_LAST) {
                 $childs = empty($childs) ? null : end($childs);
             }
@@ -168,10 +166,6 @@ class NestMerger
 
     private static function findMatchedChildren(Index $index, object $parent, array $matches)
     {
-        return $index->findAll(Arrays::replaceKeys(
-            (array)$parent,
-            array_keys($matches),
-            array_values($matches)
-        ));
+        return $index->findAll(Arrays::replaceKeys((array)$parent, $matches));
     }
 }

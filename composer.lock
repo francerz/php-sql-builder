@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "francerz/php-power-data",
-            "version": "v0.1.9",
+            "version": "v0.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/francerz/php-power-data.git",
-                "reference": "b6a21b69e7ac53c8ef3fc98c951c402e742dd7e2"
+                "reference": "53df2ae3e06492e0857a1d092f87fedd7c36a233"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/francerz/php-power-data/zipball/b6a21b69e7ac53c8ef3fc98c951c402e742dd7e2",
-                "reference": "b6a21b69e7ac53c8ef3fc98c951c402e742dd7e2",
+                "url": "https://api.github.com/repos/francerz/php-power-data/zipball/53df2ae3e06492e0857a1d092f87fedd7c36a233",
+                "reference": "53df2ae3e06492e0857a1d092f87fedd7c36a233",
                 "shasum": ""
             },
             "require-dev": {
@@ -38,9 +38,9 @@
             "description": "PHP data structures for complex data handling",
             "support": {
                 "issues": "https://github.com/francerz/php-power-data/issues",
-                "source": "https://github.com/francerz/php-power-data/tree/v0.1.9"
+                "source": "https://github.com/francerz/php-power-data/tree/v0.1.11"
             },
-            "time": "2021-03-21T01:59:31+00:00"
+            "time": "2021-03-22T01:24:23+00:00"
         }
     ],
     "packages-dev": [

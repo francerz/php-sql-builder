@@ -23,7 +23,8 @@ class NestMegerTest extends TestCase
         $parents = new SelectResult(new CompiledQuery('',[], $query), json_decode(json_encode(array(
             ['parentId'=>1],
             ['parentId'=>2],
-            ['parentId'=>3]
+            ['parentId'=>3],
+            ['parentId'=>1]
         ))));
 
         $children = new SelectResult(new CompiledQuery('',[], $query), json_decode(json_encode(array(
@@ -38,6 +39,7 @@ class NestMegerTest extends TestCase
 
         $this->assertCount(2, $parents[0]->Nest);
         $this->assertCount(1, $parents[1]->Nest);
-        $this->assertCount(1, $parents[1]->Nest);
+        $this->assertCount(1, $parents[2]->Nest);
+        $this->assertCount(2, $parents[3]->Nest);
     }
 }
