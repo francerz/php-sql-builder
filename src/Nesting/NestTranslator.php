@@ -26,12 +26,11 @@ class NestTranslator
         $new = new ConditionList();
         foreach($list as $cond) {
             $cnd = $cond->getCondition();
-            $cond->setConnector(LogicConnectors::OR);
             if ($cnd instanceof ConditionList) {
                 $cond->setCondition($this->translateConditionList($cnd, $parentResult));
-            } elseif ($cnd instanceof NestOperationResolverInterface) {
+            } elseif ($cnd instanceof NestOperationResolverInterface && $cnd->requiresTransform()) {
+                $cond->setConnector(LogicConnectors::OR);
                 $cnd = $cnd->nestTransform($parentResult);
-                if (!isset($cnd)) continue;
                 $cond->setCondition($cnd);
             }
             $new->add($cond);

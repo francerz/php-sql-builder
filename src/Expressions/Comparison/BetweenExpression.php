@@ -80,6 +80,13 @@ class BetweenExpression implements
         return $this->negated;
     }
 
+    public function requiresTransform(): bool
+    {
+        return $this->operand1 instanceof ValueProxy
+            || $this->operand2 instanceof ValueProxy
+            || $this->operand3 instanceof ValueProxy;
+    }
+
     public function nestTransform(SelectResult $parentResult): ?ComparisonOperationInterface
     {
         if ($this->operand1 instanceof ValueProxy && $this->operand2 instanceof ValueProxy) {

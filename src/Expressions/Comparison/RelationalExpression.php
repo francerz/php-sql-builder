@@ -71,6 +71,11 @@ class RelationalExpression implements
         return $this->operator;
     }
 
+    public function requiresTransform(): bool
+    {
+        return $this->operand1 instanceof ValueProxy || $this->operand2 instanceof ValueProxy;
+    }
+
     public function nestTransform(SelectResult $parentResult): ?ComparisonOperationInterface
     {
         if (in_array($this->operator, [RelationalOperators::EQUALS, RelationalOperators::NOT_EQUALS])) {
@@ -88,8 +93,7 @@ class RelationalExpression implements
                     $this->operator === RelationalOperators::NOT_EQUALS
                 );
             }
-        }
-        if (in_array($this->operator, [RelationalOperators::LESS, RelationalOperators::LESS_EQUALS])) {
+        } elseif (in_array($this->operator, [RelationalOperators::LESS, RelationalOperators::LESS_EQUALS])) {
             if ($this->operand1 instanceof ValueProxy) {
                 $this->operand1 = NestTranslator::valueProxyToMin($this->operand1, $parentResult);
             }
@@ -97,8 +101,7 @@ class RelationalExpression implements
                 $this->operand2 = NestTranslator::valueProxyToMax($this->operand2, $parentResult);
             }
             return $this;
-        }
-        if (in_array($this->operator, [RelationalOperators::GREATER, RelationalOperators::GREATER_EQUALS])) {
+        } elseif (in_array($this->operator, [RelationalOperators::GREATER, RelationalOperators::GREATER_EQUALS])) {
             if ($this->operand1 instanceof ValueProxy) {
                 $this->operand1 = NestTranslator::valueProxyToMax($this->operand1, $parentResult);
             }
