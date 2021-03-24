@@ -159,6 +159,9 @@ class NestMerger
 
     private static function getMatches(SelectQuery $query, ?array &$matches = []) : SelectQuery
     {
+        if (is_null($matches)) {
+            $matches = [];
+        }
         $query->setWhere(static::getMatchesFromConditionList($query->where(), $matches));
         $query->setHaving(static::getMatchesFromConditionList($query->having(), $matches));
         return $query;
