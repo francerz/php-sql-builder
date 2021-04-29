@@ -11,6 +11,16 @@ trait SortableTrait
 
     public function orderBy($column, $mode='ASC')
     {
+        if (is_array($column)) {
+            foreach ($column as $k => $v) {
+                if (is_numeric($k)) {
+                    $this->orderBy($v);
+                    continue;
+                }
+                $this->orderBy($k, $v);
+            }
+            return $this;
+        }
         if (!$column instanceof ComparableComponentInterface) {
             $column = Query::column($column);
         }
