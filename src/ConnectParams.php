@@ -2,8 +2,15 @@
 
 namespace Francerz\SqlBuilder;
 
+use Francerz\Http\Uri;
+use Francerz\Http\Utils\UriHelper;
+use Francerz\SqlBuilder\Driver\DriverInterface;
+use LogicException;
+use Psr\Http\Message\UriInterface;
+
 class ConnectParams
 {
+    private $driver;
     private $host;
     private $user;
     private $password;
@@ -12,6 +19,7 @@ class ConnectParams
     private $encoding;
 
     public function __construct(
+        DriverInterface $driver,
         string $host,
         ?string $user = null,
         ?string $password = null,
@@ -19,12 +27,59 @@ class ConnectParams
         ?int $port = null,
         ?string $encoding = null
     ) {
+        $this->driver = $driver;
         $this->host = $host;
         $this->user = $user;
         $this->password = $password;
         $this->database = $database;
         $this->port = $port;
         $this->encoding = $encoding;
+    }
+
+    public static function fromEnv(string $alias, ?array $env = null)
+    {
+        $env = is_null($env) ? $_ENV : $env;
+        $alias = strtoupper($alias);
+
+        $driver = DriverManager::fromEnv($alias, $env);
+        $hostKey = "DATABASE_{$alias}_HOST";
+        $portKey = "DATABASE_{$alias}_PORT";
+        $userKey = "DATABASE_{$alias}_USER";
+        $pswdKey = "DATABASE_{$alias}_PSWD";
+        $nameKey = "DATABASE_{$alias}_NAME";
+        $encdKey = "DATABASE_{$alias}_ENCD";
+
+        $host = $env[$hostKey] ?? $driver->getDefaultHost();
+        $port = $env[$portKey] ?? $driver->getDefaultPort();
+        $user = $env[$userKey] ?? $driver->getDefaultUser();
+        $pswd = $env[$pswdKey] ?? $driver->getDefaultPswd();
+        $name = $env[$nameKey] ?? $alias;
+        $encd = $env[$encdKey] ?? null;
+
+        return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd);
+    }
+
+    public static function fromUri(UriInterface $uri)
+    {
+        $driver = DriverManager::getDriver($uri->getScheme());
+
+        return new ConnectParams(
+            $driver,
+            $uri->getHost(),
+            UriHelper::getUser($uri),
+            UriHelper::getPassword($uri),
+            ltrim($uri->getPath(), '/'),
+            $uri->getPort()
+        );
+    }
+
+    public function setDriver(DriverInterface $driver)
+    {
+        $this->driver = $driver;
+    }
+    public function getDriver()
+    {
+        return $this->driver;
     }
 
     public function setHost(string $host)

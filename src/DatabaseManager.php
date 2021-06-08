@@ -2,43 +2,48 @@
 
 namespace Francerz\SqlBuilder;
 
+use Francerz\Http\Uri;
 use LogicException;
 class DatabaseManager
 {
-    public static function connect(string $alias = 'default', ?array $env = null) : DatabaseHandler
+    /**
+     * Connects to a database
+     *
+     * @param string|ConnectParams $database
+     * @param array|null $env
+     * @return DatabaseHandler
+     */
+    public static function connect($database = 'default', ?array $env = null) : DatabaseHandler
     {
-        $env = is_null($env) ? $_ENV : $env;
-
-        $alias = strtoupper($alias);
-
-        $driverKey = "DATABASE_{$alias}_DRIVER";
-        if (!array_key_exists($driverKey, $env)) {
-            throw new LogicException("Missing {$driverKey} setting in `.env` file.");
+        if (is_string($database)) {
+            if (filter_var($database, FILTER_VALIDATE_URL)) {
+                $connParams = ConnectParams::fromUri(new Uri($database));
+            } else {
+                $connParams = ConnectParams::fromEnv($database);
+            }
         }
 
-        $driver = DriverManager::getDriver($env[$driverKey]);
-        if (is_null($driver)) {
-            throw new LogicException("Unknown '{$env[$driverKey]}' driver.");
+        if ($database instanceof ConnectParams) {
+            $connParams = $database;
         }
 
-        $hostKey = "DATABASE_{$alias}_HOST";
-        $portKey = "DATABASE_{$alias}_PORT";
-        $userKey = "DATABASE_{$alias}_USER";
-        $pswdKey = "DATABASE_{$alias}_PSWD";
-        $nameKey = "DATABASE_{$alias}_NAME";
-        $encdKey = "DATABASE_{$alias}_ENCD";
-
-        $host = array_key_exists($hostKey, $env) ? $env[$hostKey] : $driver->getDefaultHost();
-        $port = array_key_exists($portKey, $env) ? $env[$portKey] : $driver->getDefaultPort();
-        $user = array_key_exists($userKey, $env) ? $env[$userKey] : $driver->getDefaultUser();
-        $pswd = array_key_exists($pswdKey, $env) ? $env[$pswdKey] : $driver->getDefaultPswd();
-        $name = array_key_exists($nameKey, $env) ? $env[$nameKey] : $alias;
-        $encd = array_key_exists($encdKey, $env) ? $env[$encdKey] : null;
-
-        $connParams = new ConnectParams($host, $user, $pswd, $name, $port, $encd);
-
-        $db = new DatabaseHandler($driver);
+        $db = new DatabaseHandler($connParams->getDriver());
         $db->connect($connParams);
         return $db;
+    }
+
+    private static function getParams($database, ?array $env = null) : ConnectParams
+    {
+        if ($database instanceof ConnectParams) {
+            return $database;
+        }
+
+        if (is_string($database)) {
+            return null;
+        }
+
+        if (is_string($database) && filter_var($database, FILTER_VALIDATE_URL)) {
+            return ConnectParams::fromUri(new Uri($database));
+        }
     }
 }
