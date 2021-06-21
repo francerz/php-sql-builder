@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32b80ac26672e4baccc3257754befccc",
+    "content-hash": "eed9528dac9ba3a9e0cd07b9ff732a9b",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -64,16 +64,16 @@
         },
         {
             "name": "francerz/http",
-            "version": "v0.2.10",
+            "version": "v0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/francerz/php-http.git",
-                "reference": "b5f035be3a40c4a52f2520f9ec64ed3a4c15e71a"
+                "reference": "fa674194df96f3a2d8d555dbeed32aac75c19671"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/francerz/php-http/zipball/b5f035be3a40c4a52f2520f9ec64ed3a4c15e71a",
-                "reference": "b5f035be3a40c4a52f2520f9ec64ed3a4c15e71a",
+                "url": "https://api.github.com/repos/francerz/php-http/zipball/fa674194df96f3a2d8d555dbeed32aac75c19671",
+                "reference": "fa674194df96f3a2d8d555dbeed32aac75c19671",
                 "shasum": ""
             },
             "require": {
@@ -97,9 +97,9 @@
             "description": "Basic HTTP client",
             "support": {
                 "issues": "https://github.com/francerz/php-http/issues",
-                "source": "https://github.com/francerz/php-http/tree/v0.2.10"
+                "source": "https://github.com/francerz/php-http/tree/v0.3.2"
             },
-            "time": "2021-05-31T18:24:03+00:00"
+            "time": "2021-06-02T14:25:02+00:00"
         },
         {
             "name": "francerz/http-utils",
@@ -158,16 +158,16 @@
         },
         {
             "name": "francerz/php-power-data",
-            "version": "v0.1.15",
+            "version": "v0.1.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/francerz/php-power-data.git",
-                "reference": "3a272b57624c23ef0d94f3f117416579c6fecade"
+                "reference": "6b6c1d9346794eb254642e4387519bdef1609c53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/francerz/php-power-data/zipball/3a272b57624c23ef0d94f3f117416579c6fecade",
-                "reference": "3a272b57624c23ef0d94f3f117416579c6fecade",
+                "url": "https://api.github.com/repos/francerz/php-power-data/zipball/6b6c1d9346794eb254642e4387519bdef1609c53",
+                "reference": "6b6c1d9346794eb254642e4387519bdef1609c53",
                 "shasum": ""
             },
             "require-dev": {
@@ -182,15 +182,15 @@
             "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
-                    "name": "Fran CZ"
+                    "name": "Francisco CZ"
                 }
             ],
             "description": "PHP data structures for complex data handling",
             "support": {
                 "issues": "https://github.com/francerz/php-power-data/issues",
-                "source": "https://github.com/francerz/php-power-data/tree/v0.1.15"
+                "source": "https://github.com/francerz/php-power-data/tree/v0.1.16"
             },
-            "time": "2021-04-19T18:26:24+00:00"
+            "time": "2021-06-21T16:52:52+00:00"
         },
         {
             "name": "psr/http-client",
@@ -1835,6 +1835,7 @@
                     "type": "github"
                 }
             ],
+            "abandoned": true,
             "time": "2020-11-30T07:30:19+00:00"
         },
         {

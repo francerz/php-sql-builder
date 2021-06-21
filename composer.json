@@ -17,7 +17,7 @@
         "phpunit/phpunit": "^8.5"
     },
     "require": {
-        "francerz/php-power-data": "^0.1.8",
-        "francerz/http": "^0.2.9"
+        "francerz/php-power-data": "^0.1",
+        "francerz/http": "^0.3"
     }
 }
