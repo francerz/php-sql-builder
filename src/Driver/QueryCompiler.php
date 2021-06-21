@@ -164,7 +164,7 @@ class QueryCompiler implements QueryCompilerInterface
             if ($set instanceof Set) {
                 $_set = $this->compileColumn($set->getColumn());
                 $_set.= ' = ';
-                $_set.= $this->compileValue($set->getValue());
+                $_set.= $this->compileComparable($set->getValue());
             }
             $_sets[] = $_set;
         }

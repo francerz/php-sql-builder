@@ -73,6 +73,9 @@ class DatabaseHandler
         return $this->compiler->compileQuery($query);
     }
 
+    /**
+     * @deprecated v0.2.64 Use executeSelect, executeInsert, executeUpdate or executeDelete instead.
+     */
     public function execute(QueryInterface $query) : QueryResultInterface
     {
         if ($query instanceof SelectQuery) {

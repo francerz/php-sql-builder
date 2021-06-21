@@ -27,7 +27,7 @@ class NestTranslatorTest extends TestCase
         $translated = $translator->translate($query, $result);
 
         $expected = Query::selectFrom('table1');
-        $expected->where('col1',10)->orIn('col2', [1, 2]);
+        $expected->where('col1',10)->andIn('col2', [1, 2]);
 
         $this->assertEquals($expected, $translated);
     }
