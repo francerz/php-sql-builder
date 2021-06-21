@@ -138,6 +138,9 @@ class QueryCompiler implements QueryCompilerInterface
     {
         $query = 'UPDATE ';
         $query.= $this->compileTable($update->getTable());
+        foreach ($update->getJoins() as $join) {
+            $query.= $this->compileJoin($join);
+        }
         $query.= $this->compileSets($update->getSets(), ' SET ');
         $query.= $this->compileConditionList($update->where(), ' WHERE ');
         $query.= $this->compileLimit($update);
