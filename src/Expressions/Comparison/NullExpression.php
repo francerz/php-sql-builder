@@ -5,12 +5,17 @@ namespace Francerz\SqlBuilder\Expressions\Comparison;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
 use Francerz\SqlBuilder\Expressions\OneOperandInterface;
+use Francerz\SqlBuilder\Nesting\NestOperationResolverInterface;
+use Francerz\SqlBuilder\Nesting\ValueProxy;
+use Francerz\SqlBuilder\Results\SelectResult;
 use InvalidArgumentException;
+use RuntimeException;
 
 class NullExpression implements
     ComparisonOperationInterface,
     NegatableInterface,
-    OneOperandInterface
+    OneOperandInterface,
+    NestOperationResolverInterface
 {
     private $negated = false;
     private $operand;
@@ -40,5 +45,23 @@ class NullExpression implements
     public function isNegated(): bool
     {
         return $this->negated;
+    }
+
+    public function requiresTransform(): bool
+    {
+        return false;
+    }
+
+    public function nestTransform(SelectResult $parentResult): ?ComparisonOperationInterface
+    {
+        return null;
+    }
+
+    public function nestResolve(): bool
+    {
+        if (!$this->operand instanceof ValueProxy) {
+            throw new RuntimeException('Invalid operand for ValueProxyResolver');
+        }
+        return is_null($this->operand->getValue());
     }
 }
