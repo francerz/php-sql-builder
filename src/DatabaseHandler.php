@@ -183,4 +183,38 @@ class DatabaseHandler
         $result = $this->driver->executeDelete($compiled);
         return $result;
     }
+
+    /**
+     * Starts a transaction.
+     *
+     * @return bool
+     * @throws TransactionException if driver doesn't support transacitions or
+     * already started.
+     */
+    public function startTransaction()
+    {
+        return $this->driver->startTransaction();
+    }
+
+    /**
+     * Rollbacks actions since transaction starts.
+     *
+     * @return bool
+     * @throws TransactionException if no transaction is running.
+     */
+    public function rollback()
+    {
+        return $this->driver->rollback();
+    }
+
+    /**
+     * Commits actions on transaction.
+     *
+     * @return bool
+     * @throws TransactionException if no transaction is running.
+     */
+    public function commit()
+    {
+        return $this->driver->commit();
+    }
 }
