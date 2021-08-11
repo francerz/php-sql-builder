@@ -100,4 +100,25 @@ interface DriverInterface
      * @throws ExecuteDeleteException
      */
     public function executeDelete(CompiledQuery $query) : DeleteResult;
+
+    /**
+     * Starts a transaction on current database connection.
+     *
+     * @return void
+     */
+    public function startTransaction();
+
+    /**
+     * Rollbacks a transaction on current database connection.
+     *
+     * @return void
+     */
+    public function rollback();
+
+    /**
+     * Commits a transaction on current database connection.
+     *
+     * @return void
+     */
+    public function commit();
 }
