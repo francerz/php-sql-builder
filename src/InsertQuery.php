@@ -48,11 +48,10 @@ class InsertQuery implements QueryInterface, Countable
         }
         if (is_object($values)) {
             $values = (array)$values;
-            if (is_array($columns)) {
-                $values = array_filter($values, function($k) use ($columns) {
-                    return in_array($k, $columns);
-                }, ARRAY_FILTER_USE_KEY);
-            }
+        }
+        if (is_array($columns)) {
+            $columns = array_combine($columns, $columns);
+            $values = array_intersect_key($values, $columns);
         }
         $this->values[] = $values;
         $this->columns = array_merge($this->columns, array_keys($values));

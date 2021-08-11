@@ -82,6 +82,9 @@ class InsertQueryTest extends TestCase
         $this->assertInstanceOf(InsertQuery::class, $query);
         $this->assertEquals(['periodo_id','materia_id'], $query->getColumns());
 
+        $query = Query::insertInto('grupos', (array)$grupo, ['periodo_id','materia_id','empleado_id']);
+        $this->assertEquals(['periodo_id','materia_id'], $query->getColumns());
+
         $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals(

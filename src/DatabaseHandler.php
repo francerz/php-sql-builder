@@ -109,7 +109,7 @@ class DatabaseHandler
         }
 
         foreach ($query->getAfterExecuteActions() as $action) {
-            call_user_func($action, $result);
+            $action($result);
         }
 
         return $result;
