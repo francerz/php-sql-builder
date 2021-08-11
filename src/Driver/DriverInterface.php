@@ -4,6 +4,7 @@ namespace Francerz\SqlBuilder\Driver;
 
 use Francerz\SqlBuilder\CompiledQuery;
 use Francerz\SqlBuilder\ConnectParams;
+use Francerz\SqlBuilder\Exceptions\TransactionException;
 use Francerz\SqlBuilder\Results\DeleteResult;
 use Francerz\SqlBuilder\Results\InsertResult;
 use Francerz\SqlBuilder\Results\SelectResult;
@@ -104,21 +105,25 @@ interface DriverInterface
     /**
      * Starts a transaction on current database connection.
      *
-     * @return void
+     * @return boolean **TRUE** if sucess, **FALSE** otherwise.
      */
-    public function startTransaction();
+    public function startTransaction() : bool;
 
     /**
      * Rollbacks a transaction on current database connection.
      *
-     * @return void
+     * @return boolean **TRUE** if success, **FALSE** otherwise.
+     * 
+     * @throws TransactionException if no transaction is running.
      */
-    public function rollback();
+    public function rollback() : bool;
 
     /**
      * Commits a transaction on current database connection.
      *
-     * @return void
+     * @return boolean **TRUE** if success, **FALSE** otherwise.
+     * 
+     * @throws TransactionException if no transaction is running.
      */
-    public function commit();
+    public function commit() : bool;
 }
