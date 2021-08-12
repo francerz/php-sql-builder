@@ -7,6 +7,7 @@ use Francerz\Http\Utils\UriHelper;
 use Francerz\SqlBuilder\Driver\DriverInterface;
 use LogicException;
 use Psr\Http\Message\UriInterface;
+use SebastianBergmann\CodeCoverage\Driver\Driver;
 
 class ConnectParams
 {
@@ -71,6 +72,12 @@ class ConnectParams
             ltrim($uri->getPath(), '/'),
             $uri->getPort()
         );
+    }
+
+    public function __toString()
+    {
+        $name = DriverManager::getDriverName($this->driver) ?? 'unknown';
+        return "{$name}://{$this->user}:{$this->password}@{$this->host}:{$this->port}/{$this->database}";
     }
 
     public function setDriver(DriverInterface $driver)

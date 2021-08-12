@@ -6,6 +6,7 @@ use Francerz\Http\Uri;
 use LogicException;
 class DatabaseManager
 {
+    private static $connections = [];
     /**
      * Connects to a database
      *
@@ -13,7 +14,7 @@ class DatabaseManager
      * @param array|null $env
      * @return DatabaseHandler
      */
-    public static function connect($database = 'default', ?array $env = null) : DatabaseHandler
+    public static function connect($database = 'default', bool $recycle = true) : DatabaseHandler
     {
         if (is_string($database)) {
             if (filter_var($database, FILTER_VALIDATE_URL)) {
@@ -27,23 +28,13 @@ class DatabaseManager
             $connParams = $database;
         }
 
+        $dbKey = (string)$connParams;
+        if ($recycle && isset(static::$connections[$dbKey])) {
+            return static::$connections[$dbKey];
+        }
+
         $db = new DatabaseHandler($connParams->getDriver());
         $db->connect($connParams);
-        return $db;
-    }
-
-    private static function getParams($database, ?array $env = null) : ConnectParams
-    {
-        if ($database instanceof ConnectParams) {
-            return $database;
-        }
-
-        if (is_string($database)) {
-            return null;
-        }
-
-        if (is_string($database) && filter_var($database, FILTER_VALIDATE_URL)) {
-            return ConnectParams::fromUri(new Uri($database));
-        }
+        return static::$connections[$dbKey] = $db;
     }
 }

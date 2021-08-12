@@ -26,6 +26,19 @@ class DriverManager
         return null;
     }
 
+    /**
+     * Returns the driver name from DriverInterface object.
+     *
+     * @param DriverInterface $driver Driver object
+     * @return string|null Returns the name of registered driver. Returns
+     * **NULL** if driver is not registered.
+     */
+    public static function getDriverName(DriverInterface $driver) : ?string
+    {
+        $name = array_keys(static::$drivers, $driver, true);
+        return empty($name) ? null : reset($name);
+    }
+
     public static function fromEnv(string $alias, ?array $env = null)
     {   
         $env = is_null($env) ? $_ENV : $env;
