@@ -3,7 +3,6 @@
 namespace Francerz\SqlBuilder;
 
 use Francerz\SqlBuilder\Components\Column;
-use Francerz\SqlBuilder\Components\SqlFunction;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Components\TableReference;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
@@ -25,6 +24,7 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         WhereableTrait::__clone as private WhereableTrait__clone;
         GroupableTrait::__clone as private GroupableTrait__clone;
         NestableTrait::__construct as private Nestable__construct;
+        JoinableTrait::join as private JoinableTrait_join;
     }
 
     protected $from;
@@ -97,6 +97,9 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         return $this;
     }
 
+    /**
+     * @return Column[]
+     */
     public function getAllColumns()
     {
         $columns = array_merge($this->columns, $this->from->getColumns());
@@ -105,6 +108,16 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
             $columns = array_merge($columns, $join->getTableReference()->getColumns());
         }
         return $columns;
+    }
+
+    public function getColumn(string $aliasOrName)
+    {
+        $columns = $this->getAllColumns();
+        $columns = array_filter($columns, function(Column $col) use ($aliasOrName) {
+            return $aliasOrName == $col->getAliasOrName();
+        });
+        $first = reset($columns);
+        return $first === false ? null : $first;
     }
 
     public function whereSingle($column, ...$args) : ConditionList

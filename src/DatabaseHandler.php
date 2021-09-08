@@ -16,6 +16,7 @@ use Francerz\SqlBuilder\Results\QueryResultInterface;
 use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\Results\UpdateResult;
 use Francerz\SqlBuilder\Results\UpsertResult;
+use Francerz\SqlBuilder\Tools\QueryOptimizer;
 use InvalidArgumentException;
 use LogicException;
 
@@ -93,6 +94,7 @@ class DatabaseHandler
 
     public function executeSelect(SelectQuery $query) : SelectResult
     {
+        $query = QueryOptimizer::optimizeSelect($query);
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeSelect($compiled);
 

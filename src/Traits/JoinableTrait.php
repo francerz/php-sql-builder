@@ -50,9 +50,25 @@ Trait JoinableTrait
         return $this->join($table, $columns, JoinTypes::RIGHT_OUTER_JOIN);
     }
 
+    /**
+     * Retrieves all Joins
+     *
+     * @return Join[]
+     */
     public function getJoins()
     {
         return $this->joins;
+    }
+
+    /**
+     * Retrieves a join with given alias or name
+     *
+     * @param string $aliasOrName
+     * @return ?Join found Join with given alias or name
+     */
+    public function getJoin(string $aliasOrName)
+    {
+        return isset($this->joins[$aliasOrName]) ? $this->joins[$aliasOrName] : null;
     }
 
     public function isJoined(string $aliasOrName)

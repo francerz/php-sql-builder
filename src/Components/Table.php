@@ -48,7 +48,7 @@ class Table
         return static::fromQuery($alias, $query);
     }
 
-    private static function fromQuery(string $alias, QueryInterface $query)
+    private static function fromQuery(string $alias, SelectQuery $query)
     {
         return new static($query, $alias);
     }
@@ -76,6 +76,21 @@ class Table
         return new static($source, $alias);
     }
 
+    /**
+     * @param string|SelectQuery $source
+     * @return void
+     */
+    public function setSource($source)
+    {
+        if (!is_string($source) && !$source instanceof SelectQuery) {
+            throw new InvalidArgumentException('Table source must be String or SelectQuery');
+        }
+        $this->source = $source;
+    }
+
+    /**
+     * @return string|SelectQuery
+     */
     public function getSource()
     {
         return $this->source;
