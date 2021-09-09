@@ -120,12 +120,12 @@ abstract class QueryOptimizer
         if (is_null($alias)) {
             return null;
         }
-        $join = $query->getJoin($alias);
-        if (is_null($join)) {
+        $tr = $query->getTableReference($alias);
+        if (is_null($tr)) {
             return null;
         }
 
-        $table = $join->getTableReference()->getTable();
+        $table = $tr->getTable();
         $source = $table->getSource();
         if ($source instanceof SelectQuery) {
             return $source;

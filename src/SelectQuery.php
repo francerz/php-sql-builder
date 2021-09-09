@@ -73,6 +73,20 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         return $this->from->getTable();
     }
 
+    public function getTableReference(string $aliasOrName)
+    {
+        $table = $this->from->getTable()->getAliasOrName();
+        if ($aliasOrName == $table) {
+            return $this->from;
+        }
+
+        $join = $this->getJoin($aliasOrName);
+        if (isset($join)) {
+            return $join->getTableReference();
+        }
+        return null;
+    }
+
     public function __clone()
     {
         $this->WhereableTrait__clone();
