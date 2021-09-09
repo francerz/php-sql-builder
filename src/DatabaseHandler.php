@@ -94,7 +94,7 @@ class DatabaseHandler
 
     public function executeSelect(SelectQuery $query) : SelectResult
     {
-        // $query = git QueryOptimizer::optimizeSelect($query);
+        $query = QueryOptimizer::optimizeSelect($query);
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeSelect($compiled);
 
