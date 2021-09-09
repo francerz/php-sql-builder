@@ -41,6 +41,12 @@ abstract class QueryOptimizer
         return $query;
     }
 
+    /**
+     * @param [type] $operand
+     * @param SelectQuery $query
+     * @param SelectQuery|null $subquery
+     * @return void
+     */
     private static function getSubqueryColumn($operand, SelectQuery $query, ?SelectQuery &$subquery = null)
     {
         if (!$operand instanceof Column) {
@@ -68,6 +74,7 @@ abstract class QueryOptimizer
     {
         $operand = $cond->getOperand();
         $column = static::getSubqueryColumn($operand, $query, $subquery);
+        if (is_null($column) || is_null($subquery)) return;
 
         $cond = clone $cond;
         $cond->setOperand($column);
@@ -90,17 +97,22 @@ abstract class QueryOptimizer
         $cond = clone $cond;
         if ($op1 instanceof Column) {
             $column = static::getSubqueryColumn($op1, $query, $subquery);
-            if (is_null($subquery)) return;
+            if (is_null($column) || is_null($subquery)) return;
             $cond->setOperand1($column);
             $subquery->where()($cond);
         } elseif ($op2 instanceof Column) {
             $column = static::getSubqueryColumn($op2, $query, $subquery);
-            if (is_null($subquery)) return;
+            if (is_null($column) || is_null($subquery)) return;
             $cond->setOperand2($column);
             $subquery->where()($cond);
         }
     }
 
+    /**
+     * @param Column $operand
+     * @param SelectQuery $query
+     * @return SelectQuery|null
+     */
     private static function getOperandSubquery(Column $operand, SelectQuery $query) : ?SelectQuery
     {
 
@@ -118,9 +130,10 @@ abstract class QueryOptimizer
         if ($source instanceof SelectQuery) {
             return $source;
         } elseif (is_string($source)) {
-            $source = new SelectQuery($source);
-            $table->setSource($source);
-            return $source;
+            return null;
+            // $source = new SelectQuery($source);
+            // $table->setSource($source);
+            // return $source;
         }
 
         return null;
