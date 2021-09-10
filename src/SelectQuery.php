@@ -63,7 +63,7 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         return $this;
     }
 
-    public function getFrom()
+    public function getFrom() : TableReference
     {
         return $this->from;
     }

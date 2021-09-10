@@ -3,6 +3,7 @@
 namespace Francerz\SqlBuilder\Tools;
 
 use Francerz\SqlBuilder\Components\Column;
+use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
 use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
 use Francerz\SqlBuilder\Expressions\OneOperandInterface;
@@ -30,15 +31,22 @@ abstract class QueryOptimizer
                 static::applyTwoOperandFilter($cnd, $query);
             }
         }
-        // foreach ($query->getJoins() as $join) {
-        //     $table = $join->getTableReference()->getTable();
-        //     $source = $table->getSource();
-        //     if ($source instanceof SelectQuery) {
-        //         $source = static::applySubqueryFilter($source);
-        //         $table->setSource($source);
-        //     }
-        // }
+        $table = $query->getFrom()->getTable();
+        static::optimizeTable($table);
+        foreach ($query->getJoins() as $join) {
+            $table = $join->getTableReference()->getTable();
+            static::optimizeTable($table);
+        }
         return $query;
+    }
+
+    private static function optimizeTable(Table $table)
+    {
+        $source = $table->getSource();
+        if ($source instanceof SelectQuery) {
+            $source = static::applySubqueryFilter($source);
+            $table->setSource($source);
+        }
     }
 
     /**
