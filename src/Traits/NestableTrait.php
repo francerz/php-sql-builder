@@ -5,6 +5,7 @@ namespace Francerz\SqlBuilder\Traits;
 use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
 use Francerz\SqlBuilder\Nesting\NestMode;
+use Francerz\SqlBuilder\SelectQuery;
 
 trait NestableTrait
 {
@@ -29,6 +30,11 @@ trait NestableTrait
         if (is_array($alias)) {
             $query = current($alias);
             $alias = key($alias);
+        }
+        if (is_callable($query)) {
+            $cbQuery = $query;
+            $query = new SelectQuery();
+            call_user_func($cbQuery, $query);
         }
         if (!$query instanceof NestedSelect) {
             $query = new NestedSelect($query);
