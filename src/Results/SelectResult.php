@@ -5,7 +5,9 @@ namespace Francerz\SqlBuilder\Results;
 use ArrayAccess;
 use Countable;
 use Exception;
+use Francerz\PowerData\Objects;
 use Francerz\SqlBuilder\CompiledQuery;
+use InvalidArgumentException;
 use Iterator;
 use JsonSerializable;
 use LogicException;
@@ -88,9 +90,22 @@ class SelectResult extends AbstractResult implements
         }
     }
 
-    public function toArray()
+    public function toArray(?string $class = null)
     {
-        return $this->rows;
+        if (!isset($type)) {
+            return $this->rows;
+        }
+
+        if (!class_exists($class)) {
+            throw new InvalidArgumentException("Class '{$class}' doesn't exists.");
+        }
+
+        $rows = [];
+        foreach ($this->rows as $row) {
+            $new = Objects::cast($row, $class);
+            array_push($rows, $new);
+        }
+        return $rows;
     }
 
     public function getColumnValues($column, bool $unique = true)
