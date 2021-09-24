@@ -92,7 +92,7 @@ class SelectResult extends AbstractResult implements
 
     public function toArray(?string $class = null)
     {
-        if (!isset($type)) {
+        if (!isset($class)) {
             return $this->rows;
         }
 
