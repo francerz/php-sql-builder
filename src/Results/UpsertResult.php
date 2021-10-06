@@ -6,10 +6,16 @@ use Francerz\SqlBuilder\CompiledQuery;
 
 class UpsertResult extends InsertResult
 {
-    private $insertRows = 0, $updateRows = 0;
+    private $insertRows = 0;
+    private $updateRows = 0;
 
-    public function __construct(CompiledQuery $query, int $insertRows = 0, int $updateRows = 0, $firstId = null, bool $success = true)
-    {
+    public function __construct(
+        CompiledQuery $query,
+        int $insertRows = 0,
+        int $updateRows = 0,
+        $firstId = null,
+        bool $success = true
+    ) {
         parent::__construct($query, $insertRows + $updateRows, $firstId, $success);
         $this->insertRows = $insertRows;
         $this->updateRows = $updateRows;
@@ -26,8 +32,12 @@ class UpsertResult extends InsertResult
         );
     }
 
-    public static function fromResult(QueryResultInterface $result, int $insertRows = 0, int $updateRows = 0, $firstId = null)
-    {
+    public static function fromResult(
+        QueryResultInterface $result,
+        int $insertRows = 0,
+        int $updateRows = 0,
+        $firstId = null
+    ) {
         return new static(
             $result->getQuery(),
             $insertRows,

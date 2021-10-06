@@ -20,7 +20,7 @@ class ConditionItem
     {
         $this->condition = $condition;
     }
-    
+
     public function getCondition()
     {
         return $this->condition;

@@ -19,8 +19,8 @@ class InExpression implements
     public function __construct(
         ComparableComponentInterface $operand1,
         ComparableComponentInterface $operand2,
-        $negated = false)
-    {
+        $negated = false
+    ) {
         $this->operand1 = $operand1;
         $this->operand2 = $operand2;
         $this->negated = $negated;
@@ -37,7 +37,7 @@ class InExpression implements
     {
         return $this->operand1;
     }
-    
+
     public function setOperand2($operand)
     {
         if (!$operand instanceof ComparableComponentInterface) {

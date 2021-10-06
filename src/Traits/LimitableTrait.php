@@ -2,7 +2,7 @@
 
 namespace Francerz\SqlBuilder\Traits;
 
-Trait LimitableTrait
+trait LimitableTrait
 {
     protected $limit;
     protected $offset = 0;
@@ -25,7 +25,7 @@ Trait LimitableTrait
     {
         return $this->limit;
     }
-    public function getLimitOffset() : int
+    public function getLimitOffset(): int
     {
         return $this->offset;
     }

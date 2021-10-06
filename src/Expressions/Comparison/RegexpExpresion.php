@@ -20,8 +20,8 @@ class RegexpExpression implements
     public function __construct(
         ComparableComponentInterface $operand1,
         ComparableComponentInterface $operand2,
-        bool $negated = false)
-    {
+        bool $negated = false
+    ) {
         $this->operand1 = $operand1;
         $this->operand2 = $operand2;
         $this->negated = $negated;

@@ -66,7 +66,7 @@ class DatabaseHandler
         return $query;
     }
 
-    private function prepareQuery(QueryInterface $query) : ?CompiledQuery
+    private function prepareQuery(QueryInterface $query): ?CompiledQuery
     {
         if (isset($this->translator)) {
             $query = $this->translator->translateQuery($query);
@@ -77,7 +77,7 @@ class DatabaseHandler
     /**
      * @deprecated v0.2.64 Use executeSelect, executeInsert, executeUpdate or executeDelete instead.
      */
-    public function execute(QueryInterface $query) : QueryResultInterface
+    public function execute(QueryInterface $query): QueryResultInterface
     {
         if ($query instanceof SelectQuery) {
             return $this->executeSelect($query);
@@ -92,7 +92,7 @@ class DatabaseHandler
         throw new InvalidArgumentException('Unknown $query type.');
     }
 
-    public function executeSelect(SelectQuery $query) : SelectResult
+    public function executeSelect(SelectQuery $query): SelectResult
     {
         $query = QueryOptimizer::optimizeSelect($query);
         $compiled = $this->prepareQuery($query);
@@ -103,7 +103,9 @@ class DatabaseHandler
         }
 
         foreach ($query->getNests() as $nest) {
-            if (!$nest instanceof Nest) return null;
+            if (!$nest instanceof Nest) {
+                return null;
+            }
             $nestSelect = $nest->getNested()->getSelect();
             $nestTranslation = $this->nestTranslator->translate($nestSelect, $result);
             $nestResult = $this->executeSelect($nestTranslation);
@@ -117,21 +119,21 @@ class DatabaseHandler
         return $result;
     }
 
-    public function executeInsert(InsertQuery $query) : InsertResult
+    public function executeInsert(InsertQuery $query): InsertResult
     {
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeInsert($compiled);
         return $result;
     }
 
-    public function executeUpdate(UpdateQuery $query) : UpdateResult
+    public function executeUpdate(UpdateQuery $query): UpdateResult
     {
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeUpdate($compiled);
         return $result;
     }
 
-    public function executeUpsert(UpsertQuery $query) : UpsertResult
+    public function executeUpsert(UpsertQuery $query): UpsertResult
     {
         $compiled = $this->prepareQuery($query);
         try {
@@ -179,7 +181,7 @@ class DatabaseHandler
         }
     }
 
-    public function executeDelete(DeleteQuery $query) : DeleteResult
+    public function executeDelete(DeleteQuery $query): DeleteResult
     {
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeDelete($compiled);

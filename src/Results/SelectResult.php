@@ -4,7 +4,6 @@ namespace Francerz\SqlBuilder\Results;
 
 use ArrayAccess;
 use Countable;
-use Exception;
 use Francerz\PowerData\Objects;
 use Francerz\SqlBuilder\CompiledQuery;
 use InvalidArgumentException;

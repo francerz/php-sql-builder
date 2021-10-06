@@ -19,7 +19,7 @@ trait WhereableTrait
         $this->where = $where;
     }
 
-    public function where() : ConditionList
+    public function where(): ConditionList
     {
         $where = $this->where;
         $args = func_get_args();

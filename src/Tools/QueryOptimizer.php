@@ -12,17 +12,18 @@ use Francerz\SqlBuilder\SelectQuery;
 
 abstract class QueryOptimizer
 {
-    public static function optimizeSelect(SelectQuery $query) : SelectQuery
+    public static function optimizeSelect(SelectQuery $query): SelectQuery
     {
         static::applySubqueryFilter($query);
         return $query;
     }
 
-    private static function applySubqueryFilter(SelectQuery $query) : SelectQuery
+    private static function applySubqueryFilter(SelectQuery $query): SelectQuery
     {
         foreach ($query->where() as $cond) {
-            if ($cond->getConnector() != LogicConnectors::AND)
+            if ($cond->getConnector() != LogicConnectors::AND) {
                 continue;
+            }
             $cnd = $cond->getCondition();
 
             if ($cnd instanceof OneOperandInterface) {
@@ -82,7 +83,9 @@ abstract class QueryOptimizer
     {
         $operand = $cond->getOperand();
         $column = static::getSubqueryColumn($operand, $query, $subquery);
-        if (is_null($column) || is_null($subquery)) return;
+        if (is_null($column) || is_null($subquery)) {
+            return;
+        }
 
         $cond = clone $cond;
         $cond->setOperand($column);
@@ -105,12 +108,16 @@ abstract class QueryOptimizer
         $cond = clone $cond;
         if ($op1 instanceof Column) {
             $column = static::getSubqueryColumn($op1, $query, $subquery);
-            if (is_null($column) || is_null($subquery)) return;
+            if (is_null($column) || is_null($subquery)) {
+                return;
+            }
             $cond->setOperand1($column);
             $subquery->where()($cond);
         } elseif ($op2 instanceof Column) {
             $column = static::getSubqueryColumn($op2, $query, $subquery);
-            if (is_null($column) || is_null($subquery)) return;
+            if (is_null($column) || is_null($subquery)) {
+                return;
+            }
             $cond->setOperand2($column);
             $subquery->where()($cond);
         }
@@ -121,7 +128,7 @@ abstract class QueryOptimizer
      * @param SelectQuery $query
      * @return SelectQuery|null
      */
-    private static function getOperandSubquery(Column $operand, SelectQuery $query) : ?SelectQuery
+    private static function getOperandSubquery(Column $operand, SelectQuery $query): ?SelectQuery
     {
 
         $alias = $operand->getTable();
@@ -139,9 +146,6 @@ abstract class QueryOptimizer
             return $source;
         } elseif (is_string($source)) {
             return null;
-            // $source = new SelectQuery($source);
-            // $table->setSource($source);
-            // return $source;
         }
 
         return null;

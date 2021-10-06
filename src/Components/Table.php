@@ -2,7 +2,6 @@
 
 namespace Francerz\SqlBuilder\Components;
 
-use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
 use InvalidArgumentException;
 use LogicException;
@@ -20,7 +19,7 @@ class Table
         $this->database = $database;
     }
 
-    public static function fromExpression($expression) : Table
+    public static function fromExpression($expression): Table
     {
         if ($expression instanceof Table) {
             return $expression;
@@ -100,7 +99,7 @@ class Table
     {
         return $this->alias;
     }
-    
+
     public function getAliasOrName()
     {
         if (isset($this->alias)) {

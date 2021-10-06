@@ -6,5 +6,5 @@ use Francerz\SqlBuilder\Components\Table;
 
 interface QueryInterface
 {
-    public function getTable() : Table;
+    public function getTable(): Table;
 }

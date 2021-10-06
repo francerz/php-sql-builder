@@ -34,12 +34,12 @@ trait GroupableTrait
         return $this;
     }
 
-    public function getGroupBy() : array
+    public function getGroupBy(): array
     {
         return $this->groupBy;
     }
 
-    public function having() : ConditionList
+    public function having(): ConditionList
     {
         $having = $this->having;
         $args = func_get_args();

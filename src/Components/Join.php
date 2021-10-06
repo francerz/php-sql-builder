@@ -21,15 +21,19 @@ class Join
 
     public function setJoinType($joinType)
     {
-        if (!in_array($joinType, array(
-            JoinTypes::CROSS_JOIN, JoinTypes::INNER_JOIN,
-            JoinTypes::LEFT_JOIN, JoinTypes::LEFT_OUTER_JOIN,
-            JoinTypes::RIGHT_JOIN, JoinTypes::RIGHT_OUTER_JOIN,
-            JoinTypes::FULL_OUTER_JOIN
-        ))) {
-            throw new InvalidArgumentException('Invalid JoinType.');
+        switch ($joinType) {
+            case JoinTypes::CROSS_JOIN:
+            case JoinTypes::INNER_JOIN:
+            case JoinTypes::LEFT_JOIN:
+            case JoinTypes::LEFT_OUTER_JOIN:
+            case JoinTypes::RIGHT_JOIN:
+            case JoinTypes::RIGHT_OUTER_JOIN:
+            case JoinTypes::FULL_OUTER_JOIN:
+                $this->joinType = $joinType;
+                break;
+            default:
+                throw new InvalidArgumentException('Invalid JoinType.');
         }
-        $this->joinType = $joinType;
     }
 
     public function getTableReference()

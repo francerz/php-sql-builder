@@ -4,10 +4,10 @@ namespace Francerz\SqlBuilder\Expressions\Comparison;
 
 interface RelationalOperators
 {
-    const EQUALS = '=';
-    const LESS = '<';
-    const GREATER = '>';
-    const LESS_EQUALS= '<=';
-    const GREATER_EQUALS = '>=';
-    const NOT_EQUALS = '<>';
+    public const EQUALS = '=';
+    public const LESS = '<';
+    public const GREATER = '>';
+    public const LESS_EQUALS = '<=';
+    public const GREATER_EQUALS = '>=';
+    public const NOT_EQUALS = '<>';
 }

@@ -8,7 +8,13 @@ use Francerz\SqlBuilder\Components\Table;
 class InsertQuery implements QueryInterface, Countable
 {
     private $table = null;
+    /**
+     * @var object[]|array[]|SelectQuery
+     */
     private $values = [];
+    /**
+     * @var string[]
+     */
     private $columns = [];
 
     public function __construct($table = null, $values = [], ?array $columns = null)
@@ -54,10 +60,10 @@ class InsertQuery implements QueryInterface, Countable
             $values = array_intersect_key($values, $columns);
         }
         $this->values[] = $values;
-        $this->columns = array_merge($this->columns, array_keys($values));
+        $this->columns = array_unique(array_merge($this->columns, array_keys($values)));
     }
 
-    public function getTable() : Table
+    public function getTable(): Table
     {
         return $this->table;
     }

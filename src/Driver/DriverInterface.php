@@ -25,105 +25,105 @@ interface DriverInterface
      *
      * @return QueryCompilerInterface|null
      */
-    public function getCompiler() : ?QueryCompilerInterface;
+    public function getCompiler(): ?QueryCompilerInterface;
 
     /**
      * Retrieves a QueryTranslatorInterface compatible object.
      *
      * @return QueryTranslatorInterface|null
      */
-    public function getTranslator() : ?QueryTranslatorInterface;
+    public function getTranslator(): ?QueryTranslatorInterface;
 
     /**
      * Returns default host address or name for given driver.
      *
      * @return string host name
      */
-    public function getDefaultHost() : string;
+    public function getDefaultHost(): string;
 
     /**
      * Returns default port number for given driver.
      *
      * @return integer port number
      */
-    public function getDefaultPort() : int;
+    public function getDefaultPort(): int;
 
     /**
      * Returns default user name for given driver.
      *
      * @return string user name
      */
-    public function getDefaultUser() : string;
+    public function getDefaultUser(): string;
 
     /**
      * Returns default password string for given driver.
      *
      * @return string password string
      */
-    public function getDefaultPswd() : string;
-    
+    public function getDefaultPswd(): string;
+
     /**
      * Executes given SELECT CompiledQuery and returns the result.
      *
      * @param CompiledQuery $query Compiled SELECT query.
      * @return SelectResult
-     * 
+     *
      * @throws ExecuteSelectException
      */
-    public function executeSelect(CompiledQuery $query) : SelectResult;
+    public function executeSelect(CompiledQuery $query): SelectResult;
 
     /**
      * Executes given INSERT CompiledQuery and returns the result.
      *
      * @param CompiledQuery $query Compiled INSERT query.
      * @return InsertResult
-     * 
+     *
      * @throws ExecuteInsertException
      */
-    public function executeInsert(CompiledQuery $query) : InsertResult;
+    public function executeInsert(CompiledQuery $query): InsertResult;
 
     /**
      * Executees given UPDATE CompiledQuery and returns the result.
      *
      * @param CompiledQuery $query
      * @return UpdateResult
-     * 
+     *
      * @throws ExecuteUpdateException
      */
-    public function executeUpdate(CompiledQuery $query) : UpdateResult;
+    public function executeUpdate(CompiledQuery $query): UpdateResult;
 
     /**
      * Executes given DELETE CompiledQuery and returns the result.
      *
      * @param CompiledQuery $query
      * @return DeleteResult
-     * 
+     *
      * @throws ExecuteDeleteException
      */
-    public function executeDelete(CompiledQuery $query) : DeleteResult;
+    public function executeDelete(CompiledQuery $query): DeleteResult;
 
     /**
      * Starts a transaction on current database connection.
      *
      * @return boolean **TRUE** if sucess, **FALSE** otherwise.
      */
-    public function startTransaction() : bool;
+    public function startTransaction(): bool;
 
     /**
      * Rollbacks a transaction on current database connection.
      *
      * @return boolean **TRUE** if success, **FALSE** otherwise.
-     * 
+     *
      * @throws TransactionException if no transaction is running.
      */
-    public function rollback() : bool;
+    public function rollback(): bool;
 
     /**
      * Commits a transaction on current database connection.
      *
      * @return boolean **TRUE** if success, **FALSE** otherwise.
-     * 
+     *
      * @throws TransactionException if no transaction is running.
      */
-    public function commit() : bool;
+    public function commit(): bool;
 }

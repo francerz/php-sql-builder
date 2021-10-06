@@ -7,5 +7,4 @@ use Francerz\SqlBuilder\Expressions\OperationInterface;
 
 interface LogicalOperationInterface extends OperationInterface, BooleanResultInterface
 {
-
 }

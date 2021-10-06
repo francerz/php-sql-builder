@@ -8,7 +8,7 @@ use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\Results\SelectResult;
 use PHPUnit\Framework\TestCase;
 
-class NestMegerTest extends TestCase
+class NestMergerTest extends TestCase
 {
     public function testMerging()
     {

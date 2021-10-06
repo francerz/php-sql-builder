@@ -15,9 +15,13 @@ use Francerz\SqlBuilder\Traits\WhereableTrait;
 
 class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterface
 {
-    use JoinableTrait, WhereableTrait, LimitableTrait, SortableTrait {
+    use JoinableTrait;
+    use WhereableTrait {
         WhereableTrait::__construct as private _whereableTraitConstruct;
     }
+    use LimitableTrait;
+    use SortableTrait;
+
     private $table;
     private $sets;
     private $matches = [];
@@ -60,7 +64,7 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
         $this->table = Table::fromExpression($table);
     }
 
-    public function getTable() : Table
+    public function getTable(): Table
     {
         return $this->table;
     }

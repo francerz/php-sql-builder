@@ -24,8 +24,8 @@ class RelationalExpression implements
     public function __construct(
         ComparableComponentInterface $operand1,
         ComparableComponentInterface $operand2,
-        $operator = null)
-    {
+        $operator = null
+    ) {
         $this->operand1 = $operand1;
         $this->operand2 = $operand2;
         $this->operator = is_null($operator) ? RelationalOperators::EQUALS : $operator;
@@ -57,14 +57,18 @@ class RelationalExpression implements
 
     public function setOperator($operator)
     {
-        if (!in_array($operator, array(
-            RelationalOperators::EQUALS, RelationalOperators::NOT_EQUALS,
-            RelationalOperators::LESS, RelationalOperators::LESS_EQUALS,
-            RelationalOperators::GREATER, RelationalOperators::GREATER_EQUALS
-        ))) {
-            throw new InvalidArgumentException('Invalid operator.');
+        switch ($operator) {
+            case RelationalOperators::EQUALS:
+            case RelationalOperators::NOT_EQUALS:
+            case RelationalOperators::LESS:
+            case RelationalOperators::LESS_EQUALS:
+            case RelationalOperators::GREATER:
+            case RelationalOperators::GREATER_EQUALS:
+                $this->operator = $operator;
+                break;
+            default:
+                throw new InvalidArgumentException('Invalid operator.');
         }
-        $this->operator = $operator;
     }
     public function getOperator()
     {

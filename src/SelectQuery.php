@@ -63,12 +63,12 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         return $this;
     }
 
-    public function getFrom() : TableReference
+    public function getFrom(): TableReference
     {
         return $this->from;
     }
 
-    public function getTable() : Table
+    public function getTable(): Table
     {
         return $this->from->getTable();
     }
@@ -104,7 +104,7 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
             $this->columns[] = $column;
         }
         if (!empty($moreColumns)) {
-            foreach($moreColumns as $c) {
+            foreach ($moreColumns as $c) {
                 $this->columns($c);
             }
         }
@@ -127,14 +127,14 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
     public function getColumn(string $aliasOrName)
     {
         $columns = $this->getAllColumns();
-        $columns = array_filter($columns, function(Column $col) use ($aliasOrName) {
+        $columns = array_filter($columns, function (Column $col) use ($aliasOrName) {
             return $aliasOrName == $col->getAliasOrName();
         });
         $first = reset($columns);
         return $first === false ? null : $first;
     }
 
-    public function whereSingle($column, ...$args) : ConditionList
+    public function whereSingle($column, ...$args): ConditionList
     {
         $value = end($args);
         if (is_scalar($value)) {

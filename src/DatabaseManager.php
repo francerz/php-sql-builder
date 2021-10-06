@@ -4,6 +4,7 @@ namespace Francerz\SqlBuilder;
 
 use Francerz\Http\Uri;
 use LogicException;
+
 class DatabaseManager
 {
     private static $connections = [];
@@ -14,7 +15,7 @@ class DatabaseManager
      * @param array|null $env
      * @return DatabaseHandler
      */
-    public static function connect($database = 'default', bool $recycle = true) : DatabaseHandler
+    public static function connect($database = 'default', bool $recycle = true): DatabaseHandler
     {
         if (is_string($database)) {
             if (filter_var($database, FILTER_VALIDATE_URL)) {

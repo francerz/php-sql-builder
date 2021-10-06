@@ -33,17 +33,20 @@ class NestMerger
         $childIndex = new Index($children->toArray(), $matches);
         // $parentIndex= new Index($parents->toArray(), array_keys($matches));
 
-        foreach($parents as $parent) {
+        foreach ($parents as $parent) {
             $childs = [];
             $parentRow->setCurrent($parent);
             $subchildren = static::findMatchedChildren($childIndex, $parent, $matches);
             foreach ($subchildren as $child) {
                 $childRow->setCurrent($child);
-                if ($this->mergeConditionList($query->where()) &&
+                if (
+                    $this->mergeConditionList($query->where()) &&
                     $this->mergeConditionList($query->having())
                 ) {
                     $childs[] = $child;
-                    if ($mode === NestMode::SINGLE_FIRST) break;
+                    if ($mode === NestMode::SINGLE_FIRST) {
+                        break;
+                    }
                 }
             }
             if ($mode === NestMode::SINGLE_FIRST) {
@@ -72,19 +75,25 @@ class NestMerger
                 $this->placeholdConditionList($cnd, $rowProxy);
             } elseif ($cnd instanceof OneOperandInterface) {
                 $op = $this->placeholdOperand($cnd->getOperand(), $rowProxy);
-                if (!isset($op)) continue;
+                if (!isset($op)) {
+                    continue;
+                }
                 $cnd->setOperand($op);
             } elseif ($cnd instanceof TwoOperandsInterface) {
                 $op1 = $this->placeholdOperand($cnd->getOperand1(), $rowProxy);
                 $op2 = $this->placeholdOperand($cnd->getOperand2(), $rowProxy);
-                if (!isset($op1, $op2)) continue;
+                if (!isset($op1, $op2)) {
+                    continue;
+                }
                 $cnd->setOperand1($op1);
                 $cnd->setOperand2($op2);
             } elseif ($cnd instanceof ThreeOperandsInterface) {
                 $op1 = $this->placeholdOperand($cnd->getOperand1(), $rowProxy);
                 $op2 = $this->placeholdOperand($cnd->getOperand2(), $rowProxy);
                 $op3 = $this->placeholdOperand($cnd->getOperand3(), $rowProxy);
-                if (!isset($op1, $op2, $op3)) continue;
+                if (!isset($op1, $op2, $op3)) {
+                    continue;
+                }
                 $cnd->setOperand1($op1);
                 $cnd->setOperand2($op2);
                 $cnd->setOperand3($op3);
@@ -104,17 +113,16 @@ class NestMerger
         }
     }
 
-    public function mergeConditionList(ConditionList $conditions) : bool
+    public function mergeConditionList(ConditionList $conditions): bool
     {
         $result = true;
-        foreach ($conditions as $cond)
-        {
+        foreach ($conditions as $cond) {
             $cnd = $cond->getCondition();
             $res = $this->handleBooleanResult($cnd);
             if ($cnd instanceof NegatableInterface && $cnd->isNegated()) {
                 $res = !$res;
             }
-            switch($cond->getConnector()) {
+            switch ($cond->getConnector()) {
                 case LogicConnectors::AND:
                     $result = $result && $res;
                     break;
@@ -126,7 +134,7 @@ class NestMerger
         return $result;
     }
 
-    public function handleBooleanResult(BooleanResultInterface $bool) : bool
+    public function handleBooleanResult(BooleanResultInterface $bool): bool
     {
         if ($bool instanceof ConditionList) {
             return $this->mergeConditionList($bool);
@@ -136,7 +144,7 @@ class NestMerger
         return false;
     }
 
-    private static function getMatchesFromConditionList(ConditionList $conds, ?array &$matches = []) : ConditionList
+    private static function getMatchesFromConditionList(ConditionList $conds, ?array &$matches = []): ConditionList
     {
         $newConds = new ConditionList();
         foreach ($conds as $cond) {
@@ -150,14 +158,13 @@ class NestMerger
                         continue;
                     }
                 }
-
             }
             $newConds->add($cond);
         }
         return $newConds;
     }
 
-    private static function getMatches(SelectQuery $query, ?array &$matches = []) : SelectQuery
+    private static function getMatches(SelectQuery $query, ?array &$matches = []): SelectQuery
     {
         if (is_null($matches)) {
             $matches = [];

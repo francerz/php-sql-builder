@@ -36,7 +36,7 @@ class QueryCompiler implements QueryCompilerInterface
 {
     private $values;
 
-    public function compileQuery(QueryInterface $query) : ?CompiledQuery
+    public function compileQuery(QueryInterface $query): ?CompiledQuery
     {
         $this->clearValues();
         if ($query instanceof SelectQuery) {
@@ -72,107 +72,107 @@ class QueryCompiler implements QueryCompilerInterface
         return $this->values;
     }
 
-    protected function addValue($value) : string
+    protected function addValue($value): string
     {
         $key = 'v' . (count($this->values) + 1);
         $this->values[$key] = $value;
         return $key;
     }
 
-    protected function compileSelect(SelectQuery $select) : string
+    protected function compileSelect(SelectQuery $select): string
     {
         $query = 'SELECT ';
         // COLUMNS
-        $query.= $this->compileColumns($select->getAllColumns());
+        $query .= $this->compileColumns($select->getAllColumns());
         // FROM
         $from = $select->getFrom();
         if (isset($from)) {
-            $query.= ' FROM '. $this->compileTable($from->getTable());
+            $query .= ' FROM ' . $this->compileTable($from->getTable());
         }
         // JOINS
         foreach ($select->getJoins() as $join) {
-            $query.= $this->compileJoin($join);
+            $query .= $this->compileJoin($join);
         }
         // WHERE
-        $query.= $this->compileConditionList($select->where(), ' WHERE ');
+        $query .= $this->compileConditionList($select->where(), ' WHERE ');
         // GROUP BY
-        $query.= $this->compileGroupBy($select);
+        $query .= $this->compileGroupBy($select);
         // HAVING
-        $query.= $this->compileConditionList($select->having(), ' HAVING ');
+        $query .= $this->compileConditionList($select->having(), ' HAVING ');
         // ORDER BY
-        $query.= $this->compileOrderBy($select);
+        $query .= $this->compileOrderBy($select);
         // LIMIT
-        $query.= $this->compileLimit($select);
+        $query .= $this->compileLimit($select);
 
         return $query;
     }
 
-    protected function compileInsert(InsertQuery $insert) : string
+    protected function compileInsert(InsertQuery $insert): string
     {
         $query = 'INSERT INTO ';
-        $query.= $this->compileTable($insert->getTable(), false);
+        $query .= $this->compileTable($insert->getTable(), false);
         $columns = $insert->getColumns();
-        $query.= '(' . join(',', $columns) . ') ';
+        $query .= '(' . join(',', $columns) . ') ';
         $values = $insert->getValues();
         if ($values instanceof SelectQuery) {
-            $query.= $this->compileSelect($values);
+            $query .= $this->compileSelect($values);
             return $query;
         }
         if (!is_array($values)) {
             return $query;
         }
-        $query.= 'VALUES ';
+        $query .= 'VALUES ';
         $rows = [];
-        foreach($values as $val) {
+        foreach ($values as $val) {
             $row = [];
             foreach ($columns as $col) {
-                $row[] = isset($val[$col]) ? ':'.$this->addValue($val[$col]) : 'NULL';
+                $row[] = isset($val[$col]) ? ':' . $this->addValue($val[$col]) : 'NULL';
             }
             $rows[] = implode(',', $row);
         }
-        $query.= '('.implode('),(', $rows).')';
+        $query .= '(' . implode('),(', $rows) . ')';
         return $query;
     }
 
-    protected function compileUpdate(UpdateQuery $update) : string
+    protected function compileUpdate(UpdateQuery $update): string
     {
         $query = 'UPDATE ';
-        $query.= $this->compileTable($update->getTable());
+        $query .= $this->compileTable($update->getTable());
         foreach ($update->getJoins() as $join) {
-            $query.= $this->compileJoin($join);
+            $query .= $this->compileJoin($join);
         }
-        $query.= $this->compileSets($update->getSets(), ' SET ');
-        $query.= $this->compileConditionList($update->where(), ' WHERE ');
-        $query.= $this->compileLimit($update);
+        $query .= $this->compileSets($update->getSets(), ' SET ');
+        $query .= $this->compileConditionList($update->where(), ' WHERE ');
+        $query .= $this->compileLimit($update);
         return $query;
     }
 
-    protected function compileDelete(DeleteQuery $delete) : string
+    protected function compileDelete(DeleteQuery $delete): string
     {
         $query = 'DELETE FROM ';
-        $query.= $this->compileTable($delete->getTable());
+        $query .= $this->compileTable($delete->getTable());
         foreach ($delete->getJoins() as $join) {
-            $query.= $this->compileJoin($join);
+            $query .= $this->compileJoin($join);
         }
-        $query.= $this->compileConditionList($delete->where(), ' WHERE ');
-        $query.= $this->compileLimit($delete);
+        $query .= $this->compileConditionList($delete->where(), ' WHERE ');
+        $query .= $this->compileLimit($delete);
         return $query;
     }
 
-    protected function compileSets(array $sets, ?string $prefix = null) : string
+    protected function compileSets(array $sets, ?string $prefix = null): string
     {
         $_sets = [];
         foreach ($sets as $set) {
             $_set = '';
             if ($set instanceof Set) {
                 $_set = $this->compileColumn($set->getColumn());
-                $_set.= ' = ';
-                $_set.= $this->compileComparable($set->getValue());
+                $_set .= ' = ';
+                $_set .= $this->compileComparable($set->getValue());
             }
             $_sets[] = $_set;
         }
         $output = isset($prefix) ? $prefix : '';
-        $output.= join(', ', $_sets);
+        $output .= join(', ', $_sets);
         return $output;
     }
 
@@ -191,12 +191,12 @@ class QueryCompiler implements QueryCompilerInterface
     protected function compileJoin(Join $join)
     {
         $output = $this->compileJoinType($join->getJoinType());
-        $output.= $this->compileTable($join->getTableReference()->getTable());
-        $output.= $this->compileConditionList($join->getOn(), ' ON ');
+        $output .= $this->compileTable($join->getTableReference()->getTable());
+        $output .= $this->compileConditionList($join->getOn(), ' ON ');
         return $output;
     }
 
-    protected function compileJoinType($joinType) : string
+    protected function compileJoinType($joinType): string
     {
         switch ($joinType) {
             case JoinTypes::INNER_JOIN:
@@ -216,13 +216,13 @@ class QueryCompiler implements QueryCompilerInterface
         }
     }
 
-    protected function compileTable(Table $table, bool $withAlias = true) : string
+    protected function compileTable(Table $table, bool $withAlias = true): string
     {
         $alias = $table->getAlias();
-        
+
         $output = $this->compileTableSource($table->getSource(), $table->getDatabase());
         if ($withAlias && isset($alias)) {
-            $output .= ' AS '.$this->compileTableAlias($alias);
+            $output .= ' AS ' . $this->compileTableAlias($alias);
         }
         return $output;
     }
@@ -230,10 +230,10 @@ class QueryCompiler implements QueryCompilerInterface
     protected function compileTableSource($source, ?string $database = null)
     {
         if ($source instanceof SelectQuery) {
-            return '('.$this->compileSelect($source).')';
+            return '(' . $this->compileSelect($source) . ')';
         }
         if (isset($database)) {
-            return $this->compileTableDatabase($database).'.'.$this->compileTableName($source);
+            return $this->compileTableDatabase($database) . '.' . $this->compileTableName($source);
         }
         return $this->compileTableName($source);
     }
@@ -253,18 +253,18 @@ class QueryCompiler implements QueryCompilerInterface
         return $database;
     }
 
-    protected function compileConditionList(ConditionList $conditions, string $prefix = '') : string
+    protected function compileConditionList(ConditionList $conditions, string $prefix = ''): string
     {
         $output = '';
         if (count($conditions) > 0) {
             $output = $prefix;
             foreach ($conditions as $k => $item) {
                 if ($k === 0) {
-                    $output.= $this->compileBooleanExpression($item->getCondition());
+                    $output .= $this->compileBooleanExpression($item->getCondition());
                     continue;
                 }
-                $output.= $this->compileConnector($item->getConnector());
-                $output.= $this->compileBooleanExpression($item->getCondition());
+                $output .= $this->compileConnector($item->getConnector());
+                $output .= $this->compileBooleanExpression($item->getCondition());
             }
         }
         return $output;
@@ -280,7 +280,7 @@ class QueryCompiler implements QueryCompilerInterface
         }
     }
 
-    protected function compileBooleanExpression(BooleanResultInterface $expr) : string
+    protected function compileBooleanExpression(BooleanResultInterface $expr): string
     {
         if ($expr instanceof ConditionList) {
             return '(' . $this->compileConditionList($expr) . ')';
@@ -289,7 +289,7 @@ class QueryCompiler implements QueryCompilerInterface
         }
     }
 
-    protected function compileComparison(ComparisonOperationInterface $expr) : string
+    protected function compileComparison(ComparisonOperationInterface $expr): string
     {
         if ($expr instanceof RelationalExpression) {
             return $this->compileRelationalExpression($expr);
@@ -306,11 +306,11 @@ class QueryCompiler implements QueryCompilerInterface
         }
     }
 
-    protected function compileRelationalExpression(RelationalExpression $expr) : string
+    protected function compileRelationalExpression(RelationalExpression $expr): string
     {
         $output = $this->compileComparable($expr->getOperand1());
-        $output.= $this->compileRelationalOperator($expr->getOperator());
-        $output.= $this->compileComparable($expr->getOperand2());
+        $output .= $this->compileRelationalOperator($expr->getOperator());
+        $output .= $this->compileComparable($expr->getOperand2());
         return $output;
     }
 
@@ -332,48 +332,48 @@ class QueryCompiler implements QueryCompilerInterface
         }
     }
 
-    protected function compileLikeExpression(LikeExpression $expr) : string
+    protected function compileLikeExpression(LikeExpression $expr): string
     {
         $output = $this->compileComparable($expr->getOperand1());
-        $output.= $expr->isNegated() ? ' NOT LIKE ' : ' LIKE ';
-        $output.= $this->compileComparable($expr->getOperand2());
+        $output .= $expr->isNegated() ? ' NOT LIKE ' : ' LIKE ';
+        $output .= $this->compileComparable($expr->getOperand2());
         return $output;
     }
 
-    protected function compileInExpression(InExpression $expr) : string
+    protected function compileInExpression(InExpression $expr): string
     {
         $output = $this->compileComparable($expr->getOperand1());
-        $output.= $expr->isNegated() ? ' NOT IN ' : ' IN ';
-        $output.= $this->compileComparable($expr->getOperand2());
+        $output .= $expr->isNegated() ? ' NOT IN ' : ' IN ';
+        $output .= $this->compileComparable($expr->getOperand2());
         return $output;
     }
 
-    protected function compileNullExpression(NullExpression $expr) : string
+    protected function compileNullExpression(NullExpression $expr): string
     {
         $output = $this->compileComparable($expr->getOperand());
-        $output.= $expr->isNegated() ? ' IS NOT NULL' : ' IS NULL';
+        $output .= $expr->isNegated() ? ' IS NOT NULL' : ' IS NULL';
         return $output;
     }
 
-    protected function compileBetweenExpression(BetweenExpression $expr) : string
+    protected function compileBetweenExpression(BetweenExpression $expr): string
     {
         $output = $this->compileComparable($expr->getOperand1());
-        $output.= $expr->isNegated() ? ' NOT BETWEEN ' : ' BETWEEN ';
-        $output.= $this->compileComparable($expr->getOperand2());
-        $output.= ' AND ';
-        $output.= $this->compileComparable($expr->getOperand3());
-        return $output;
-    }
-    
-    protected function compileRegexpExpression(RegexpExpression $expr) : string
-    {
-        $output = $this->compileComparable($expr->getOperand1());
-        $output.= $expr->isNegated() ? ' NOT REGEXP ' : ' REGEXP ';
-        $output.= $this->compileComparable($expr->getOperand2());
+        $output .= $expr->isNegated() ? ' NOT BETWEEN ' : ' BETWEEN ';
+        $output .= $this->compileComparable($expr->getOperand2());
+        $output .= ' AND ';
+        $output .= $this->compileComparable($expr->getOperand3());
         return $output;
     }
 
-    protected function compileComparable(ComparableComponentInterface $comp) : string
+    protected function compileRegexpExpression(RegexpExpression $expr): string
+    {
+        $output = $this->compileComparable($expr->getOperand1());
+        $output .= $expr->isNegated() ? ' NOT REGEXP ' : ' REGEXP ';
+        $output .= $this->compileComparable($expr->getOperand2());
+        return $output;
+    }
+
+    protected function compileComparable(ComparableComponentInterface $comp): string
     {
         if ($comp instanceof Column) {
             return $this->compileColumn($comp);
@@ -390,12 +390,12 @@ class QueryCompiler implements QueryCompilerInterface
         return $this->compileValue($comp);
     }
 
-    protected function compileColumn(Column $column) : string
+    protected function compileColumn(Column $column): string
     {
         $alias = $column->getAlias();
         $output = $this->compileColumnSource($column->getColumn(), $column->getTable());
         if (isset($alias)) {
-            $output.= ' AS '.$this->compileColumnAlias($column->getAlias());
+            $output .= ' AS ' . $this->compileColumnAlias($column->getAlias());
         }
         return $output;
     }
@@ -403,21 +403,21 @@ class QueryCompiler implements QueryCompilerInterface
     protected function compileColumnSource($source, ?string $table)
     {
         if ($source instanceof SelectQuery) {
-            return '('.$this->compileSelect($source).')';
+            return '(' . $this->compileSelect($source) . ')';
         }
         if ($source instanceof SqlFunction) {
             return $this->compileFunction($source);
         }
         if ($source instanceof ComparableComponentInterface) {
-            return '('.$this->compileComparable($source).')';
+            return '(' . $this->compileComparable($source) . ')';
         }
-        $output = isset($table) ? $this->compileColumnTable($table).'.' : '';
+        $output = isset($table) ? $this->compileColumnTable($table) . '.' : '';
         if ($source instanceof SqlRaw) {
-            $output.= $source->getContent();
+            $output .= $source->getContent();
         } elseif ($source === '*') {
-            $output.= '*';
+            $output .= '*';
         } else {
-            $output.= $this->compileColumnName($source);
+            $output .= $this->compileColumnName($source);
         }
         return $output;
     }
@@ -439,9 +439,9 @@ class QueryCompiler implements QueryCompilerInterface
 
     protected function compileFunction(SqlFunction $function)
     {
-        $output = $function->getName().'(';
+        $output = $function->getName() . '(';
         $args = [];
-        foreach($function->getArgs() as $arg) {
+        foreach ($function->getArgs() as $arg) {
             if ($arg instanceof ComparableComponentInterface) {
                 $args[] = $this->compileComparable($arg);
                 continue;
@@ -451,19 +451,19 @@ class QueryCompiler implements QueryCompilerInterface
                 continue;
             }
         }
-        return $output.implode(', ', $args).')';
+        return $output . implode(', ', $args) . ')';
     }
 
-    protected function compileValue(SqlValue $value) : string
+    protected function compileValue(SqlValue $value): string
     {
         if ($value instanceof SqlValueArray) {
             $vals = [];
             foreach ($value->getValue() as $val) {
-                $vals[] = ':'.$this->addValue($val);
+                $vals[] = ':' . $this->addValue($val);
             }
-            return '('.join(', ', $vals).')';
+            return '(' . join(', ', $vals) . ')';
         }
-        return ':'.$this->addValue($value->getValue());
+        return ':' . $this->addValue($value->getValue());
     }
 
     protected function compileOrderBy(SortableInterface $sortable)
@@ -480,11 +480,11 @@ class QueryCompiler implements QueryCompilerInterface
             $mode = $ob[1];
             $orders[] = "{$this->compileComparable($col)} {$mode}";
         }
-        $output.= implode(', ', $orders);
+        $output .= implode(', ', $orders);
         return $output;
     }
 
-    protected function compileGroupBy(SelectQuery $select) : string
+    protected function compileGroupBy(SelectQuery $select): string
     {
         $groupBy = $select->getGroupBy();
         if (empty($groupBy)) {
@@ -496,18 +496,20 @@ class QueryCompiler implements QueryCompilerInterface
         foreach ($groupBy as $g) {
             $groups[] = $this->compileComparable($g);
         }
-        $output.= implode(', ', $groups);
+        $output .= implode(', ', $groups);
         return $output;
     }
 
     protected function compileLimit(LimitableInterface $limitable)
     {
         $limit = $limitable->getLimit();
-        if (is_null($limit)) return '';
+        if (is_null($limit)) {
+            return '';
+        }
         $offset = $limitable->getLimitOffset();
 
-        $output = ' LIMIT '.$limit;
-        $output.= $offset > 0 ? ', '.$offset : '';
+        $output = ' LIMIT ' . $limit;
+        $output .= $offset > 0 ? ', ' . $offset : '';
         return $output;
     }
 }

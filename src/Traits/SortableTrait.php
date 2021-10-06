@@ -9,7 +9,7 @@ trait SortableTrait
 {
     private $orderBy = [];
 
-    public function orderBy($column, $mode='ASC')
+    public function orderBy($column, $mode = 'ASC')
     {
         if (is_array($column)) {
             foreach ($column as $k => $v) {
@@ -28,7 +28,7 @@ trait SortableTrait
         return $this;
     }
 
-    public function getOrderBy() : array
+    public function getOrderBy(): array
     {
         return $this->orderBy;
     }

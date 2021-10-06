@@ -16,16 +16,16 @@ class AbstractResult implements QueryResultInterface
         $this->success = $success;
     }
 
-    public function success() : bool
+    public function success(): bool
     {
         return $this->success;
     }
 
-    public function getQuery() : CompiledQuery
+    public function getQuery(): CompiledQuery
     {
         return $this->query;
     }
-    public function getNumRows() : int
+    public function getNumRows(): int
     {
         return $this->numRows;
     }

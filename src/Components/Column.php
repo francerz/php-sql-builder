@@ -5,7 +5,6 @@ namespace Francerz\SqlBuilder\Components;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\SelectQuery;
 use InvalidArgumentException;
-use SNMP;
 
 class Column implements ComparableComponentInterface
 {
@@ -45,7 +44,7 @@ class Column implements ComparableComponentInterface
 
         return new static($column, $alias, $table);
     }
-    public static function fromArray(array $array, ?string $table = null) : array
+    public static function fromArray(array $array, ?string $table = null): array
     {
         $arr = [];
 

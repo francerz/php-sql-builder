@@ -9,7 +9,7 @@ use Francerz\SqlBuilder\Components\TableReference;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use LogicException;
 
-Trait JoinableTrait
+trait JoinableTrait
 {
     protected $joins = [];
     protected $lastJoin;
@@ -27,7 +27,7 @@ Trait JoinableTrait
     }
     public function crossJoin($table, ?array $columns = [])
     {
-        return $this->join($table, $columns, JoinTypes::CROSS_JOIN);   
+        return $this->join($table, $columns, JoinTypes::CROSS_JOIN);
     }
     public function innerJoin($table, ?array $columns = [])
     {
@@ -76,7 +76,7 @@ Trait JoinableTrait
         return isset($this->joins[$aliasOrName]);
     }
 
-    public function on() : ConditionList
+    public function on(): ConditionList
     {
         if (!$this->lastJoin instanceof Join) {
             throw new LogicException('Cannot use \'on\' clause without join.');

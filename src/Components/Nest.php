@@ -8,10 +8,18 @@ use Francerz\SqlBuilder\Nesting\RowProxy;
 
 class Nest
 {
-    private $alias, $nested, $callback, $rowProxy, $mode;
+    private $alias;
+    private $nested;
+    private $callback;
+    private $rowProxy;
+    private $mode;
 
-    public function __construct(string $alias, callable $callback, ?NestedSelect $nested = null, $mode = NestMode::COLLECTION)
-    {
+    public function __construct(
+        string $alias,
+        callable $callback,
+        ?NestedSelect $nested = null,
+        $mode = NestMode::COLLECTION
+    ) {
         $this->alias = $alias;
         $this->callback = $callback;
         $this->nested = $nested;
@@ -39,7 +47,7 @@ class Nest
         return $this->nested;
     }
 
-    public function getRowProxy() : ?RowProxy
+    public function getRowProxy(): ?RowProxy
     {
         return $this->rowProxy;
     }

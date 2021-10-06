@@ -48,15 +48,16 @@ class ConditionList implements
 
     private function setMode($mode)
     {
-        if (!in_array($mode, array(
-            ComparisonModes::COLUMN_COLUMN,
-            ComparisonModes::COLUMN_VALUE,
-            ComparisonModes::VALUE_COLUMN,
-            ComparisonModes::VALUE_VALUE
-        ))) {
-            throw new InvalidArgumentException('Invalid condition mode.');
+        switch ($mode) {
+            case ComparisonModes::COLUMN_COLUMN:
+            case ComparisonModes::COLUMN_VALUE:
+            case ComparisonModes::VALUE_COLUMN:
+            case ComparisonModes::VALUE_VALUE:
+                $this->mode = $mode;
+                break;
+            default:
+                throw new InvalidArgumentException('Invalid condition mode.');
         }
-        $this->mode = $mode;
     }
 
     public function getMode()
@@ -77,7 +78,7 @@ class ConditionList implements
     {
         reset($this->conditions);
     }
-    public function current() : ConditionItem
+    public function current(): ConditionItem
     {
         return current($this->conditions);
     }
@@ -89,7 +90,7 @@ class ConditionList implements
     {
         return key($this->conditions);
     }
-    public function valid() : bool
+    public function valid(): bool
     {
         return key($this->conditions) !== null;
     }
@@ -120,7 +121,7 @@ class ConditionList implements
         unset($this->conditions[$offset]);
     }
 
-    public function add(ConditionItem $item) : ConditionList
+    public function add(ConditionItem $item): ConditionList
     {
         $this->conditions[] = $item;
         return $this;
@@ -132,9 +133,11 @@ class ConditionList implements
             return $operand;
         }
         switch ($this->mode) {
-            case ComparisonModes::COLUMN_COLUMN: case ComparisonModes::COLUMN_VALUE:
+            case ComparisonModes::COLUMN_COLUMN:
+            case ComparisonModes::COLUMN_VALUE:
                 return Query::column($operand);
-            case ComparisonModes::VALUE_COLUMN: case ComparisonModes::VALUE_VALUE:
+            case ComparisonModes::VALUE_COLUMN:
+            case ComparisonModes::VALUE_VALUE:
                 return Query::value($operand);
         }
     }
@@ -144,9 +147,11 @@ class ConditionList implements
             return $operand;
         }
         switch ($this->mode) {
-            case ComparisonModes::COLUMN_COLUMN: case ComparisonModes::VALUE_COLUMN:
+            case ComparisonModes::COLUMN_COLUMN:
+            case ComparisonModes::VALUE_COLUMN:
                 return Query::column($operand);
-            case ComparisonModes::COLUMN_VALUE: case ComparisonModes::VALUE_VALUE:
+            case ComparisonModes::COLUMN_VALUE:
+            case ComparisonModes::VALUE_VALUE:
                 return Query::value($operand);
         }
     }
@@ -158,9 +163,18 @@ class ConditionList implements
         $operand2 = $this->coarseModeSecond($operand2);
         return new RelationalExpression($operand1, $operand2, $operator);
     }
-    public function addRelational($operand1, $operand2, $operator = RelationalOperators::EQUALS, $connector = LogicConnectors::AND)
-    {
-        return $this->add(new ConditionItem($this->genRelationalExpression($operand1, $operand2, $operator), $connector));
+    public function addRelational(
+        $operand1,
+        $operand2,
+        $operator = RelationalOperators::EQUALS,
+        $connector = LogicConnectors::AND
+    ) {
+        return $this->add(
+            new ConditionItem(
+                $this->genRelationalExpression($operand1, $operand2, $operator),
+                $connector
+            )
+        );
     }
 
     #region Relational operators with operator
@@ -240,7 +254,7 @@ class ConditionList implements
         return $this->notEquals($operand1, $operand2, LogicConnectors::OR);
     }
     #endregion
-    
+
     #endregion
 
     #region LIKE
@@ -254,7 +268,7 @@ class ConditionList implements
     {
         return $this->add(new ConditionItem($this->genLikeExpression($operand1, $operand2, $negated), $connector));
     }
-    
+
     #region LIKE with connector and negation
     public function notLike($operand1, $operand2)
     {
@@ -278,7 +292,7 @@ class ConditionList implements
     }
     #endregion
 
-    #endregion 
+    #endregion
 
     #region REGEXP
     private function genRegexpExpression($value, $pattern, $negated = false)
@@ -349,7 +363,7 @@ class ConditionList implements
     {
         return $this->null($value, true, LogicConnectors::OR);
     }
-    #endregion 
+    #endregion
 
     #endregion
 
@@ -358,7 +372,7 @@ class ConditionList implements
     {
         $expression = $this->coarseModeFirst($expression);
         $value = $value instanceof SqlValue ? $value : Query::value($value);
-        return $this->addExpression(function($conditions) use ($expression, $value) {
+        return $this->addExpression(function ($conditions) use ($expression, $value) {
             $conditions->equals($expression, $value);
             $conditions->orNull($expression);
         }, false, $connector);
@@ -388,7 +402,12 @@ class ConditionList implements
     }
     public function between($value, $minVal, $maxVal, $negated = false, $connector = LogicConnectors::AND)
     {
-        return $this->add(new ConditionItem($this->genBetweenExpression($value, $minVal, $maxVal, $negated), $connector));
+        return $this->add(
+            new ConditionItem(
+                $this->genBetweenExpression($value, $minVal, $maxVal, $negated),
+                $connector
+            )
+        );
     }
 
     #region BETWEEN with connector and negation
@@ -413,7 +432,7 @@ class ConditionList implements
         return $this->between($value, $minVal, $maxVal, true, LogicConnectors::OR);
     }
     #endregion
-    
+
     #endregion
 
     #region IN
@@ -510,7 +529,9 @@ class ConditionList implements
 
     private function multiArgsToExpression($args)
     {
-        if (empty($args)) return null;
+        if (empty($args)) {
+            return null;
+        }
 
         if (count($args) == 1) {
             return reset($args);

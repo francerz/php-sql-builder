@@ -2,12 +2,9 @@
 
 namespace Francerz\SqlBuilder;
 
-use Francerz\Http\Uri;
 use Francerz\Http\Utils\UriHelper;
 use Francerz\SqlBuilder\Driver\DriverInterface;
-use LogicException;
 use Psr\Http\Message\UriInterface;
-use SebastianBergmann\CodeCoverage\Driver\Driver;
 
 class ConnectParams
 {
@@ -93,7 +90,7 @@ class ConnectParams
     {
         $this->host = $host;
     }
-    public function getHost() : string
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -101,7 +98,7 @@ class ConnectParams
     {
         $this->user = $user;
     }
-    public function getUser() : ?string
+    public function getUser(): ?string
     {
         return $this->user;
     }
@@ -109,7 +106,7 @@ class ConnectParams
     {
         $this->password = $password;
     }
-    public function getPassword() : ?string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -117,7 +114,7 @@ class ConnectParams
     {
         $this->database = $database;
     }
-    public function getDatabase() : ?string
+    public function getDatabase(): ?string
     {
         return $this->database;
     }
@@ -126,7 +123,7 @@ class ConnectParams
     {
         $this->port = $port;
     }
-    public function getPort() : ?int
+    public function getPort(): ?int
     {
         return $this->port;
     }
@@ -135,7 +132,7 @@ class ConnectParams
     {
         $this->encoding = $encoding;
     }
-    public function getEncoding() : ?string
+    public function getEncoding(): ?string
     {
         return $this->encoding;
     }

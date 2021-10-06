@@ -2,7 +2,6 @@
 
 namespace Francerz\SqlBuilder\Expressions\Comparison;
 
-use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\NegatableInterface;
 use Francerz\SqlBuilder\Expressions\ThreeOperandsInterface;

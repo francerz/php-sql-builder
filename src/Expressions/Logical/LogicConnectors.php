@@ -4,6 +4,6 @@ namespace Francerz\SqlBuilder\Expressions\Logical;
 
 interface LogicConnectors
 {
-    const AND = 'AND';
-    const OR = 'OR';
+    public const AND = 'AND';
+    public const OR = 'OR';
 }

@@ -6,5 +6,5 @@ use Francerz\SqlBuilder\QueryInterface;
 
 interface QueryTranslatorInterface
 {
-    public function translateQuery(QueryInterface $query) : QueryInterface;
+    public function translateQuery(QueryInterface $query): QueryInterface;
 }

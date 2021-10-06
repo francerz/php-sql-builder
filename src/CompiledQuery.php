@@ -17,12 +17,12 @@ class CompiledQuery
         $this->queryObj = $queryObj;
     }
 
-    public function getQuery() : string
+    public function getQuery(): string
     {
         return $this->query;
     }
 
-    public function getValues() : array
+    public function getValues(): array
     {
         return $this->values;
     }

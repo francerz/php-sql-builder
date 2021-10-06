@@ -4,12 +4,13 @@ namespace Francerz\SqlBuilder\Components;
 
 class Set
 {
-    private $column, $value;
+    private $column;
+    private $value;
 
     public function __construct(Column $column, $value)
     {
         $this->column = $column;
-        $this->value = $value;    
+        $this->value = $value;
     }
 
     public function getColumn()
