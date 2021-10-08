@@ -18,7 +18,7 @@ class SelectResult extends AbstractResult implements
     JsonSerializable
 {
     private $rows;
-    
+
     public function __construct(CompiledQuery $query, array $rows, bool $success = true)
     {
         parent::__construct($query, count($rows), $success);

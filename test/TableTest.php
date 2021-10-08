@@ -27,7 +27,8 @@ class TableTest extends TestCase
 
     public function testCreateFromCallable()
     {
-        $table = Table::fromExpression('t1',function($q){});
+        $table = Table::fromExpression('t1', function ($q) {
+        });
         $this->assertInstanceOf(SelectQuery::class, $table->getSource());
         $this->assertEquals('t1', $table->getAlias());
     }
@@ -38,16 +39,17 @@ class TableTest extends TestCase
         $this->assertEquals('table1', $table->getSource());
         $this->assertNull($table->getAlias());
 
-        $table = Table::fromExpression(['t1'=>'table1']);
+        $table = Table::fromExpression(['t1' => 'table1']);
         $this->assertEquals('table1', $table->getSource());
         $this->assertEquals('t1', $table->getAlias());
 
         $query = new SelectQuery();
-        $table = Table::fromExpression(['t1'=>$query]);
+        $table = Table::fromExpression(['t1' => $query]);
         $this->assertEquals($query, $table->getSource());
         $this->assertEquals('t1', $table->getAlias());
 
-        $table = Table::fromExpression(['t1'=>function($q){}]);
+        $table = Table::fromExpression(['t1' => function ($q) {
+        }]);
         $this->assertInstanceOf(SelectQuery::class, $table->getSource());
         $this->assertEquals('t1', $table->getAlias());
     }

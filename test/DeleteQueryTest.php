@@ -16,10 +16,10 @@ class DeleteQueryTest extends TestCase
 
     public function testDeleteCase()
     {
-        $query = Query::deleteFrom('table1', ['key'=>15]);
+        $query = Query::deleteFrom('table1', ['key' => 15]);
         $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals('DELETE FROM table1 WHERE key = :v1', $compiled->getQuery());
-        $this->assertEquals(['v1'=>15], $compiled->getValues());
+        $this->assertEquals(['v1' => 15], $compiled->getValues());
     }
 }

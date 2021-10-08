@@ -18,7 +18,7 @@ class DriverManager
         static::$drivers[$name] = $driver;
     }
 
-    public static function getDriver(string $name) : ?DriverInterface
+    public static function getDriver(string $name): ?DriverInterface
     {
         if (array_key_exists($name, static::$drivers)) {
             return static::$drivers[$name];
@@ -33,7 +33,7 @@ class DriverManager
      * @return string|null Returns the name of registered driver. Returns
      * **NULL** if driver is not registered.
      */
-    public static function getDriverName(DriverInterface $driver) : ?string
+    public static function getDriverName(DriverInterface $driver): ?string
     {
         $name = array_keys(static::$drivers, $driver, true);
         return empty($name) ? null : reset($name);

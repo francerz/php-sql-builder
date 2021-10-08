@@ -14,13 +14,13 @@ use PHPUnit\Framework\TestCase;
 
 class SelectNestableTest extends TestCase
 {
-    public function getGroupsQuery() 
+    public function getGroupsQuery()
     {
         /*
             SQL:
             SELECT g.group_id, g.subject, g.teacher FROM groups AS g WHERE g.group_id IN (3, 7 , 11)
         */
-        $query = Query::selectFrom(['g'=>'groups'], ['group_id', 'subject', 'teacher']);
+        $query = Query::selectFrom(['g' => 'groups'], ['group_id', 'subject', 'teacher']);
         $query->where()->in('g.group_id', [3, 7, 11]);
 
         /*
@@ -30,11 +30,11 @@ class SelectNestableTest extends TestCase
             INNER JOIN groups_students AS gs ON s.student_id = gs.student_id
             WHERE gs.group_id IN (3, 7, 11)
         */
-        $studentsQuery = Query::selectFrom(['s'=>'students']);
-        $query->nest(['Students'=>$studentsQuery], function(NestedSelect $nest, RowProxy $row) {
+        $studentsQuery = Query::selectFrom(['s' => 'students']);
+        $query->nest(['Students' => $studentsQuery], function (NestedSelect $nest, RowProxy $row) {
             // common structure for nesting,
             $nest->getSelect()
-                ->innerJoin(['gs'=>'groups_students'],['group_id'])
+                ->innerJoin(['gs' => 'groups_students'], ['group_id'])
                 ->on()->equals('s.student_id', 'gs.student_id');
 
             // result varies per $row values.
@@ -49,9 +49,9 @@ class SelectNestableTest extends TestCase
     {
         $compiler = new QueryCompiler();
         $grupos = array(
-            ["group_id"=>3],
-            ["group_id"=>7],
-            ["group_id"=>11]
+            ["group_id" => 3],
+            ["group_id" => 7],
+            ["group_id" => 11]
         );
         return new SelectResult(
             $compiler->compileQuery($query),
@@ -63,10 +63,10 @@ class SelectNestableTest extends TestCase
     {
         $compiler = new QueryCompiler();
         $students = array(
-            ['group_id'=> 3, 'student_id'=>13, 'name'=>'John Doe'],
-            ['group_id'=>11, 'student_id'=>17, 'name'=>'Janne Doe'],
-            ['group_id'=> 7, 'student_id'=>19, 'name'=>'James Doe'],
-            ['group_id'=> 7, 'student_id'=>23, 'name'=>'Judy Doe']
+            ['group_id' => 3, 'student_id' => 13, 'name' => 'John Doe'],
+            ['group_id' => 11, 'student_id' => 17, 'name' => 'Janne Doe'],
+            ['group_id' => 7, 'student_id' => 19, 'name' => 'James Doe'],
+            ['group_id' => 7, 'student_id' => 23, 'name' => 'Judy Doe']
         );
         return new SelectResult(
             $compiler->compileQuery($query),
@@ -78,15 +78,15 @@ class SelectNestableTest extends TestCase
     {
         $compiler = new QueryCompiler();
         $groups = array(
-            ["group_id"=>3,'Students'=>[
-                ['group_id'=> 3, 'student_id'=>13, 'name'=>'John Doe']
+            ["group_id" => 3, 'Students' => [
+                ['group_id' => 3, 'student_id' => 13, 'name' => 'John Doe']
             ]],
-            ["group_id"=>7,'Students'=>[
-                ['group_id'=> 7, 'student_id'=>19, 'name'=>'James Doe'],
-                ['group_id'=> 7, 'student_id'=>23, 'name'=>'Judy Doe']
+            ["group_id" => 7, 'Students' => [
+                ['group_id' => 7, 'student_id' => 19, 'name' => 'James Doe'],
+                ['group_id' => 7, 'student_id' => 23, 'name' => 'Judy Doe']
             ]],
-            ["group_id"=>11,'Students'=>[
-                ['group_id'=>11, 'student_id'=>17, 'name'=>'Janne Doe']
+            ["group_id" => 11, 'Students' => [
+                ['group_id' => 11, 'student_id' => 17, 'name' => 'Janne Doe']
             ]]
         );
         return new SelectResult(
@@ -110,14 +110,14 @@ class SelectNestableTest extends TestCase
         $nest = $nests[0];
         if (!$nest instanceof Nest) return;
 
-        $nested= $nest->getNested();
+        $nested = $nest->getNested();
         $nestSelect = $nested->getSelect();
         $nestTranslate = $nestTranslator->translate($nestSelect, $groups);
 
         $nestCompiled = $compiler->compileQuery($nestTranslate);
         $expected = 'SELECT s.*, gs.group_id FROM students AS s INNER JOIN groups_students AS gs ON s.student_id = gs.student_id WHERE gs.group_id IN (:v1, :v2, :v3)';
         $this->assertEquals($expected, $nestCompiled->getQuery());
-        $this->assertEquals(['v1'=>3,'v2'=>7,'v3'=>11], $nestCompiled->getValues());
+        $this->assertEquals(['v1' => 3, 'v2' => 7, 'v3' => 11], $nestCompiled->getValues());
 
         $students = $this->getStudentsExpectedResult($nestTranslate);
 

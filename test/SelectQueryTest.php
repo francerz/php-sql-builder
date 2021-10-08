@@ -37,20 +37,20 @@ class SelectQueryTest extends TestCase
     {
         $id_carrera = 6;
 
-        $query = Query::selectFrom(new Table('grupos','g','siitecdb'));
+        $query = Query::selectFrom(new Table('grupos', 'g', 'siitecdb'));
         $query
-            ->innerJoin(['a'=>'asignaturas'])
+            ->innerJoin(['a' => 'asignaturas'])
             ->on()->equals('a.id_asignatura', 'g.id_asignatura');
         $query
-            ->innerJoin(['p'=>'periodos'])
+            ->innerJoin(['p' => 'periodos'])
             ->on()->equals('p.id_periodo', 'g.id_periodo');
         $query
-            ->leftJoin(['pe'=>'planes_estudios'])
+            ->leftJoin(['pe' => 'planes_estudios'])
             ->on()->equals('pe.id_plan_estudio', 'g.id_plan_estudio');
-        
+
         $query->where()
             ->between(Query::value(date('Y-m-d')), Query::column('p.inicio'), Query::column('p.fin'))
-            ->and(function(ConditionList $where) use ($id_carrera) {
+            ->and(function (ConditionList $where) use ($id_carrera) {
                 $where
                     ->equals('pe.id_carrera', $id_carrera)
                     ->orNull('pe.id_plan_estudio');
@@ -60,9 +60,9 @@ class SelectQueryTest extends TestCase
 
         $query->columns([
             'nombre' => Q::f('COALESCE', Q::c('g.nombre'), Q::c('a.nombre')),
-            'other' => Q::f('IF',Q::cond()->null('g.base_grupo_id'), 0, 1)
+            'other' => Q::f('IF', Q::cond()->null('g.base_grupo_id'), 0, 1)
         ]);
-        
+
         $expected = "SELECT
             COALESCE(g.nombre, a.nombre) AS nombre,
             IF((g.base_grupo_id IS NULL), :v1, :v2) AS other,
@@ -82,14 +82,20 @@ class SelectQueryTest extends TestCase
         ORDER BY g.id_grupo ASC";
 
         $compiled = $this->compiler->compileQuery($query);
-        
-        $this->assertEquals(['v1'=>0,'v2'=>1,'v3'=>date('Y-m-d'),'v4'=>$id_carrera,'v5'=>$id_carrera], $compiled->getValues());
-        $this->assertEquals(preg_replace('/\s+/',' ', $expected), $compiled->getQuery());
+
+        $this->assertEquals([
+            'v1' => 0,
+            'v2' => 1,
+            'v3' => date('Y-m-d'),
+            'v4' => $id_carrera,
+            'v5' => $id_carrera
+        ], $compiled->getValues());
+        $this->assertEquals(preg_replace('/\s+/', ' ', $expected), $compiled->getQuery());
     }
 
     public function testCompilingTest()
     {
-        $query = Query::selectFrom(['t'=>'table']);
+        $query = Query::selectFrom(['t' => 'table']);
         $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t', $compiled->getQuery());
@@ -97,7 +103,7 @@ class SelectQueryTest extends TestCase
 
         // --------
 
-        $query->crossJoin(['t2'=>'table2']);
+        $query->crossJoin(['t2' => 'table2']);
         $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t, table2 AS t2', $compiled->getQuery());
@@ -106,15 +112,15 @@ class SelectQueryTest extends TestCase
         // --------
 
         $subquery = Query::selectFrom('table_a AS a');
-        $query->innerJoin(['t3'=>$subquery])->on()
-            ->equals('t3.col','t2.col')
-            ->andLessEquals('t3.col2','t.c');
+        $query->innerJoin(['t3' => $subquery])->on()
+            ->equals('t3.col', 't2.col')
+            ->andLessEquals('t3.col2', 't.c');
         $compiled = $this->compiler->compileQuery($query);
 
         $this->assertEquals(
-            'SELECT t.* FROM table AS t, table2 AS t2 '.
-            'INNER JOIN (SELECT a.* FROM table_a AS a) AS t3 '.
-            'ON t3.col = t2.col AND t3.col2 <= t.c',
+            'SELECT t.* FROM table AS t, table2 AS t2 ' .
+                'INNER JOIN (SELECT a.* FROM table_a AS a) AS t3 ' .
+                'ON t3.col = t2.col AND t3.col2 <= t.c',
             $compiled->getQuery()
         );
         $this->assertEquals([], $compiled->getValues());
@@ -124,25 +130,25 @@ class SelectQueryTest extends TestCase
         $query->where()->notBetween('t.alpha', 16, 80);
         $compiled = $this->compiler->compileQuery($query);
 
-        $expected = "SELECT t.* FROM table AS t, table2 AS t2 
-            INNER JOIN (SELECT a.* FROM table_a AS a) AS t3 
-            ON t3.col = t2.col AND t3.col2 <= t.c 
+        $expected = "SELECT t.* FROM table AS t, table2 AS t2
+            INNER JOIN (SELECT a.* FROM table_a AS a) AS t3
+            ON t3.col = t2.col AND t3.col2 <= t.c
             WHERE t.alpha NOT BETWEEN :v1 AND :v2";
 
         $this->assertEquals(preg_replace('/\s+/', ' ', $expected), $compiled->getQuery());
-        $this->assertEquals(['v1'=>16,'v2'=>80], $compiled->getValues());
+        $this->assertEquals(['v1' => 16, 'v2' => 80], $compiled->getValues());
     }
 
     public function testWhereArgs()
     {
         $query = Query::selectFrom('groups');
 
-        $query->where(function(ConditionList $where) {
+        $query->where(function (ConditionList $where) {
             $where->in('group_id', [3, 5, 7, 11]);
         });
-        $query->where('a','b')
-            ->and('c','NULL')
-            ->or('d','BETWEEN','e', 'f');
+        $query->where('a', 'b')
+            ->and('c', 'NULL')
+            ->or('d', 'BETWEEN', 'e', 'f');
 
         $compiled = $this->compiler->compileQuery($query);
 

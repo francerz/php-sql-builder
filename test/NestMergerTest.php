@@ -16,22 +16,22 @@ class NestMergerTest extends TestCase
         $nested = Query::selectFrom('table2');
         $nested->where()->lessEquals('childId', 4);
 
-        $query->nest(['Nest'=>$nested], function(NestedSelect $nest, RowProxy $row) {
+        $query->nest(['Nest' => $nested], function (NestedSelect $nest, RowProxy $row) {
             $nest->getSelect()->where('childCol', $row->parentId);
         });
 
-        $parents = new SelectResult(new CompiledQuery('',[], $query), json_decode(json_encode(array(
-            ['parentId'=>1],
-            ['parentId'=>2],
-            ['parentId'=>3],
-            ['parentId'=>1]
+        $parents = new SelectResult(new CompiledQuery('', [], $query), json_decode(json_encode(array(
+            ['parentId' => 1],
+            ['parentId' => 2],
+            ['parentId' => 3],
+            ['parentId' => 1]
         ))));
 
-        $children = new SelectResult(new CompiledQuery('',[], $query), json_decode(json_encode(array(
-            ['childId'=>1, 'childCol'=>2],
-            ['childId'=>2, 'childCol'=>1],
-            ['childId'=>3, 'childCol'=>1],
-            ['childId'=>4, 'childCol'=>3]
+        $children = new SelectResult(new CompiledQuery('', [], $query), json_decode(json_encode(array(
+            ['childId' => 1, 'childCol' => 2],
+            ['childId' => 2, 'childCol' => 1],
+            ['childId' => 3, 'childCol' => 1],
+            ['childId' => 4, 'childCol' => 3]
         ))));
 
         $merger = new NestMerger();

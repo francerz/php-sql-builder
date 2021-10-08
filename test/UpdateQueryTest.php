@@ -1,7 +1,6 @@
 <?php
 
 use Francerz\SqlBuilder\Driver\QueryCompiler;
-use Francerz\SqlBuilder\GenericCompiler;
 use Francerz\SqlBuilder\Query;
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +11,7 @@ class UpdateQueryTest extends TestCase
     public function __construct()
     {
         parent::__construct();
-        $this->compiler = new QueryCompiler();    
+        $this->compiler = new QueryCompiler();
     }
 
     public function testUpdateSimple()
@@ -22,7 +21,7 @@ class UpdateQueryTest extends TestCase
         $obj->attr2 = 'bravo';
         $obj->pk_id = 123;
 
-        $query = Query::update(['t1'=>'table'], $obj, ['pk_id']);
+        $query = Query::update(['t1' => 'table'], $obj, ['pk_id']);
 
         $compiled = $this->compiler->compileQuery($query);
 
@@ -31,7 +30,7 @@ class UpdateQueryTest extends TestCase
             $compiled->getQuery()
         );
 
-        $query = Query::update(['t1'=>'table'], $obj, ['pk_id'], ['attr2']);
+        $query = Query::update(['t1' => 'table'], $obj, ['pk_id'], ['attr2']);
 
         $compiled = $this->compiler->compileQuery($query);
 

@@ -8,11 +8,7 @@ use Francerz\SqlBuilder\Components\SqlRaw;
 use Francerz\SqlBuilder\Components\SqlValue;
 use Francerz\SqlBuilder\Components\SqlValueArray;
 use Francerz\SqlBuilder\Components\Table;
-use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\Comparison\ComparisonModes;
-use Francerz\SqlBuilder\Expressions\Comparison\NullExpression;
-use Francerz\SqlBuilder\Expressions\Comparison\RelationalExpression;
-use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 
 abstract class Query
@@ -25,7 +21,7 @@ abstract class Query
     /**
      * @deprecated v0.3.14
      */
-    public static function c($name) : Column
+    public static function c($name): Column
     {
         return call_user_func_array([Query::class, 'column'], func_get_args());
     }
@@ -36,7 +32,7 @@ abstract class Query
     /**
      * @deprecated v0.3.14
      */
-    public static function v($name) : SqlValue
+    public static function v($name): SqlValue
     {
         return call_user_func_array([Query::class, 'value'], func_get_args());
     }
@@ -47,7 +43,7 @@ abstract class Query
     /**
      * @deprecated v0.3.14
      */
-    public static function a($name) : SqlValueArray
+    public static function a($name): SqlValueArray
     {
         return call_user_func_array([Query::class, 'array'], func_get_args());
     }
@@ -58,7 +54,7 @@ abstract class Query
     /**
      * @deprecated v0.3.14
      */
-    public static function r($content) : SqlRaw
+    public static function r($content): SqlRaw
     {
         return call_user_func_array([Query::class, 'raw'], func_get_args());
     }
@@ -69,7 +65,7 @@ abstract class Query
     /**
      * @deprecated v0.3.14
      */
-    public static function f(string $name, ...$args) : SqlFunction
+    public static function f(string $name, ...$args): SqlFunction
     {
         return call_user_func_array([Query::class, 'func'], func_get_args());
     }
@@ -99,7 +95,7 @@ abstract class Query
     #endregion
 
     #region Conditions
-    public static function cond($mode = ComparisonModes::COLUMN_VALUE) : ConditionList
+    public static function cond($mode = ComparisonModes::COLUMN_VALUE): ConditionList
     {
         $cond = new ConditionList($mode);
         return $cond;
