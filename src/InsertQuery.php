@@ -4,6 +4,9 @@ namespace Francerz\SqlBuilder;
 
 use Countable;
 use Francerz\SqlBuilder\Components\Table;
+use ReflectionClass;
+use ReflectionProperty;
+use stdClass;
 
 class InsertQuery implements QueryInterface, Countable
 {
@@ -53,7 +56,7 @@ class InsertQuery implements QueryInterface, Countable
             return;
         }
         if (is_object($values)) {
-            $values = (array)$values;
+            $values = static::objectAsArray($values);
         }
         if (is_array($columns)) {
             $columns = array_combine($columns, $columns);
@@ -61,6 +64,26 @@ class InsertQuery implements QueryInterface, Countable
         }
         $this->values[] = $values;
         $this->columns = array_unique(array_merge($this->columns, array_keys($values)));
+    }
+
+    private static function objectAsArray(object $obj): array
+    {
+        if ($obj instanceof stdClass) {
+            return (array)$obj;
+        }
+        $classRef = new ReflectionClass($obj);
+        $props = $classRef->getProperties(ReflectionProperty::IS_PUBLIC);
+
+        $arr = [];
+        foreach ($props as $prop) {
+            $name = $prop->getName();
+            $comment = $prop->getDocComment();
+            if (strpos($comment, '@sql-ignore') !== false) {
+                continue;
+            }
+            $arr[$name] = $obj->{$name};
+        }
+        return $arr;
     }
 
     public function getTable(): Table

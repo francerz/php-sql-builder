@@ -8,6 +8,13 @@ Installation
 composer require francerz/sql-builder
 ```
 
+How to use
+---------------------------------------
+
+- [Connect to a database](doc/Connect.md)
+- [Select Query](doc/SelectQuery.md)
+  - [Nesting](doc/SelectNesting.md)
+
 ## Creating `SELECT` query
 
 ```php
@@ -39,8 +46,9 @@ SELECT g.group_id, g.subject, g.teacher FROM groups AS g WHERE g.subject LIKE '%
 `ConditionsList` contains multiple methods each operator:
 
 - **Relative operators:** `equals()`, `notEquals()`, `lessThan()`, `lessEquals()`, `greaterThan()`, `greaterEquals()`.
-  
+
   > Also there are prefixed logic connectors (`and`, `or`) methods like: `andLessThan()`, `orEquals()`.
+
 - **LIKE operator:** `like()`, `notLike()`, `andLike()`, `orLike()`, `andNotLike()` and `orNotLike()`.
 - **IS NULL operator:** `null()`, `notNull()`, `andNull()`, `orNull()`, `andNotNull()` and `orNotNull()`.
 - **BETWEEN operator:** `between()`, `notBetween()`, `andBetween()`, `orBetween()`, `andNotBetween()` and `orNotBetween()`.
@@ -51,7 +59,7 @@ SELECT g.group_id, g.subject, g.teacher FROM groups AS g WHERE g.subject LIKE '%
 Conditions list allows using parentheses expresions by using a nested condition
 inside a callback.
 
-To pass the callback you must use the `__invoke()`, `not()`, `and()`, `or()`, `andNot()` and `orNot()`. 
+To pass the callback you must use the `__invoke()`, `not()`, `and()`, `or()`, `andNot()` and `orNot()`.
 
 ```php
 $query->where()(function($subwhere) {
@@ -81,7 +89,7 @@ Outputs:
 ... WHERE (g.subject = 'Database Fundamentals' OR g.subject IS NULL)
 ```
 
-> **NOTE:**  
+> **NOTE:**
 > The `ConditionsList` object is also available with `JOINS `***`ON`***
 > and `HAVING` clause.
 

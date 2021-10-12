@@ -1,5 +1,6 @@
 <?php
 
+use Francerz\SqlBuilder\Dev\User;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\InsertQuery;
 use Francerz\SqlBuilder\Query;
@@ -92,5 +93,27 @@ class InsertQueryTest extends TestCase
             $compiled->getQuery()
         );
         $this->assertEquals(['v1' => 80, 'v2' => 3213], $compiled->getValues());
+    }
+
+    public function testInsertQueryObjectAsArray()
+    {
+        $user = new User();
+        $user->user_id = 20;
+        $user->username = 'myname';
+        $user->enabled = true;
+        $user->loggedIn = false;
+
+        $refclass = new ReflectionClass(InsertQuery::class);
+        $method = $refclass->getMethod('objectAsArray');
+        $method->setAccessible(true);
+        $actual = $method->invoke(null, $user);
+
+        $expected = [
+            'user_id' => 20,
+            'username' => 'myname',
+            'enabled'   => true
+        ];
+
+        $this->assertEquals($expected, $actual);
     }
 }
