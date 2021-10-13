@@ -1,7 +1,10 @@
 <?php
 
+use Francerz\SqlBuilder\Components\Column;
+use Francerz\SqlBuilder\Dev\User;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Query;
+use Francerz\SqlBuilder\UpdateQuery;
 use PHPUnit\Framework\TestCase;
 
 class UpdateQueryTest extends TestCase
@@ -38,5 +41,24 @@ class UpdateQueryTest extends TestCase
             "UPDATE table AS t1 SET t1.attr2 = :v1 WHERE t1.pk_id = :v2",
             $compiled->getQuery()
         );
+    }
+
+    public function testCreateUpdateWithClass()
+    {
+        $user = new User();
+        $user->user_id = 5;
+        $user->username = 'user';
+        $user->enabled = 1;
+        $user->loggedIn = 0;
+
+        $actual = Query::update('users', $user);
+
+        $expected = new UpdateQuery('users');
+        $expected->set('username', 'user');
+        $expected->set('enabled', 1);
+        $expected->where('users.user_id', 5);
+
+        $this->assertTrue(true);
+        $this->assertEquals($expected, $actual);
     }
 }

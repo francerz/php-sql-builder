@@ -20,19 +20,19 @@ class NestMergerTest extends TestCase
             $nest->getSelect()->where('childCol', $row->parentId);
         });
 
-        $parents = new SelectResult(new CompiledQuery('', [], $query), json_decode(json_encode(array(
-            ['parentId' => 1],
-            ['parentId' => 2],
-            ['parentId' => 3],
-            ['parentId' => 1]
-        ))));
+        $parents = new SelectResult(new CompiledQuery('', [], $query), [
+            (object)['parentId' => 1],
+            (object)['parentId' => 2],
+            (object)['parentId' => 3],
+            (object)['parentId' => 1]
+        ]);
 
-        $children = new SelectResult(new CompiledQuery('', [], $query), json_decode(json_encode(array(
-            ['childId' => 1, 'childCol' => 2],
-            ['childId' => 2, 'childCol' => 1],
-            ['childId' => 3, 'childCol' => 1],
-            ['childId' => 4, 'childCol' => 3]
-        ))));
+        $children = new SelectResult(new CompiledQuery('', [], $query), [
+            (object)['childId' => 1, 'childCol' => 2],
+            (object)['childId' => 2, 'childCol' => 1],
+            (object)['childId' => 3, 'childCol' => 1],
+            (object)['childId' => 4, 'childCol' => 3]
+        ]);
 
         $merger = new NestMerger();
         $merger->merge($parents, $children, $query->getNests()[0]);

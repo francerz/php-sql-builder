@@ -6,12 +6,14 @@ use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Set;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
+use Francerz\SqlBuilder\Helpers\ModelHelper;
 use Francerz\SqlBuilder\Traits\JoinableTrait;
 use Francerz\SqlBuilder\Traits\LimitableInterface;
 use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\Traits\SortableInterface;
 use Francerz\SqlBuilder\Traits\SortableTrait;
 use Francerz\SqlBuilder\Traits\WhereableTrait;
+use ReflectionProperty;
 
 class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterface
 {
@@ -24,7 +26,6 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
 
     private $table;
     private $sets;
-    private $matches = [];
 
     public function __construct($table)
     {
@@ -38,14 +39,19 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
         if (empty($data)) {
             return $query;
         }
-        if (is_object($data)) {
-            $data = (array)$data;
+        if (empty($matching) && empty($columns)) {
+            $matching = array_map(function (ReflectionProperty $prop) {
+                return $prop->getName();
+            }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_SKIP_DEFAULT));
+            $columns = array_map(function (ReflectionProperty $prop) {
+                return $prop->getName();
+            }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_SKIP_KEY));
         }
+        $data = ModelHelper::dataAsArray($data);
         foreach ($data as $k => $v) {
             if (in_array($k, $matching)) {
                 $key = new Column($k, null, $query->getTable()->getAliasOrName());
                 $query->where()->equals($key, $v);
-                $query->matches[$k] = $v;
             }
             if (empty($columns)) {
                 $query->set($k, $v);
@@ -83,10 +89,5 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
     public function getSets()
     {
         return $this->sets;
-    }
-
-    public function getMatches()
-    {
-        return $this->matches;
     }
 }
