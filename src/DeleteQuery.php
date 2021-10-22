@@ -17,11 +17,13 @@ class DeleteQuery implements QueryInterface, LimitableInterface, SortableInterfa
     }
 
     private $table;
+    private $rowsInArray;
 
     public function __construct($table)
     {
         $this->_whereableTraitConstruct();
         $this->setTable($table);
+        $this->rowsInArray = [];
     }
 
     public static function createFiltered($table, $filter = [])
@@ -44,5 +46,15 @@ class DeleteQuery implements QueryInterface, LimitableInterface, SortableInterfa
     public function getTable(): Table
     {
         return $this->table;
+    }
+
+    public function rowsIn(string $table)
+    {
+        $this->rowsInArray[$table];
+    }
+
+    public function getRowsIn()
+    {
+        return $this->rowsInArray;
     }
 }

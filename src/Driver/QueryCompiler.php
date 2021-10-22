@@ -150,6 +150,10 @@ class QueryCompiler implements QueryCompilerInterface
     protected function compileDelete(DeleteQuery $delete): string
     {
         $query = 'DELETE FROM ';
+        $rowsIn = $delete->getRowsIn();
+        if (count($rowsIn) > 0) {
+            $query = 'DELETE ' . join(',', $rowsIn) . ' FROM';
+        }
         $query .= $this->compileTable($delete->getTable());
         foreach ($delete->getJoins() as $join) {
             $query .= $this->compileJoin($join);

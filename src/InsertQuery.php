@@ -5,9 +5,6 @@ namespace Francerz\SqlBuilder;
 use Countable;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Helpers\ModelHelper;
-use ReflectionClass;
-use ReflectionProperty;
-use stdClass;
 
 class InsertQuery implements QueryInterface, Countable
 {
