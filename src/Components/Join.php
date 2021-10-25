@@ -15,25 +15,17 @@ class Join
     public function __construct(TableReference $tableReference, $joinType = JoinTypes::INNER_JOIN)
     {
         $this->tableReference = $tableReference;
-        $this->joinType = $joinType;
+        $this->joinType = JoinTypes::coerce($joinType);
         $this->on = new ConditionList(ComparisonModes::COLUMN_COLUMN);
     }
 
+    /**
+     * @param JoinTypes $joinType
+     * @return void
+     */
     public function setJoinType($joinType)
     {
-        switch ($joinType) {
-            case JoinTypes::CROSS_JOIN:
-            case JoinTypes::INNER_JOIN:
-            case JoinTypes::LEFT_JOIN:
-            case JoinTypes::LEFT_OUTER_JOIN:
-            case JoinTypes::RIGHT_JOIN:
-            case JoinTypes::RIGHT_OUTER_JOIN:
-            case JoinTypes::FULL_OUTER_JOIN:
-                $this->joinType = $joinType;
-                break;
-            default:
-                throw new InvalidArgumentException('Invalid JoinType.');
-        }
+        $this->joinType = JoinTypes::coerce($joinType);
     }
 
     public function getTableReference()

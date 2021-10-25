@@ -23,7 +23,7 @@ class Nest
         $this->alias = $alias;
         $this->callback = $callback;
         $this->nested = $nested;
-        $this->mode = $mode;
+        $this->mode = NestMode::coerce($mode);
     }
 
     public function init()

@@ -23,6 +23,7 @@
     },
     "require": {
         "francerz/php-power-data": "^0.1",
-        "francerz/http": "^0.3"
+        "francerz/http": "^0.3",
+        "francerz/enum": "^0.1.1"
     }
 }

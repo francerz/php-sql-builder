@@ -2,7 +2,9 @@
 
 namespace Francerz\SqlBuilder\Expressions\Comparison;
 
-interface RelationalOperators
+use Francerz\Enum\AbstractEnum;
+
+final class RelationalOperators extends AbstractEnum
 {
     public const EQUALS = '=';
     public const LESS = '<';

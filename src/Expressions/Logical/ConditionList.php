@@ -19,6 +19,7 @@ use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\Components\SqlValue;
 use InvalidArgumentException;
 use Iterator;
+use RuntimeException;
 
 class ConditionList implements
     BooleanResultInterface,
@@ -48,16 +49,7 @@ class ConditionList implements
 
     private function setMode($mode)
     {
-        switch ($mode) {
-            case ComparisonModes::COLUMN_COLUMN:
-            case ComparisonModes::COLUMN_VALUE:
-            case ComparisonModes::VALUE_COLUMN:
-            case ComparisonModes::VALUE_VALUE:
-                $this->mode = $mode;
-                break;
-            default:
-                throw new InvalidArgumentException('Invalid condition mode.');
-        }
+        $this->mode = ComparisonModes::coerce($mode);
     }
 
     public function getMode()
@@ -132,28 +124,30 @@ class ConditionList implements
         if ($operand instanceof ComparableComponentInterface) {
             return $operand;
         }
-        switch ($this->mode) {
-            case ComparisonModes::COLUMN_COLUMN:
-            case ComparisonModes::COLUMN_VALUE:
-                return Query::column($operand);
-            case ComparisonModes::VALUE_COLUMN:
-            case ComparisonModes::VALUE_VALUE:
-                return Query::value($operand);
+
+        if ($this->mode->in([ComparisonModes::COLUMN_COLUMN, ComparisonModes::COLUMN_VALUE])) {
+            return Query::column($operand);
         }
+        if ($this->mode->in([ComparisonModes::VALUE_COLUMN, ComparisonModes::VALUE_VALUE])) {
+            return Query::value($operand);
+        }
+
+        throw new RuntimeException('Failed first operand in condition.');
     }
     private function coarseModeSecond($operand)
     {
         if ($operand instanceof ComparableComponentInterface) {
             return $operand;
         }
-        switch ($this->mode) {
-            case ComparisonModes::COLUMN_COLUMN:
-            case ComparisonModes::VALUE_COLUMN:
-                return Query::column($operand);
-            case ComparisonModes::COLUMN_VALUE:
-            case ComparisonModes::VALUE_VALUE:
-                return Query::value($operand);
+
+        if ($this->mode->in([ComparisonModes::COLUMN_COLUMN, ComparisonModes::VALUE_COLUMN])) {
+            return Query::column($operand);
         }
+        if ($this->mode->in([ComparisonModes::COLUMN_VALUE, ComparisonModes::VALUE_VALUE])) {
+            return Query::value($operand);
+        }
+
+        throw new RuntimeException('Failed second operad in condition.');
     }
 
     #region Relational operators

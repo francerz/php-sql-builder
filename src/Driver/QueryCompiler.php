@@ -200,9 +200,14 @@ class QueryCompiler implements QueryCompilerInterface
         return $output;
     }
 
+    /**
+     * @param JoinTypes $joinType
+     * @return string
+     */
     protected function compileJoinType($joinType): string
     {
-        switch ($joinType) {
+        $joinType = JoinTypes::coerce($joinType);
+        switch ((string)$joinType) {
             case JoinTypes::INNER_JOIN:
                 return ' INNER JOIN ';
             case JoinTypes::LEFT_JOIN:

@@ -21,7 +21,7 @@ trait NestableTrait
      *
      * @param string|array $alias Nest result alias name. Or array like [$alias => $query]
      * @param callable $callback Iterator compare function with parameters (NestedSelect $select, RowProxy $row)
-     * @param NestMode::value $mode Nest iteration mode if result will be Collection, First or Last element.
+     * @param NestMode::value $mode Nest iteration mode will be Collection, First or Last element.
      * @return void
      */
     public function nest($alias, callable $callback, $mode = NestMode::COLLECTION)

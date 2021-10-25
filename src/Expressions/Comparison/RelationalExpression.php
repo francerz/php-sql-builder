@@ -28,7 +28,7 @@ class RelationalExpression implements
     ) {
         $this->operand1 = $operand1;
         $this->operand2 = $operand2;
-        $this->operator = is_null($operator) ? RelationalOperators::EQUALS : $operator;
+        $this->setOperator($operator);
     }
 
     public function setOperand1($operand)
@@ -57,18 +57,9 @@ class RelationalExpression implements
 
     public function setOperator($operator)
     {
-        switch ($operator) {
-            case RelationalOperators::EQUALS:
-            case RelationalOperators::NOT_EQUALS:
-            case RelationalOperators::LESS:
-            case RelationalOperators::LESS_EQUALS:
-            case RelationalOperators::GREATER:
-            case RelationalOperators::GREATER_EQUALS:
-                $this->operator = $operator;
-                break;
-            default:
-                throw new InvalidArgumentException('Invalid operator.');
-        }
+        $this->operator =
+            RelationalOperators::coerce($operator) ??
+            RelationalOperators::fromValue(RelationalOperators::EQUALS);
     }
     public function getOperator()
     {
@@ -87,17 +78,17 @@ class RelationalExpression implements
                 return new InExpression(
                     $this->operand2,
                     NestTranslator::valueProxyToArray($this->operand1, $parentResult),
-                    $this->operator === RelationalOperators::NOT_EQUALS
+                    $this->operator->is(RelationalOperators::NOT_EQUALS)
                 );
             }
             if ($this->operand2 instanceof ValueProxy) {
                 return new InExpression(
                     $this->operand1,
                     NestTranslator::valueProxyToArray($this->operand2, $parentResult),
-                    $this->operator === RelationalOperators::NOT_EQUALS
+                    $this->operator->is(RelationalOperators::NOT_EQUALS)
                 );
             }
-        } elseif (in_array($this->operator, [RelationalOperators::LESS, RelationalOperators::LESS_EQUALS])) {
+        } elseif ($this->operator->in([RelationalOperators::LESS, RelationalOperators::LESS_EQUALS])) {
             if ($this->operand1 instanceof ValueProxy) {
                 $this->operand1 = NestTranslator::valueProxyToMin($this->operand1, $parentResult);
             }
@@ -105,7 +96,7 @@ class RelationalExpression implements
                 $this->operand2 = NestTranslator::valueProxyToMax($this->operand2, $parentResult);
             }
             return $this;
-        } elseif (in_array($this->operator, [RelationalOperators::GREATER, RelationalOperators::GREATER_EQUALS])) {
+        } elseif ($this->operator->in([RelationalOperators::GREATER, RelationalOperators::GREATER_EQUALS])) {
             if ($this->operand1 instanceof ValueProxy) {
                 $this->operand1 = NestTranslator::valueProxyToMax($this->operand1, $parentResult);
             }
@@ -128,7 +119,7 @@ class RelationalExpression implements
         $op1 = $this->operand1->getValue();
         $op2 = $this->operand2->getValue();
 
-        switch ($this->operator) {
+        switch ((string)$this->operator) {
             case RelationalOperators::EQUALS:
                 return $op1 == $op2;
             case RelationalOperators::NOT_EQUALS:

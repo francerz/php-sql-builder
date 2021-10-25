@@ -33,10 +33,7 @@ class ConditionItem
 
     public function setConnector($connector)
     {
-        if (!in_array($connector, [LogicConnectors::AND, LogicConnectors::OR])) {
-            throw new InvalidArgumentException('Invalid condition connector');
-        }
-        $this->connector = $connector;
+        $this->connector = LogicConnectors::coerce($connector);
     }
 
     public function __clone()

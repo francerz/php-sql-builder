@@ -2,7 +2,9 @@
 
 namespace Francerz\SqlBuilder\Components;
 
-interface JoinTypes
+use Francerz\Enum\AbstractEnum;
+
+final class JoinTypes extends AbstractEnum
 {
     public const CROSS_JOIN = 'CROSS JOIN';
     public const INNER_JOIN = 'INNER JOIN';

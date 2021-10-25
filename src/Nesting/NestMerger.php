@@ -44,14 +44,14 @@ class NestMerger
                     $this->mergeConditionList($query->having())
                 ) {
                     $childs[] = $child;
-                    if ($mode === NestMode::SINGLE_FIRST) {
+                    if ($mode->is(NestMode::SINGLE_FIRST)) {
                         break;
                     }
                 }
             }
-            if ($mode === NestMode::SINGLE_FIRST) {
+            if ($mode->is(NestMode::SINGLE_FIRST)) {
                 $childs = empty($childs) ? null : reset($childs);
-            } elseif ($mode === NestMode::SINGLE_LAST) {
+            } elseif ($mode->is(NestMode::SINGLE_LAST)) {
                 $childs = empty($childs) ? null : end($childs);
             }
             $parent->$alias = $childs;
@@ -148,9 +148,9 @@ class NestMerger
     {
         $newConds = new ConditionList();
         foreach ($conds as $cond) {
-            if ($cond->getConnector() === LogicConnectors::AND) {
+            if ($cond->getConnector() == LogicConnectors::AND) {
                 $cnd = $cond->getCondition();
-                if ($cnd instanceof RelationalExpression && $cnd->getOperator() === RelationalOperators::EQUALS) {
+                if ($cnd instanceof RelationalExpression && $cnd->getOperator()->is(RelationalOperators::EQUALS)) {
                     $op1 = $cnd->getOperand1();
                     $op2 = $cnd->getOperand2();
                     if ($op1 instanceof ValueProxy && $op2 instanceof ValueProxy) {
