@@ -1,7 +1,6 @@
 <?php
 
-use Francerz\SqlBuilder\Components\Column;
-use Francerz\SqlBuilder\Dev\User;
+use Francerz\SqlBuilder\Dev\Model\User;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\UpdateQuery;

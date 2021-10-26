@@ -2,8 +2,9 @@
 
 namespace Francerz\SqlBuilder;
 
-use Francerz\Http\Utils\UriHelper;
 use Francerz\SqlBuilder\Driver\DriverInterface;
+use InvalidArgumentException;
+use LogicException;
 use Psr\Http\Message\UriInterface;
 
 class ConnectParams
@@ -57,17 +58,34 @@ class ConnectParams
         return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd);
     }
 
-    public static function fromUri(UriInterface $uri)
+    /**
+     * @param UriInterface|string $uri
+     * @return ConnectParams
+     */
+    public static function fromUri($uri)
     {
-        $driver = DriverManager::getDriver($uri->getScheme());
+        if ($uri instanceof UriInterface) {
+            $uri = (string)$uri;
+        }
+
+        if (filter_var($uri, FILTER_VALIDATE_URL) === false) {
+            throw new InvalidArgumentException("Invalid URL '{$uri}'.");
+        }
+        $uriParts = parse_url($uri);
+        $driverKey = $uriParts['scheme'] ?: null;
+        $driver = DriverManager::getDriver($driverKey);
+
+        if (is_null($driver)) {
+            throw new LogicException("Missing driver {$driverKey}.");
+        }
 
         return new ConnectParams(
             $driver,
-            $uri->getHost(),
-            UriHelper::getUser($uri),
-            UriHelper::getPassword($uri),
-            ltrim($uri->getPath(), '/'),
-            $uri->getPort()
+            $uriParts['host'] ?? '',
+            $uriParts['user'] ?? '',
+            $uriParts['pass'] ?? '',
+            ltrim($uriParts['path'] ?? '', '/'),
+            $uriParts['port'] ?? 0
         );
     }
 

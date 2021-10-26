@@ -1,6 +1,6 @@
 <?php
 
-use Francerz\SqlBuilder\Dev\User;
+use Francerz\SqlBuilder\Dev\Model\User;
 use Francerz\SqlBuilder\Helpers\ModelHelper;
 use PHPUnit\Framework\TestCase;
 

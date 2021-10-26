@@ -1,6 +1,6 @@
 <?php
 
-namespace Francerz\SqlBuilder\Dev;
+namespace Francerz\SqlBuilder\Dev\Model;
 
 class User
 {

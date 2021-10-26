@@ -2,11 +2,15 @@
 
 namespace Francerz\SqlBuilder;
 
-use Francerz\Http\Uri;
 use LogicException;
+use Psr\Http\Message\UriInterface;
 
 class DatabaseManager
 {
+    /** @var ConnectParams[] */
+    private static $params = [];
+
+    /** @var DatabaseHandler[] */
     private static $connections = [];
     /**
      * Connects to a database
@@ -18,14 +22,14 @@ class DatabaseManager
     public static function connect($database = 'default', bool $recycle = true): DatabaseHandler
     {
         if (is_string($database)) {
-            if (filter_var($database, FILTER_VALIDATE_URL)) {
-                $connParams = ConnectParams::fromUri(new Uri($database));
+            if (array_key_exists($database, static::$params)) {
+                $connParams = static::$params[$database];
             } else {
                 $connParams = ConnectParams::fromEnv($database);
             }
-        }
-
-        if ($database instanceof ConnectParams) {
+        } elseif ($database instanceof UriInterface) {
+            $connParams = ConnectParams::fromUri($database);
+        } elseif ($database instanceof ConnectParams) {
             $connParams = $database;
         }
 
@@ -37,5 +41,21 @@ class DatabaseManager
         $db = new DatabaseHandler($connParams->getDriver());
         $db->connect($connParams);
         return static::$connections[$dbKey] = $db;
+    }
+
+    public static function register(string $alias, ConnectParams $params, bool $overwrite = false)
+    {
+        if (!$overwrite && array_key_exists($alias, static::$params)) {
+            throw new LogicException("Database alias '{$alias}' already used.");
+        }
+        static::$params[$alias] = $params;
+    }
+
+    public static function find(string $alias)
+    {
+        if (array_key_exists($alias, static::$params)) {
+            return static::$params[$alias];
+        }
+        return null;
     }
 }
