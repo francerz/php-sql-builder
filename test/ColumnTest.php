@@ -1,5 +1,7 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Components\Column;
 use PHPUnit\Framework\TestCase;
 

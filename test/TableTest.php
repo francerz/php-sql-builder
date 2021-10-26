@@ -1,5 +1,7 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\SelectQuery;
 use PHPUnit\Framework\TestCase;

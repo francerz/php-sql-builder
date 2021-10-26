@@ -1,6 +1,7 @@
 <?php
 
-use Francerz\SqlBuilder\GenericCompiler;
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Driver\QueryCompiler;

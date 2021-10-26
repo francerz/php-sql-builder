@@ -1,5 +1,7 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\CompiledQuery;
 use Francerz\SqlBuilder\Nesting\NestTranslator;
 use Francerz\SqlBuilder\Nesting\RowProxy;

@@ -1,5 +1,7 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\CompiledQuery;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
 use Francerz\SqlBuilder\Nesting\NestMerger;

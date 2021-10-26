@@ -1,10 +1,13 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Dev\Model\User;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\UpdateQuery;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class UpdateQueryTest extends TestCase
 {

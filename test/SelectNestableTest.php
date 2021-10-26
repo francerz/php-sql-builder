@@ -1,6 +1,7 @@
 <?php
 
-use Francerz\SqlBuilder\GenericCompiler;
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
@@ -108,7 +109,9 @@ class SelectNestableTest extends TestCase
         $this->assertEquals(1, count($nests));
 
         $nest = $nests[0];
-        if (!$nest instanceof Nest) return;
+        if (!$nest instanceof Nest) {
+            return;
+        }
 
         $nested = $nest->getNested();
         $nestSelect = $nested->getSelect();

@@ -1,5 +1,7 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Query;
 use PHPUnit\Framework\TestCase;

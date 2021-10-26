@@ -1,5 +1,7 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\SelectQuery;
 use Francerz\SqlBuilder\Tools\QueryOptimizer;

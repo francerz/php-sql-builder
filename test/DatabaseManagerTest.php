@@ -1,5 +1,7 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\ConnectParams;
 use Francerz\SqlBuilder\DatabaseHandler;
 use Francerz\SqlBuilder\DatabaseManager;
