@@ -19,7 +19,7 @@ abstract class Query
         return Column::fromString($name);
     }
     /**
-     * @deprecated v0.3.14
+     * @deprecated v0.4.0
      */
     public static function c($name): Column
     {
@@ -30,7 +30,7 @@ abstract class Query
         return new SqlValue($value);
     }
     /**
-     * @deprecated v0.3.14
+     * @deprecated v0.4.0
      */
     public static function v($name): SqlValue
     {
@@ -41,7 +41,7 @@ abstract class Query
         return new SqlValueArray($array);
     }
     /**
-     * @deprecated v0.3.14
+     * @deprecated v0.4.0
      */
     public static function a($name): SqlValueArray
     {
@@ -52,7 +52,7 @@ abstract class Query
         return new SqlRaw($content);
     }
     /**
-     * @deprecated v0.3.14
+     * @deprecated v0.4.0
      */
     public static function r($content): SqlRaw
     {
@@ -63,7 +63,7 @@ abstract class Query
         return new SqlFunction($name, $args);
     }
     /**
-     * @deprecated v0.3.14
+     * @deprecated v0.4.0
      */
     public static function f(string $name, ...$args): SqlFunction
     {

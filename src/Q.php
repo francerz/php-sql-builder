@@ -3,7 +3,7 @@
 namespace Francerz\SqlBuilder;
 
 /**
- * @deprecated v0.3.14
+ * @deprecated v0.4.0
  */
 abstract class Q extends Query
 {
