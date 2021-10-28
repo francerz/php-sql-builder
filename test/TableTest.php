@@ -55,4 +55,15 @@ class TableTest extends TestCase
         $this->assertInstanceOf(SelectQuery::class, $table->getSource());
         $this->assertEquals('t1', $table->getAlias());
     }
+
+    public function testCreateFromExpression()
+    {
+        $expected = new Table('table', 't', 'db');
+
+        $actual = Table::fromExpression('db.table AS t');
+        $this->assertEquals($expected, $actual);
+
+        $actual = Table::fromExpression(['t' => 'db.table']);
+        $this->assertEquals($expected, $actual);
+    }
 }

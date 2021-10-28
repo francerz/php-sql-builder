@@ -57,8 +57,12 @@ class Table
         if (stripos($string, ' AS ', 1) === false) {
             return new static($string);
         }
-        $str = preg_split('/\s+AS\s+/i', $string);
-        return new static($str[0], $str[1]);
+        list($table, $alias) = preg_split('/\s+AS\s+/i', $string);
+        $db = null;
+        if (strpos($table, '.') !== false) {
+            list($db, $table) = explode('.', $table, 2);
+        }
+        return new static($table, $alias, $db);
     }
 
     private static function fromArray(array $array)
@@ -66,13 +70,16 @@ class Table
         if (count($array) !== 1) {
             throw new InvalidArgumentException();
         }
+        $db = null;
         $alias = key($array);
         $alias = is_string($alias) ? $alias : null;
         $source = current($array);
         if (is_callable($source) && is_string($alias)) {
             return static::fromCallable($alias, $source);
+        } elseif (is_string($source) && strpos($source, '.') !== false) {
+            list($db, $source) = explode('.', $source, 2);
         }
-        return new static($source, $alias);
+        return new static($source, $alias, $db);
     }
 
     /**
