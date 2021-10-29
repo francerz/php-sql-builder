@@ -16,6 +16,7 @@ class DeleteQuery implements QueryInterface, LimitableInterface, SortableInterfa
         WhereableTrait::__construct as private _whereableTraitConstruct;
     }
 
+    private $database = null;
     private $table;
     private $rowsInArray;
 
@@ -46,6 +47,16 @@ class DeleteQuery implements QueryInterface, LimitableInterface, SortableInterfa
     public function getTable(): Table
     {
         return $this->table;
+    }
+
+    public function setDatabase($database)
+    {
+        $this->database = $database;
+    }
+
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     public function rowsIn(string $table)

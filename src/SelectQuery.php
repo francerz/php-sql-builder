@@ -29,6 +29,7 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
 
     protected $from;
     protected $columns;
+    protected $database = null;
 
     public function __construct($table = null, ?array $columns = null)
     {
@@ -85,6 +86,16 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
             return $join->getTableReference();
         }
         return null;
+    }
+
+    public function setDatabase($database)
+    {
+        $this->database = $database;
+    }
+
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     public function __clone()

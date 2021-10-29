@@ -8,6 +8,7 @@ use Francerz\SqlBuilder\Helpers\ModelHelper;
 
 class InsertQuery implements QueryInterface, Countable
 {
+    private $database = null;
     private $table = null;
     /**
      * @var object[]|array[]|SelectQuery
@@ -34,6 +35,16 @@ class InsertQuery implements QueryInterface, Countable
             $table = Table::fromExpression($table);
         }
         $this->table = $table;
+    }
+
+    public function setDatabase($database)
+    {
+        $this->database = $database;
+    }
+
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     public function count()

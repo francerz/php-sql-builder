@@ -24,6 +24,7 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
     use LimitableTrait;
     use SortableTrait;
 
+    private $database = null;
     private $table;
     private $sets;
 
@@ -73,6 +74,16 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
     public function getTable(): Table
     {
         return $this->table;
+    }
+
+    public function setDatabase($database)
+    {
+        $this->database = $database;
+    }
+
+    public function getDatabase()
+    {
+        return $this->database;
     }
 
     public function set($column, $value)

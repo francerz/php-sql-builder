@@ -15,7 +15,7 @@ class DatabaseManager
     /**
      * Connects to a database
      *
-     * @param string|ConnectParams $database
+     * @param string|ConnectParams|UriInterface $database
      * @param array|null $env
      * @return DatabaseHandler
      */
