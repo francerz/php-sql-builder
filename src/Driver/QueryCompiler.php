@@ -418,7 +418,8 @@ class QueryCompiler implements QueryCompilerInterface
             return $this->compileFunction($source);
         }
         if ($source instanceof ComparableComponentInterface) {
-            return '(' . $this->compileComparable($source) . ')';
+            return $this->compileComparable($source);
+            // return '(' . $this->compileComparable($source) . ')';
         }
         $output = isset($table) ? $this->compileColumnTable($table) . '.' : '';
         if ($source instanceof SqlRaw) {

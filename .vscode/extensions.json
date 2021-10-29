@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "editorconfig.editorconfig",
+        "felixfbecker.php-debug",
+        "felixfbecker.php-pack",
+        "hbenl.vscode-test-explorer",
+        "neilbrayfield.php-docblocker",
+        "recca0120.vscode-phpunit",
+        "satiromarra.vscode-phpcs-fixer",
+        "shevaua.phpcs"
+    ]
+}

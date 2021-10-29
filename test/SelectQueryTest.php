@@ -6,7 +6,6 @@ use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
-use Francerz\SqlBuilder\Q;
 use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\SelectQuery;
 use PHPUnit\Framework\TestCase;
@@ -60,8 +59,8 @@ class SelectQueryTest extends TestCase
         $query->orderBy('g.id_grupo');
 
         $query->columns([
-            'nombre' => Q::f('COALESCE', Q::c('g.nombre'), Q::c('a.nombre')),
-            'other' => Q::f('IF', Q::cond()->null('g.base_grupo_id'), 0, 1)
+            'nombre' => 'COALESCE(g.nombre, a.nombre)',
+            'other' => Query::func('IF', Query::cond()->null('g.base_grupo_id'), 0, 1)
         ]);
 
         $expected = "SELECT
@@ -153,7 +152,8 @@ class SelectQueryTest extends TestCase
 
         $compiled = $this->compiler->compileQuery($query);
 
-        $expected = "SELECT groups.* FROM groups WHERE (group_id IN (:v1, :v2, :v3, :v4)) AND a = :v5 AND c IS NULL OR d BETWEEN :v6 AND :v7";
+        $expected = "SELECT groups.* FROM groups WHERE (group_id IN (:v1, :v2, :v3, :v4)) " .
+            "AND a = :v5 AND c IS NULL OR d BETWEEN :v6 AND :v7";
 
         $this->assertEquals($expected, $compiled->getQuery());
     }

@@ -16,7 +16,7 @@ abstract class Query
     #region Components
     public static function column($name)
     {
-        return Column::fromString($name);
+        return Column::fromExpression($name);
     }
     /**
      * @deprecated v0.4.0

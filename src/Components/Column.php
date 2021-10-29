@@ -40,43 +40,56 @@ class Column implements ComparableComponentInterface
             $string = substr($string, 0, $asLastPos);
         }
 
-        static::getColTable($string, $column, $table);
+        if (preg_match('/^([\w]+.)?[\w]+$/', $string)) {
+            static::getColTable($string, $column, $table);
+        } elseif (false && preg_match('/^([\w]+)\(([^()]+|(?1))*\)$/', $string, $matches)) {
+            $column = new SqlFunction($matches[1], [$matches[2]]);
+        } else {
+            $column = new SqlRaw($string);
+        }
 
         return new static($column, $alias, $table);
     }
+
+    public static function fromExpression($content, ?string $alias = null, ?string $table = null)
+    {
+        $alias = is_string($alias) && !empty($alias) ? $alias : null;
+
+        if (is_string($content)) {
+            if (is_string($table)) {
+                static::getColTable($content, $column, $table);
+                return new Column($column, $alias, $table);
+            }
+            $column = static::fromString($content);
+            $column->alias = $column->alias ?? $alias;
+            $column->table = $column->table ?? $table;
+            return $column;
+        } elseif (is_array($content)) {
+            $v = reset($content);
+            $k = key($content);
+            return static::fromExpression($v, $k, $table);
+        } elseif ($content instanceof SelectQuery) {
+            if ($content->getLimit() !== 1 || count($content->getAllColumns()) !== 1) {
+                throw new InvalidArgumentException(
+                    'Column source SelectQuery MUST have only one column and limit 1.'
+                );
+            }
+            return new Column($content, $alias, $table);
+        } elseif ($content instanceof SqlRaw) {
+            return new Column($content, $alias);
+        } elseif ($content instanceof SqlFunction) {
+            return new Column($content, $alias);
+        } else {
+            return new Column(new SqlRaw((string)$content), $alias, $table);
+        }
+    }
+
     public static function fromArray(array $array, ?string $table = null): array
     {
         $arr = [];
-
         foreach ($array as $k => $item) {
-            $alias = is_string($k) ? $k : null;
-            if (is_string($item) && is_string($table)) {
-                static::getColTable($item, $column, $table);
-                $item = new Column($column, $alias, $table);
-            } elseif (is_string($item)) {
-                $item = static::fromString($item);
-                $item->alias = $alias;
-            } elseif ($item instanceof SelectQuery) {
-                if ($item->getLimit() !== 1 || count($item->getAllColumns()) !== 1) {
-                    throw new InvalidArgumentException(
-                        'Column source SelectQuery MUST have only one column and limit 1.'
-                    );
-                }
-                $item = new Column($item, $alias);
-            } elseif ($item instanceof SqlRaw) {
-                $item = new Column($item, $alias);
-            } elseif ($item instanceof SqlFunction) {
-                $item = new Column($item, $alias);
-            }
-            if (!$item instanceof Column) {
-                continue;
-            }
-            if (isset($table)) {
-                $item->setTable($table);
-            }
-            $arr[] = $item;
+            $arr[] = static::fromExpression($item, $k, $table);
         }
-
         return $arr;
     }
 

@@ -15,7 +15,7 @@ final class QueryOptimizer
     private function __construct()
     {
     }
-    
+
     public static function optimizeSelect(SelectQuery $query): SelectQuery
     {
         static::applySubqueryFilter($query);
