@@ -7,8 +7,11 @@ use ReflectionClass;
 use ReflectionProperty;
 use stdClass;
 
-abstract class ModelHelper
+final class ModelHelper
 {
+    private function __construct()
+    {
+    }
     public static function dataAsArray($data, bool $withKeys = true): array
     {
         if (is_array($data)) {

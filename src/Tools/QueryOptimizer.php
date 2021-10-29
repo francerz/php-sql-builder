@@ -10,8 +10,12 @@ use Francerz\SqlBuilder\Expressions\OneOperandInterface;
 use Francerz\SqlBuilder\Expressions\TwoOperandsInterface;
 use Francerz\SqlBuilder\SelectQuery;
 
-abstract class QueryOptimizer
+final class QueryOptimizer
 {
+    private function __construct()
+    {
+    }
+    
     public static function optimizeSelect(SelectQuery $query): SelectQuery
     {
         static::applySubqueryFilter($query);
