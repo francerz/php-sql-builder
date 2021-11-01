@@ -21,7 +21,7 @@ class DriverManager
     public static function getDriver(string $name): ?DriverInterface
     {
         if (array_key_exists($name, static::$drivers)) {
-            return static::$drivers[$name];
+            return clone static::$drivers[$name];
         }
         return null;
     }
