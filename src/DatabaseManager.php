@@ -2,6 +2,7 @@
 
 namespace Francerz\SqlBuilder;
 
+use InvalidArgumentException;
 use LogicException;
 use Psr\Http\Message\UriInterface;
 
@@ -15,13 +16,15 @@ class DatabaseManager
     /**
      * Connects to a database
      *
-     * @param string|ConnectParams|UriInterface $database
+     * @param string|ConnectParams|UriInterface|DatabaseHandler $database
      * @param array|null $env
      * @return DatabaseHandler
      */
     public static function connect($database = 'default', bool $recycle = true): DatabaseHandler
     {
-        if (is_string($database)) {
+        if ($database instanceof DatabaseHandler) {
+            return $database;
+        } elseif (is_string($database)) {
             if (array_key_exists($database, static::$params)) {
                 $connParams = static::$params[$database];
             } else {
@@ -31,6 +34,8 @@ class DatabaseManager
             $connParams = ConnectParams::fromUri($database);
         } elseif ($database instanceof ConnectParams) {
             $connParams = $database;
+        } else {
+            throw new InvalidArgumentException('Cannot connect to database with given parameter.');
         }
 
         $dbKey = (string)$connParams;

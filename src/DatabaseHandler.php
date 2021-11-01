@@ -104,11 +104,15 @@ class DatabaseHandler
 
         foreach ($query->getNests() as $nest) {
             if (!$nest instanceof Nest) {
-                return null;
+                throw new LogicException('Invalid nest value');
             }
             $nestSelect = $nest->getNested()->getSelect();
-            $nestTranslation = $this->nestTranslator->translate($nestSelect, $result);
-            $nestResult = $this->executeSelect($nestTranslation);
+            $nestConn = $this;
+            if ($nestSelect->getConnection() !== null) {
+                $nestConn = DatabaseManager::connect($nestSelect->getConnection());
+            }
+            $nestTranslation = $nestConn->nestTranslator->translate($nestSelect, $result);
+            $nestResult = $nestConn->executeSelect($nestTranslation);
             $this->nestMerger->merge($result, $nestResult, $nest);
         }
 
@@ -120,6 +124,7 @@ class DatabaseHandler
     }
 
     public function executeInsert(InsertQuery $query): InsertResult
+
     {
         $compiled = $this->prepareQuery($query);
         $result = $this->driver->executeInsert($compiled);

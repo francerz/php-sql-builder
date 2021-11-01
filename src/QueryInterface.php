@@ -16,15 +16,15 @@ interface QueryInterface
      *
      * If is null, default connection will be used.
      *
-     * @param string|UriInterface|ConnectParams|null $database
+     * @param string|UriInterface|ConnectParams|DatabaseHandler|null $database
      * @return void
      */
-    public function setDatabase($database);
+    public function setConnection($connectiom);
 
     /**
-     * Retrieves assigned database to query.
+     * Retrieves assigned connection to query.
      *
-     * @return string|UriInterface|ConnectParams|null
+     * @return string|UriInterface|ConnectParams|DatabaseHandler|null
      */
-    public function getDatabase();
+    public function getConnection();
 }

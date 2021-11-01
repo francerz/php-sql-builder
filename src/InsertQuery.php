@@ -8,7 +8,7 @@ use Francerz\SqlBuilder\Helpers\ModelHelper;
 
 class InsertQuery implements QueryInterface, Countable
 {
-    private $database = null;
+    private $connection = null;
     private $table = null;
     /**
      * @var object[]|array[]|SelectQuery
@@ -37,14 +37,14 @@ class InsertQuery implements QueryInterface, Countable
         $this->table = $table;
     }
 
-    public function setDatabase($database)
+    public function setConnection($connection)
     {
-        $this->database = $database;
+        $this->connection = $connection;
     }
 
-    public function getDatabase()
+    public function getConnection()
     {
-        return $this->database;
+        return $this->connection;
     }
 
     public function count()
