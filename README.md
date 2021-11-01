@@ -1,6 +1,8 @@
 SQL Builder
 =======================================
 
+[![Packagist](https://img.shields.io/packagist/vpre/francerz/sql-builder)](https://packagist.org/packages/francerz/sql-builder)
+
 Installation
 ---------------------------------------
 
