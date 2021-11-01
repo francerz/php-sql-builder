@@ -1,7 +1,8 @@
 SQL Builder
 =======================================
 
-[![Packagist](https://img.shields.io/packagist/vpre/francerz/sql-builder)](https://packagist.org/packages/francerz/sql-builder)
+![Packagist](https://img.shields.io/packagist/vpre/francerz/sql-builder)]
+![Build Status](https://github.com/francerz/php-sql-builder/workflows/PHP%20Unit%20Tests/badge.svg)
 
 Installation
 ---------------------------------------
