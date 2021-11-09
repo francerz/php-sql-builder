@@ -88,7 +88,8 @@ class Column implements ComparableComponentInterface
     {
         $arr = [];
         foreach ($array as $k => $item) {
-            $arr[] = static::fromExpression($item, $k, $table);
+            $alias = is_numeric($k) ? null : $k;
+            $arr[] = static::fromExpression($item, $alias, $table);
         }
         return $arr;
     }
