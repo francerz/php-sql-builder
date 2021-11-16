@@ -61,7 +61,7 @@ class DeleteQuery implements QueryInterface, LimitableInterface, SortableInterfa
 
     public function rowsIn(string $table)
     {
-        $this->rowsInArray[$table];
+        $this->rowsInArray[] = $table;
     }
 
     public function getRowsIn()

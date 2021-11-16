@@ -152,7 +152,7 @@ class QueryCompiler implements QueryCompilerInterface
         $query = 'DELETE FROM ';
         $rowsIn = $delete->getRowsIn();
         if (count($rowsIn) > 0) {
-            $query = 'DELETE ' . join(',', $rowsIn) . ' FROM';
+            $query = 'DELETE ' . join(',', $rowsIn) . ' FROM ';
         }
         $query .= $this->compileTable($delete->getTable());
         foreach ($delete->getJoins() as $join) {
