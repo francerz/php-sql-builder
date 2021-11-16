@@ -1,3 +1,7 @@
+# Git default LF endlines
+* text=auto eol=lf
+
+# Export to packages ignoring files
 /dev                    export-ignore
 /test                   export-ignore
 /phpunit.xml            export-ignore
