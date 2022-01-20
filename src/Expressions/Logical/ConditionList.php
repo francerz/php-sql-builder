@@ -4,6 +4,7 @@ namespace Francerz\SqlBuilder\Expressions\Logical;
 
 use ArrayAccess;
 use Countable;
+use Francerz\Enum\AbstractEnum;
 use Francerz\SqlBuilder\Expressions\BooleanResultInterface;
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
 use Francerz\SqlBuilder\Expressions\Comparison\BetweenExpression;
@@ -543,7 +544,11 @@ class ConditionList implements
             return $this->genInExpression($first, $operator);
         }
 
-        switch ($operator) {
+        if (!is_string($operator) && !$operator instanceof AbstractEnum) {
+            return $this->genRelationalExpression($first, $operator, RelationalOperators::EQUALS);
+        }
+
+        switch (strtoupper((string)$operator)) {
             case RelationalOperators::EQUALS:
             case RelationalOperators::NOT_EQUALS:
             case RelationalOperators::LESS:
