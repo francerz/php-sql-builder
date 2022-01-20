@@ -543,7 +543,7 @@ class ConditionList implements
             return $this->genInExpression($first, $operator);
         }
 
-        switch (strtoupper((string)$operator)) {
+        switch ($operator) {
             case RelationalOperators::EQUALS:
             case RelationalOperators::NOT_EQUALS:
             case RelationalOperators::LESS:
