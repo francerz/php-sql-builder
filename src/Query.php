@@ -80,7 +80,7 @@ abstract class Query
     {
         return new InsertQuery(Table::fromExpression($table), $values, $columns);
     }
-    public static function update($table, $data = null, array $matching = [], array $columns = [])
+    public static function update($table, $data = null, ?array $matching = null, ?array $columns = null)
     {
         return UpdateQuery::createUpdate($table, $data, $matching, $columns);
     }

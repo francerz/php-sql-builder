@@ -34,12 +34,16 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
         $this->setTable($table);
     }
 
-    public static function createUpdate($table, $data = null, array $matching = [], array $columns = [])
+    public static function createUpdate($table, $data = null, ?array $matching = null, ?array $columns = null)
     {
         $query = new UpdateQuery($table);
         if (empty($data)) {
             return $query;
         }
+
+        $matching = $matching ?? [];
+        $columns = $columns ?? [];
+
         if (empty($matching) && empty($columns)) {
             $matching = array_map(function (ReflectionProperty $prop) {
                 return $prop->getName();
@@ -48,6 +52,7 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
                 return $prop->getName();
             }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_SKIP_KEY));
         }
+
         $data = ModelHelper::dataAsArray($data);
         foreach ($data as $k => $v) {
             if (in_array($k, $matching)) {
