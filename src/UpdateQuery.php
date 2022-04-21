@@ -13,6 +13,7 @@ use Francerz\SqlBuilder\Traits\LimitableTrait;
 use Francerz\SqlBuilder\Traits\SortableInterface;
 use Francerz\SqlBuilder\Traits\SortableTrait;
 use Francerz\SqlBuilder\Traits\WhereableTrait;
+use LogicException;
 use ReflectionProperty;
 
 class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterface
@@ -41,16 +42,13 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
             return $query;
         }
 
-        $matching = $matching ?? [];
-        $columns = $columns ?? [];
-
-        if (empty($matching) && empty($columns)) {
+        if (is_null($matching) && is_null($columns)) {
             $matching = array_map(function (ReflectionProperty $prop) {
                 return $prop->getName();
-            }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_SKIP_DEFAULT));
+            }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_ONLY_KEYS));
             $columns = array_map(function (ReflectionProperty $prop) {
                 return $prop->getName();
-            }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_SKIP_KEY));
+            }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_SKIP_KEYS));
         }
 
         $data = ModelHelper::dataAsArray($data);

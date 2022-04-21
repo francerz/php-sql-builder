@@ -9,6 +9,11 @@ use stdClass;
 
 final class ModelHelper
 {
+    public const PROPERTY_SKIP_DEFAULT  = 0b00001000;
+    public const PROPERTY_SKIP_KEYS     = 0b00000001;
+    public const PROPERTY_ONLY_KEYS     = 0b00000010;
+    public const PROPERTY_KEEP_IGNORE   = 0b00010000;
+
     private function __construct()
     {
     }
@@ -24,7 +29,7 @@ final class ModelHelper
             return (array)$data;
         }
         $flags = 0;
-        $flags |= $withKeys ? 0 : static::PROPERTY_SKIP_KEY;
+        $flags |= $withKeys ? 0 : static::PROPERTY_SKIP_KEYS;
         $props = static::getDataProperties($data, $flags);
 
         $arr = [];
@@ -34,10 +39,6 @@ final class ModelHelper
         }
         return $arr;
     }
-
-    public const PROPERTY_SKIP_DEFAULT  = 0b00001000;
-    public const PROPERTY_SKIP_KEY      = 0b00000001;
-    public const PROPERTY_KEEP_IGNORE   = 0b00010000;
 
     /** @return ReflectionProperty[] */
     public static function getDataProperties($obj, int $flags = 0)
@@ -53,6 +54,14 @@ final class ModelHelper
 
         $props = array_filter($properties, function (ReflectionProperty $prop) use ($flags) {
             $comment = $prop->getDocComment();
+
+            if (($flags & static::PROPERTY_ONLY_KEYS) > 0) {
+                if (!is_string($comment)) {
+                    return false;
+                }
+                return Strings::contains($comment, '@sql-key');
+            }
+
             if ($comment === false) {
                 return true;
             }
@@ -60,7 +69,7 @@ final class ModelHelper
                 return ($flags & static::PROPERTY_KEEP_IGNORE) > 0;
             }
             if (Strings::contains($comment, '@sql-key')) {
-                return ($flags & static::PROPERTY_SKIP_KEY) === 0;
+                return ($flags & static::PROPERTY_SKIP_KEYS) === 0;
             }
 
             return ($flags & static::PROPERTY_SKIP_DEFAULT) === 0;
