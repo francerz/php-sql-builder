@@ -75,6 +75,9 @@ class QueryCompiler implements QueryCompilerInterface
 
     protected function addValue($value): string
     {
+        if ($value instanceof DateTimeInterface) {
+            $value = $value->format('Y-m-d H:i:s');
+        }
         $key = 'v' . (count($this->values) + 1);
         $this->values[$key] = $value;
         return $key;
@@ -470,18 +473,11 @@ class QueryCompiler implements QueryCompilerInterface
         if ($value instanceof SqlValueArray) {
             $vals = [];
             foreach ($value->getValue() as $val) {
-                if ($val instanceof DateTimeInterface) {
-                    $val = $this->compileDatetime($val);
-                }
                 $vals[] = ':' . $this->addValue($val);
             }
             return '(' . join(', ', $vals) . ')';
         }
-        $val = $value->getValue();
-        if ($val instanceof DateTimeInterface) {
-            $val = $this->compileDatetime($val);
-        }
-        return ':' . $this->addValue($val);
+        return ':' . $this->addValue($value->getValue());
     }
 
     protected function compileDatetime(DateTimeInterface $datetime)
