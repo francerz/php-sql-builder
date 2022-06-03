@@ -2,6 +2,7 @@
 
 namespace Francerz\SqlBuilder\Driver;
 
+use DateTimeInterface;
 use Francerz\SqlBuilder\CompiledQuery;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Join;
@@ -469,11 +470,23 @@ class QueryCompiler implements QueryCompilerInterface
         if ($value instanceof SqlValueArray) {
             $vals = [];
             foreach ($value->getValue() as $val) {
+                if ($val instanceof DateTimeInterface) {
+                    $val = $this->compileDatetime($val);
+                }
                 $vals[] = ':' . $this->addValue($val);
             }
             return '(' . join(', ', $vals) . ')';
         }
-        return ':' . $this->addValue($value->getValue());
+        $val = $value->getValue();
+        if ($val instanceof DateTimeInterface) {
+            $val = $this->compileDatetime($val);
+        }
+        return ':' . $this->addValue($val);
+    }
+
+    protected function compileDatetime(DateTimeInterface $datetime)
+    {
+        return $datetime->format('Y-m-d H:i:s');
     }
 
     protected function compileOrderBy(SortableInterface $sortable)
