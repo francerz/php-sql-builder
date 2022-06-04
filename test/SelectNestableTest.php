@@ -46,38 +46,29 @@ class SelectNestableTest extends TestCase
         return $query;
     }
 
-    public function getGroupsExpectedResult(SelectQuery $query)
+    public function getGroupsExpectedResult()
     {
-        $compiler = new QueryCompiler();
         $grupos = array(
             ["group_id" => 3],
             ["group_id" => 7],
             ["group_id" => 11]
         );
-        return new SelectResult(
-            $compiler->compileQuery($query),
-            json_decode(json_encode($grupos))
-        );
+        return new SelectResult(json_decode(json_encode($grupos)));
     }
 
-    public function getStudentsExpectedResult(SelectQuery $query)
+    public function getStudentsExpectedResult()
     {
-        $compiler = new QueryCompiler();
         $students = array(
             ['group_id' => 3, 'student_id' => 13, 'name' => 'John Doe'],
             ['group_id' => 11, 'student_id' => 17, 'name' => 'Janne Doe'],
             ['group_id' => 7, 'student_id' => 19, 'name' => 'James Doe'],
             ['group_id' => 7, 'student_id' => 23, 'name' => 'Judy Doe']
         );
-        return new SelectResult(
-            $compiler->compileQuery($query),
-            json_decode(json_encode($students))
-        );
+        return new SelectResult(json_decode(json_encode($students)));
     }
 
-    public function getGroupsNestedResult(SelectQuery $query)
+    public function getGroupsNestedResult()
     {
-        $compiler = new QueryCompiler();
         $groups = array(
             ["group_id" => 3, 'Students' => [
                 ['group_id' => 3, 'student_id' => 13, 'name' => 'John Doe']
@@ -90,10 +81,7 @@ class SelectNestableTest extends TestCase
                 ['group_id' => 11, 'student_id' => 17, 'name' => 'Janne Doe']
             ]]
         );
-        return new SelectResult(
-            $compiler->compileQuery($query),
-            json_decode(json_encode($groups))
-        );
+        return new SelectResult(json_decode(json_encode($groups)));
     }
 
     public function testNestable()
@@ -117,7 +105,7 @@ class SelectNestableTest extends TestCase
         $nestSelect = $nested->getSelect();
         $nestTranslate = $nestTranslator->translate($nestSelect, $groups);
 
-        $nestCompiled = $compiler->compileQuery($nestTranslate);
+        $nestCompiled = $compiler->compileSelect($nestTranslate);
         $expected = 'SELECT s.*, gs.group_id FROM students AS s INNER JOIN groups_students AS gs ON s.student_id = gs.student_id WHERE gs.group_id IN (:v1, :v2, :v3)';
         $this->assertEquals($expected, $nestCompiled->getQuery());
         $this->assertEquals(['v1' => 3, 'v2' => 7, 'v3' => 11], $nestCompiled->getValues());

@@ -20,7 +20,7 @@ class NestTranslatorTest extends TestCase
         $query->where('col1', 10);
         $query->where('col2', new ValueProxy(new RowProxy(), 'test'));
 
-        $result = new SelectResult(new CompiledQuery(''), [
+        $result = new SelectResult([
             (object)['test' => 1],
             (object)['test' => 2],
             (object)['test' => 1]

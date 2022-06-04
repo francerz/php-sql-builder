@@ -2,12 +2,15 @@
 
 namespace Francerz\SqlBuilder\Dev\Driver;
 
-use Francerz\SqlBuilder\CompiledQuery;
+use Francerz\SqlBuilder\Compiles\CompiledDelete;
+use Francerz\SqlBuilder\Compiles\CompiledInsert;
+use Francerz\SqlBuilder\Compiles\CompiledProcedure;
+use Francerz\SqlBuilder\Compiles\CompiledSelect;
+use Francerz\SqlBuilder\Compiles\CompiledUpdate;
 use Francerz\SqlBuilder\ConnectParams;
 use Francerz\SqlBuilder\Driver\DriverInterface;
 use Francerz\SqlBuilder\Driver\QueryCompilerInterface;
 use Francerz\SqlBuilder\Driver\QueryTranslatorInterface;
-use Francerz\SqlBuilder\DriverManager;
 use Francerz\SqlBuilder\Results\DeleteResult;
 use Francerz\SqlBuilder\Results\InsertResult;
 use Francerz\SqlBuilder\Results\SelectResult;
@@ -49,27 +52,37 @@ class TestDriver implements DriverInterface
         return '';
     }
 
-    public function executeSelect(CompiledQuery $query): SelectResult
+    public function executeSelect(CompiledSelect $query): SelectResult
     {
-        return new SelectResult(new CompiledQuery(''), []);
+        return new SelectResult([]);
     }
 
-    public function executeInsert(CompiledQuery $query): InsertResult
+    public function executeInsert(CompiledInsert $query): InsertResult
     {
-        return new InsertResult(new CompiledQuery(''));
+        return new InsertResult();
     }
 
-    public function executeUpdate(CompiledQuery $query): UpdateResult
+    public function executeUpdate(CompiledUpdate $query): UpdateResult
     {
-        return new UpdateResult(new CompiledQuery(''));
+        return new UpdateResult();
     }
 
-    public function executeDelete(CompiledQuery $query): DeleteResult
+    public function executeDelete(CompiledDelete $query): DeleteResult
     {
-        return new DeleteResult(new CompiledQuery(''));
+        return new DeleteResult();
+    }
+
+    public function executeProcedure(CompiledProcedure $query): array
+    {
+        return [];
     }
 
     public function startTransaction(): bool
+    {
+        return false;
+    }
+
+    public function isOnTransaction(): bool
     {
         return false;
     }

@@ -28,7 +28,7 @@ class UpdateQueryTest extends TestCase
 
         $query = Query::update(['t1' => 'table'], $obj, ['pk_id']);
 
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileUpdate($query);
 
         $this->assertEquals(
             "UPDATE table AS t1 SET t1.attr1 = :v1, t1.attr2 = :v2, t1.pk_id = :v3 WHERE t1.pk_id = :v4",
@@ -37,7 +37,7 @@ class UpdateQueryTest extends TestCase
 
         $query = Query::update(['t1' => 'table'], $obj, ['pk_id'], ['attr2']);
 
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileUpdate($query);
 
         $this->assertEquals(
             "UPDATE table AS t1 SET t1.attr2 = :v1 WHERE t1.pk_id = :v2",

@@ -2,7 +2,6 @@
 
 namespace Francerz\SqlBuilder\Tests;
 
-use Francerz\SqlBuilder\CompiledQuery;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
 use Francerz\SqlBuilder\Nesting\NestMerger;
 use Francerz\SqlBuilder\Nesting\RowProxy;
@@ -22,14 +21,14 @@ class NestMergerTest extends TestCase
             $nest->getSelect()->where('childCol', $row->parentId);
         });
 
-        $parents = new SelectResult(new CompiledQuery('', [], $query), [
+        $parents = new SelectResult([
             (object)['parentId' => 1],
             (object)['parentId' => 2],
             (object)['parentId' => 3],
             (object)['parentId' => 1]
         ]);
 
-        $children = new SelectResult(new CompiledQuery('', [], $query), [
+        $children = new SelectResult([
             (object)['childId' => 1, 'childCol' => 2],
             (object)['childId' => 2, 'childCol' => 1],
             (object)['childId' => 3, 'childCol' => 1],

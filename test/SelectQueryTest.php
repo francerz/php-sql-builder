@@ -81,7 +81,7 @@ class SelectQueryTest extends TestCase
             AND (pe.id_carrera = :v5 OR pe.id_carrera IS NULL)
         ORDER BY g.id_grupo ASC";
 
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileSelect($query);
 
         $this->assertEquals([
             'v1' => 0,
@@ -96,7 +96,7 @@ class SelectQueryTest extends TestCase
     public function testCompilingTest()
     {
         $query = Query::selectFrom(['t' => 'table']);
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileSelect($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t', $compiled->getQuery());
         $this->assertEquals([], $compiled->getValues());
@@ -104,7 +104,7 @@ class SelectQueryTest extends TestCase
         // --------
 
         $query->crossJoin(['t2' => 'table2']);
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileSelect($query);
 
         $this->assertEquals('SELECT t.* FROM table AS t, table2 AS t2', $compiled->getQuery());
         $this->assertEquals([], $compiled->getValues());
@@ -115,7 +115,7 @@ class SelectQueryTest extends TestCase
         $query->innerJoin(['t3' => $subquery])->on()
             ->equals('t3.col', 't2.col')
             ->andLessEquals('t3.col2', 't.c');
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileSelect($query);
 
         $this->assertEquals(
             'SELECT t.* FROM table AS t, table2 AS t2 ' .
@@ -128,7 +128,7 @@ class SelectQueryTest extends TestCase
         // --------
 
         $query->where()->notBetween('t.alpha', 16, 80);
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileSelect($query);
 
         $expected = "SELECT t.* FROM table AS t, table2 AS t2
             INNER JOIN (SELECT a.* FROM table_a AS a) AS t3
@@ -150,7 +150,7 @@ class SelectQueryTest extends TestCase
             ->and('c', 'NULL')
             ->or('d', 'BETWEEN', 'e', 'f');
 
-        $compiled = $this->compiler->compileQuery($query);
+        $compiled = $this->compiler->compileSelect($query);
 
         $expected = "SELECT groups.* FROM groups WHERE (group_id IN (:v1, :v2, :v3, :v4)) " .
             "AND a = :v5 AND c IS NULL OR d BETWEEN :v6 AND :v7";
