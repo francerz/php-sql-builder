@@ -269,7 +269,7 @@ class QueryCompiler implements QueryCompilerInterface
     protected function compileTableSource($source, ?string $database = null)
     {
         if ($source instanceof SelectQuery) {
-            return '(' . $this->compileSelect($source) . ')';
+            return '(' . $this->compileSelectString($source) . ')';
         }
         if (isset($database)) {
             return $this->compileTableDatabase($database) . '.' . $this->compileTableName($source);
