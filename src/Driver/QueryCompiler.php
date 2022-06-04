@@ -3,7 +3,11 @@
 namespace Francerz\SqlBuilder\Driver;
 
 use DateTimeInterface;
-use Francerz\SqlBuilder\CompiledQuery;
+use Francerz\SqlBuilder\Compiles\CompiledDelete;
+use Francerz\SqlBuilder\Compiles\CompiledInsert;
+use Francerz\SqlBuilder\Compiles\CompiledProcedure;
+use Francerz\SqlBuilder\Compiles\CompiledSelect;
+use Francerz\SqlBuilder\Compiles\CompiledUpdate;
 use Francerz\SqlBuilder\Components\Column;
 use Francerz\SqlBuilder\Components\Join;
 use Francerz\SqlBuilder\Components\JoinTypes;
@@ -27,8 +31,8 @@ use Francerz\SqlBuilder\Expressions\Comparison\RelationalOperators;
 use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Expressions\Logical\LogicConnectors;
 use Francerz\SqlBuilder\InsertQuery;
-use Francerz\SqlBuilder\QueryInterface;
 use Francerz\SqlBuilder\SelectQuery;
+use Francerz\SqlBuilder\StoredProcedure;
 use Francerz\SqlBuilder\Traits\LimitableInterface;
 use Francerz\SqlBuilder\Traits\SortableInterface;
 use Francerz\SqlBuilder\UpdateQuery;
@@ -36,32 +40,6 @@ use Francerz\SqlBuilder\UpdateQuery;
 class QueryCompiler implements QueryCompilerInterface
 {
     private $values;
-
-    public function compileQuery(QueryInterface $query): ?CompiledQuery
-    {
-        $this->clearValues();
-        if ($query instanceof SelectQuery) {
-            $sql = $this->compileSelect($query);
-            $values = $this->getValues();
-            return new CompiledQuery($sql, $values, $query);
-        }
-        if ($query instanceof InsertQuery) {
-            $sql = $this->compileInsert($query);
-            $values = $this->getValues();
-            return new CompiledQuery($sql, $values, $query);
-        }
-        if ($query instanceof UpdateQuery) {
-            $sql = $this->compileUpdate($query);
-            $values = $this->getValues();
-            return new CompiledQuery($sql, $values, $query);
-        }
-        if ($query instanceof DeleteQuery) {
-            $sql = $this->compileDelete($query);
-            $values = $this->getValues();
-            return new CompiledQuery($sql, $values, $query);
-        }
-        return null;
-    }
 
     protected function clearValues()
     {
@@ -76,14 +54,63 @@ class QueryCompiler implements QueryCompilerInterface
     protected function addValue($value): string
     {
         if ($value instanceof DateTimeInterface) {
-            $value = $value->format('Y-m-d H:i:s');
+            $value = $this->compileDatetime($value);
         }
         $key = 'v' . (count($this->values) + 1);
         $this->values[$key] = $value;
         return $key;
     }
 
-    protected function compileSelect(SelectQuery $select): string
+    public function compileSelect(SelectQuery $select): CompiledSelect
+    {
+        $this->clearValues();
+        return new CompiledSelect(
+            $this->compileSelectString($select),
+            $this->getValues()
+        );
+    }
+
+    public function compileInsert(InsertQuery $insert): CompiledInsert
+    {
+        $this->clearValues();
+        return new CompiledInsert(
+            $this->compileInsertString($insert),
+            $this->getValues()
+        );
+    }
+
+    public function compileUpdate(UpdateQuery $query): CompiledUpdate
+    {
+        $this->clearValues();
+        return new CompiledUpdate(
+            $this->compileUpdateString($query),
+            $this->getValues()
+        );
+    }
+
+    public function compileDelete(DeleteQuery $query): CompiledDelete
+    {
+        $this->clearValues();
+        return new CompiledDelete(
+            $this->compileDeleteString($query),
+            $this->getValues()
+        );
+    }
+
+    public function compileProcedure(StoredProcedure $procedure): CompiledProcedure
+    {
+        $this->clearValues();
+        $sql = $procedure->getName();
+        $params = [];
+        foreach ($procedure->getParams() as $p) {
+            $params[] = ':' . $this->addValue($p);
+        }
+        $sql .= '(' . join(',', $params) . ')';
+        $values = $this->getValues();
+        return new CompiledProcedure($sql, $values);
+    }
+
+    protected function compileSelectString(SelectQuery $select): string
     {
         $query = 'SELECT ';
         // COLUMNS
@@ -107,11 +134,10 @@ class QueryCompiler implements QueryCompilerInterface
         $query .= $this->compileOrderBy($select);
         // LIMIT
         $query .= $this->compileLimit($select);
-
         return $query;
     }
 
-    protected function compileInsert(InsertQuery $insert): string
+    protected function compileInsertString(InsertQuery $insert): string
     {
         $query = 'INSERT INTO ';
         $query .= $this->compileTable($insert->getTable(), false);
@@ -138,7 +164,7 @@ class QueryCompiler implements QueryCompilerInterface
         return $query;
     }
 
-    protected function compileUpdate(UpdateQuery $update): string
+    protected function compileUpdateString(UpdateQuery $update): string
     {
         $query = 'UPDATE ';
         $query .= $this->compileTable($update->getTable());
@@ -151,7 +177,7 @@ class QueryCompiler implements QueryCompilerInterface
         return $query;
     }
 
-    protected function compileDelete(DeleteQuery $delete): string
+    protected function compileDeleteString(DeleteQuery $delete): string
     {
         $query = 'DELETE FROM ';
         $rowsIn = $delete->getRowsIn();

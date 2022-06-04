@@ -2,7 +2,11 @@
 
 namespace Francerz\SqlBuilder\Driver;
 
-use Francerz\SqlBuilder\CompiledQuery;
+use Francerz\SqlBuilder\Compiles\CompiledDelete;
+use Francerz\SqlBuilder\Compiles\CompiledInsert;
+use Francerz\SqlBuilder\Compiles\CompiledProcedure;
+use Francerz\SqlBuilder\Compiles\CompiledSelect;
+use Francerz\SqlBuilder\Compiles\CompiledUpdate;
 use Francerz\SqlBuilder\ConnectParams;
 use Francerz\SqlBuilder\Exceptions\TransactionException;
 use Francerz\SqlBuilder\Results\DeleteResult;
@@ -65,42 +69,52 @@ interface DriverInterface
     /**
      * Executes given SELECT CompiledQuery and returns the result.
      *
-     * @param CompiledQuery $query Compiled SELECT query.
+     * @param CompiledSelect $query Compiled SELECT query.
      * @return SelectResult
      *
      * @throws ExecuteSelectException
      */
-    public function executeSelect(CompiledQuery $query): SelectResult;
+    public function executeSelect(CompiledSelect $query): SelectResult;
 
     /**
      * Executes given INSERT CompiledQuery and returns the result.
      *
-     * @param CompiledQuery $query Compiled INSERT query.
+     * @param CompiledInsert $query Compiled INSERT query.
      * @return InsertResult
      *
      * @throws ExecuteInsertException
      */
-    public function executeInsert(CompiledQuery $query): InsertResult;
+    public function executeInsert(CompiledInsert $query): InsertResult;
 
     /**
      * Executees given UPDATE CompiledQuery and returns the result.
      *
-     * @param CompiledQuery $query
+     * @param CompiledUpdate $query
      * @return UpdateResult
      *
      * @throws ExecuteUpdateException
      */
-    public function executeUpdate(CompiledQuery $query): UpdateResult;
+    public function executeUpdate(CompiledUpdate $query): UpdateResult;
 
     /**
      * Executes given DELETE CompiledQuery and returns the result.
      *
-     * @param CompiledQuery $query
+     * @param CompiledDelete $query
      * @return DeleteResult
      *
      * @throws ExecuteDeleteException
      */
-    public function executeDelete(CompiledQuery $query): DeleteResult;
+    public function executeDelete(CompiledDelete $query): DeleteResult;
+
+    /**
+     * Execute procedure and returns the results.
+     *
+     * @param CompiledProcedure $query
+     * @return SelectResult[]
+     *
+     * @throws ExecuteProcedureException
+     */
+    public function executeProcedure(CompiledProcedure $query): array;
 
     /**
      * Starts a transaction on current database connection.
@@ -126,4 +140,11 @@ interface DriverInterface
      * @throws TransactionException if no transaction is running.
      */
     public function commit(): bool;
+
+    /**
+     * Checks if current connection is on an active transaction.
+     *
+     * @return boolean
+     */
+    public function isOnTransaction(): bool;
 }

@@ -5,7 +5,6 @@ namespace Francerz\SqlBuilder\Results;
 use ArrayAccess;
 use Countable;
 use Francerz\PowerData\Objects;
-use Francerz\SqlBuilder\CompiledQuery;
 use InvalidArgumentException;
 use Iterator;
 use JsonSerializable;
@@ -19,9 +18,9 @@ class SelectResult extends AbstractResult implements
 {
     private $rows;
 
-    public function __construct(CompiledQuery $query, array $rows, bool $success = true)
+    public function __construct(array $rows, bool $success = true)
     {
-        parent::__construct($query, count($rows), $success);
+        parent::__construct(count($rows), $success);
         $this->rows = $rows;
     }
 
