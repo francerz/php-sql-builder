@@ -2,6 +2,6 @@
 
 namespace Francerz\SqlBuilder\Compiles;
 
-class CompiledSelect extends AbstractCompiledQuery
+class CompiledSelect extends AbstractCompiledStatement
 {
 }

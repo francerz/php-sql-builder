@@ -2,7 +2,7 @@
 
 namespace Francerz\SqlBuilder\Compiles;
 
-abstract class AbstractCompiledQuery
+abstract class AbstractCompiledStatement
 {
     private $query;
     private $values;

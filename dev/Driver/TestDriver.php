@@ -77,12 +77,12 @@ class TestDriver implements DriverInterface
         return [];
     }
 
-    public function startTransaction(): bool
+    public function inTransaction(): bool
     {
         return false;
     }
 
-    public function isOnTransaction(): bool
+    public function startTransaction(): bool
     {
         return false;
     }

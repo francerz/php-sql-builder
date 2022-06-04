@@ -2,6 +2,6 @@
 
 namespace Francerz\SqlBuilder\Compiles;
 
-class CompiledProcedure
+class CompiledProcedure extends AbstractCompiledStatement
 {
 }
