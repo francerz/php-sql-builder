@@ -117,6 +117,13 @@ interface DriverInterface
     public function executeProcedure(CompiledProcedure $query): array;
 
     /**
+     * Checks if current connection is on an active transaction.
+     *
+     * @return boolean
+     */
+    public function inTransaction(): bool;
+
+    /**
      * Starts a transaction on current database connection.
      *
      * @return boolean **TRUE** if sucess, **FALSE** otherwise.
@@ -140,11 +147,4 @@ interface DriverInterface
      * @throws TransactionException if no transaction is running.
      */
     public function commit(): bool;
-
-    /**
-     * Checks if current connection is on an active transaction.
-     *
-     * @return boolean
-     */
-    public function isOnTransaction(): bool;
 }
