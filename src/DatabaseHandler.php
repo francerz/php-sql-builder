@@ -150,7 +150,7 @@ class DatabaseHandler
      */
     public function executeUpsert(UpsertQuery $query): UpsertResult
     {
-        if (count($query)) {
+        if (count($query) === 0) {
             return new UpsertResult();
         }
 
