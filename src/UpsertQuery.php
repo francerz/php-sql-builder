@@ -2,15 +2,17 @@
 
 namespace Francerz\SqlBuilder;
 
+use Countable;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Helpers\ModelHelper;
 use Iterator;
-use LogicException;
 
-class UpsertQuery implements Iterator
+class UpsertQuery implements Iterator, Countable
 {
     private $table = null;
+    private $values = [];
     private $keys = [];
+    private $columns = [];
 
     public function __construct($table = null, $values = null, array $keys = [], ?array $columns = null)
     {
@@ -65,44 +67,33 @@ class UpsertQuery implements Iterator
         return $this->columns;
     }
 
-    public function getUpdateQuery(): UpdateQuery
+    public function count()
     {
-        $values = $this->getValues();
-        if ($values instanceof SelectQuery) {
-            throw new \Exception('Upsert with SelectQuery not supported.');
-        }
-        if (!is_array($values) && !$values instanceof Iterator) {
-            throw new \Exception('Invalid values for upserting.');
-        }
-        if (count($values) !== 1) {
-            throw new LogicException('Only can get UpdateQuery from single row.');
-        }
-        $update = UpdateQuery::createUpdate($this->getTable(), $values[0], $this->keys, $this->getColumns());
-        return $update;
+        return count($this->values);
     }
 
     public function current()
     {
-        return current($this->rows);
+        return current($this->values);
     }
 
     public function next()
     {
-        next($this->rows);
+        next($this->values);
     }
 
     public function rewind()
     {
-        return reset($this->rows);
+        return reset($this->values);
     }
 
     public function key()
     {
-        return key($this->rows);
+        return key($this->values);
     }
 
     public function valid()
     {
-        return key($this->rows) !== null;
+        return key($this->values) !== null;
     }
 }

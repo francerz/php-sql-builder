@@ -150,6 +150,10 @@ class DatabaseHandler
      */
     public function executeUpsert(UpsertQuery $query): UpsertResult
     {
+        if (count($query)) {
+            return new UpsertResult();
+        }
+
         $keys = $query->getKeys();
         $keys = array_combine($keys, $keys);
 
@@ -242,8 +246,8 @@ class DatabaseHandler
      * @return bool Returns TRUE if connection is on an active transaction,
      * returns FALSE otherwise.
      */
-    public function isOnTransaction()
+    public function inTransaction()
     {
-        return $this->driver->isOnTransaction();
+        return $this->driver->inTransaction();
     }
 }
