@@ -8,22 +8,25 @@ use Francerz\SqlBuilder\Driver\DriverInterface;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Driver\QueryCompilerInterface;
 use Francerz\SqlBuilder\Driver\QueryTranslatorInterface;
+use Francerz\SqlBuilder\Exceptions\DeleteWithoutWhereException;
+use Francerz\SqlBuilder\Exceptions\UpdateWithoutWhereException;
 use Francerz\SqlBuilder\Nesting\NestMerger;
 use Francerz\SqlBuilder\Nesting\NestTranslator;
 use Francerz\SqlBuilder\Results\DeleteResult;
 use Francerz\SqlBuilder\Results\InsertResult;
-use Francerz\SqlBuilder\Results\QueryResultInterface;
 use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\Results\UpdateResult;
 use Francerz\SqlBuilder\Results\UpsertResult;
 use Francerz\SqlBuilder\Tools\QueryOptimizer;
-use InvalidArgumentException;
 use LogicException;
 
 class DatabaseHandler
 {
     private $compiler;
     private $driver;
+
+    private $allowUpdateWithoutWhere = false;
+    private $allowDeleteWithoutWhere = false;
 
     private $nestTranslator;
     private $nestMerger;
@@ -57,21 +60,25 @@ class DatabaseHandler
     }
 
     /**
-     * @deprecated v0.2.64 Use executeSelect, executeInsert, executeUpdate or executeDelete instead.
+     * Enables perform update without where clause on current connection.
+     *
+     * @param boolean $allow
+     * @return void
      */
-    public function execute(QueryInterface $query): QueryResultInterface
+    public function allowUpdateWithoutWhere($allow = true)
     {
-        if ($query instanceof SelectQuery) {
-            return $this->executeSelect($query);
-        } elseif ($query instanceof InsertQuery) {
-            return $this->executeInsert($query);
-        } elseif ($query instanceof UpdateQuery) {
-            return $this->executeUpdate($query);
-        } elseif ($query instanceof DeleteQuery) {
-            return $this->executeDelete($query);
-        }
+        $this->allowUpdateWithoutWhere = $allow;
+    }
 
-        throw new InvalidArgumentException('Unknown $query type.');
+    /**
+     * Enables perform delete without where clause on current connection.
+     *
+     * @param boolean $allow
+     * @return void
+     */
+    public function allowDeleteWithoutWhere($allow = true)
+    {
+        $this->allowDeleteWithoutWhere = $allow;
     }
 
     public function executeSelect(SelectQuery $query): SelectResult
@@ -105,6 +112,12 @@ class DatabaseHandler
         return $result;
     }
 
+    /**
+     * Executes an InsertQuery on current database connection.
+     *
+     * @param InsertQuery $query
+     * @return InsertResult
+     */
     public function executeInsert(InsertQuery $query): InsertResult
     {
         $compiled = $this->compiler->compileInsert($query);
@@ -112,15 +125,37 @@ class DatabaseHandler
         return $result;
     }
 
+    /**
+     * Executes an UpdateQuery on current database connection.
+     *
+     * @param UpdateQuery $query
+     * @return UpdateResult
+     *
+     * @throws UpdateWithoutWhereException
+     */
     public function executeUpdate(UpdateQuery $query): UpdateResult
     {
+        if (count($query->where()) === 0 && !$this->allowUpdateWithoutWhere) {
+            throw new UpdateWithoutWhereException('Trying to execute update without where clause.');
+        }
         $compiled = $this->compiler->compileUpdate($query);
         $result = $this->driver->executeUpdate($compiled);
         return $result;
     }
 
+    /**
+     * Executes a DeleteQuery on current database connection.
+     *
+     * @param DeleteQuery $query
+     * @return DeleteResult
+     * 
+     * @throws DeleteWithoutWhereException
+     */
     public function executeDelete(DeleteQuery $query): DeleteResult
     {
+        if (count($query->where()) === 0 && !$this->allowDeleteWithoutWhere) {
+            throw new DeleteWithoutWhereException('Trying to execute delete without where clause.');
+        }
         $compiled = $this->compiler->compileDelete($query);
         $result = $this->driver->executeDelete($compiled);
         return $result;
