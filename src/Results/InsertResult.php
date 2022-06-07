@@ -12,6 +12,9 @@ class InsertResult extends AbstractResult
         $this->insertedId = $insertedId;
     }
 
+    /**
+     * @deprecated v0.5.0 Use `getInsertedId()` method instead.
+     */
     public function getFirstId()
     {
         return $this->insertedId;
