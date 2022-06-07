@@ -2,11 +2,10 @@
 
 namespace Francerz\SqlBuilder\Exceptions;
 
-use Exception;
 use Francerz\SqlBuilder\Compiles\AbstractCompiledStatement;
 use Throwable;
 
-class ExecuteStatementException extends Exception
+class ExecuteStatementException extends SqlBuilderException
 {
     private $compiledStatement;
 
