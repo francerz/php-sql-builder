@@ -373,11 +373,14 @@ Executing Stored Procedures
 ---------------------------------------
 
 ```php
+// Connecting to database 'school'.
 $db = DatabaseManager::connect('school');
 
-// If procedure execute any `SELECT` then a `SelectResult[]` is returned.
+// Calls stored procedure with two argments.
 $results = $db->call('procedure_name', 'arg1', 'arg2');
 
+// Iterating procedure result sets.
+// `$results: SelectResult[]`
 foreach ($results as $i => $selectResult) {
     echo "Fetched {$selectResult->getNumRows()} rows in {$i} resultset.";
 }
