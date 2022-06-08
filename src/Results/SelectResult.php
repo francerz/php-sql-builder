@@ -72,6 +72,11 @@ class SelectResult extends AbstractResult implements
         throw new LogicException('Read Only access.');
     }
 
+    /**
+     * @deprecated v0.5.0
+     *
+     * @return void
+     */
     public function first()
     {
         $first = reset($this->rows);
@@ -80,6 +85,11 @@ class SelectResult extends AbstractResult implements
         }
     }
 
+    /**
+     * @deprecated v0.5.0
+     *
+     * @return void
+     */
     public function last()
     {
         $last = end($this->rows);
