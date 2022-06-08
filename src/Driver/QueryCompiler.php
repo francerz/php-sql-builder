@@ -100,7 +100,8 @@ class QueryCompiler implements QueryCompilerInterface
     public function compileProcedure(StoredProcedure $procedure): CompiledProcedure
     {
         $this->clearValues();
-        $sql = $procedure->getName();
+        $sql = 'CALL ';
+        $sql .= $procedure->getName();
         $params = [];
         foreach ($procedure->getParams() as $p) {
             $params[] = ':' . $this->addValue($p);
