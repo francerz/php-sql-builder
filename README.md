@@ -394,11 +394,14 @@ Executing Stored Procedures  [↑](#table-of-contents)
 $db = DatabaseManager::connect('school');
 
 // Calls stored procedure with two argments.
+/** @var SelectResult[] */
 $results = $db->call('procedure_name', 'arg1', 'arg2');
 
+// Shows how many results obtained from procedure.
+echo count($results) . ' results.' . PHP_EOL;
+
 // Iterating procedure result sets.
-// `$results: SelectResult[]`
 foreach ($results as $i => $selectResult) {
-    echo "Fetched " . $selectResult->getNumRows() . " rows in " . $i . " resultset.";
+    echo "Fetched " . $selectResult->getNumRows() . PHP_EOL;
 }
 ```
