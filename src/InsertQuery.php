@@ -10,13 +10,9 @@ class InsertQuery implements QueryInterface, Countable
 {
     private $connection = null;
     private $table = null;
-    /**
-     * @var object[]|array[]|SelectQuery
-     */
+    /** @var object[]|array[]|SelectQuery */
     private $values = [];
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $columns = [];
 
     public function __construct($table = null, $values = [], ?array $columns = null)

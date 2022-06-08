@@ -32,13 +32,6 @@ interface DriverInterface
     public function getCompiler(): ?QueryCompilerInterface;
 
     /**
-     * Retrieves a QueryTranslatorInterface compatible object.
-     *
-     * @return QueryTranslatorInterface|null
-     */
-    public function getTranslator(): ?QueryTranslatorInterface;
-
-    /**
      * Returns default host address or name for given driver.
      *
      * @return string host name

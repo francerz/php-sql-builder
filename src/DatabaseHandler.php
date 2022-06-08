@@ -7,7 +7,6 @@ use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Driver\DriverInterface;
 use Francerz\SqlBuilder\Driver\QueryCompiler;
 use Francerz\SqlBuilder\Driver\QueryCompilerInterface;
-use Francerz\SqlBuilder\Driver\QueryTranslatorInterface;
 use Francerz\SqlBuilder\Exceptions\DeleteWithoutWhereException;
 use Francerz\SqlBuilder\Exceptions\UpdateWithoutWhereException;
 use Francerz\SqlBuilder\Nesting\NestMerger;
@@ -47,11 +46,6 @@ class DatabaseHandler
     public function setCompiler(QueryCompilerInterface $compiler)
     {
         $this->compiler = $compiler;
-    }
-
-    public function setTranslator(QueryTranslatorInterface $translator)
-    {
-        $this->translator = $translator;
     }
 
     public function connect(ConnectParams $params)

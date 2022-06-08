@@ -10,7 +10,6 @@ use Francerz\SqlBuilder\Compiles\CompiledUpdate;
 use Francerz\SqlBuilder\ConnectParams;
 use Francerz\SqlBuilder\Driver\DriverInterface;
 use Francerz\SqlBuilder\Driver\QueryCompilerInterface;
-use Francerz\SqlBuilder\Driver\QueryTranslatorInterface;
 use Francerz\SqlBuilder\Results\DeleteResult;
 use Francerz\SqlBuilder\Results\InsertResult;
 use Francerz\SqlBuilder\Results\SelectResult;
@@ -23,11 +22,6 @@ class TestDriver implements DriverInterface
     }
 
     public function getCompiler(): ?QueryCompilerInterface
-    {
-        return null;
-    }
-
-    public function getTranslator(): ?QueryTranslatorInterface
     {
         return null;
     }

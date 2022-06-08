@@ -17,7 +17,9 @@ class DeleteQuery implements QueryInterface, LimitableInterface, SortableInterfa
     }
 
     private $connection = null;
+    /** @var Table */
     private $table;
+    /** @var string[] */
     private $rowsInArray;
 
     public function __construct($table)
