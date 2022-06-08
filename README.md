@@ -6,21 +6,24 @@ SQL Builder
 
 A query builder that allows optimal performance object based query construction.
 
+Table of contents
+---------------------------------------
 - [SQL Builder](#sql-builder)
-  - [Installation](#installation)
-  - [Basic common usage syntax](#basic-common-usage-syntax)
-    - [Select query](#select-query)
-    - [Insert query](#insert-query)
-    - [Update query](#update-query)
-    - [Delete query](#delete-query)
-  - [Connect to database](#connect-to-database)
-  - [Build `SELECT` with `WHERE` clause.](#build-select-with-where-clause)
-      - [List of operators.](#list-of-operators)
-  - [Building `SELECT` with `JOIN`](#building-select-with-join)
-  - [SELECT nesting](#select-nesting)
-  - [Executing Stored Procedures](#executing-stored-procedures)
+  - [Table of contents](#table-of-contents)
+  - [Installation ↑](#installation-)
+  - [Basic common usage syntax  ↑](#basic-common-usage-syntax--)
+    - [Select query  ↑](#select-query--)
+    - [Insert query  ↑](#insert-query--)
+    - [Update query  ↑](#update-query--)
+    - [Delete query  ↑](#delete-query--)
+  - [Connect to database  ↑](#connect-to-database--)
+  - [Build SELECT with WHERE or HAVING clause  ↑](#build-select-with-where-or-having-clause--)
+      - [List of operators  ↑](#list-of-operators--)
+  - [Building SELECT with JOIN  ↑](#building-select-with-join--)
+  - [SELECT nesting  ↑](#select-nesting--)
+  - [Executing Stored Procedures  ↑](#executing-stored-procedures--)
 
-Installation
+Installation [↑](#table-of-contents)
 ---------------------------------------
 
 This package can be installed with composer using following command.
@@ -29,7 +32,7 @@ This package can be installed with composer using following command.
 composer require francerz/sql-builder
 ```
 
-Basic common usage syntax
+Basic common usage syntax  [↑](#table-of-contents)
 ---------------------------------------
 ```php
 class Group {
@@ -39,7 +42,7 @@ class Group {
 }
 ```
 
-### Select query
+### Select query  [↑](#table-of-contents)
 ```php
 // SELECT group_id, subject, teacher FROM groups
 $query = Query::selectFrom('groups', ['group_id', 'subject', 'teacher']);
@@ -49,7 +52,7 @@ $result = $db->executeSelect($query);
 $groups = $result->toArray(Group::class);
 ```
 
-### Insert query
+### Insert query  [↑](#table-of-contents)
 ```php
 $group = new Group();
 $group->subject = 'Database fundamentals';
@@ -63,7 +66,7 @@ $result = $db->executeInsert($query);
 $group->group_id = $result->getInsertedId();
 ```
 
-### Update query
+### Update query  [↑](#table-of-contents)
 ```php
 $group = new Group();
 $group->group_id = 10;
@@ -76,7 +79,7 @@ $db = DatabaseManager::connect('school');
 $result = $db->executeUpdate($query);
 ```
 
-### Delete query
+### Delete query  [↑](#table-of-contents)
 ```php
 // DELETE FROM groups WHERE group_id = 10
 $query = Query::deleteFrom('groups', ['group_id' => 10]);
@@ -85,7 +88,7 @@ $db = DatabaseManager::connect('school');
 $result = $db->executeDelete($query);
 ```
 
-Connect to database
+Connect to database  [↑](#table-of-contents)
 ---------------------------------------
 
 Using an URI string
@@ -107,7 +110,7 @@ $db = DatabaseManager::connect('school');
 
 ---
 
-Build `SELECT` with `WHERE` clause.
+Build SELECT with WHERE or HAVING clause  [↑](#table-of-contents)
 ---------------------------------------
 
 Bellow are examples of using `WHERE` clause which aplies to `SELECT`, `UPDATE`
@@ -181,7 +184,7 @@ Parenthesis anonymous function only works in the following syntax.
 - `$query->where()->andNot(function)`
 - `$query->where()->orNot(function)`
 
-#### List of operators.
+#### List of operators  [↑](#table-of-contents)
 | Operator      | Regular (AND)                 | AND                              | OR                              |
 | ------------- | ----------------------------- | -------------------------------- | ------------------------------- |
 | `=`           | `equals($op1, $op2)`          | `andEquals($op1, $op2)`          | `orEquals($op1, $op2)`          |
@@ -206,7 +209,7 @@ Parenthesis anonymous function only works in the following syntax.
 
 ---
 
-Building `SELECT` with `JOIN`
+Building SELECT with JOIN  [↑](#table-of-contents)
 ---------------------------------------
 
 ```sql
@@ -313,7 +316,7 @@ $query->columns([
 > Join Syntax is available to `SELECT`, `UPDATE` and `DELETE` sql syntax,
 > however, not all database engines might support it.
 
-SELECT nesting
+SELECT nesting  [↑](#table-of-contents)
 ---------------------------------------
 
 Sometimes database table joining might not be enought for all the data requirements.
@@ -383,7 +386,7 @@ Result might be like this:
 ]
 ```
 
-Executing Stored Procedures
+Executing Stored Procedures  [↑](#table-of-contents)
 ---------------------------------------
 
 ```php
