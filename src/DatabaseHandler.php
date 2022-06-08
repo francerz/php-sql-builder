@@ -148,7 +148,7 @@ class DatabaseHandler
      *
      * @param DeleteQuery $query
      * @return DeleteResult
-     * 
+     *
      * @throws DeleteWithoutWhereException
      */
     public function executeDelete(DeleteQuery $query): DeleteResult
@@ -172,6 +172,19 @@ class DatabaseHandler
     {
         $compiled = $this->compiler->compileProcedure($procedure);
         return $this->driver->executeProcedure($compiled);
+    }
+
+    /**
+     * Calls a store procedure and returns its results
+     *
+     * @param string $procedure
+     * @param mixed ...$args
+     * @return SelectResult[]
+     */
+    public function call(string $procedure, ...$args)
+    {
+        $proc = new StoredProcedure($procedure, $args);
+        return $this->executeProcedure($proc);
     }
 
     /**
@@ -254,6 +267,17 @@ class DatabaseHandler
     }
 
     /**
+     * Checks if current connection is on an active transaction.
+     *
+     * @return bool Returns TRUE if connection is on an active transaction,
+     * returns FALSE otherwise.
+     */
+    public function inTransaction()
+    {
+        return $this->driver->inTransaction();
+    }
+
+    /**
      * Rollbacks actions since transaction starts.
      *
      * @return bool
@@ -273,16 +297,5 @@ class DatabaseHandler
     public function commit()
     {
         return $this->driver->commit();
-    }
-
-    /**
-     * Checks if current connection is on an active transaction.
-     *
-     * @return bool Returns TRUE if connection is on an active transaction,
-     * returns FALSE otherwise.
-     */
-    public function inTransaction()
-    {
-        return $this->driver->inTransaction();
     }
 }
