@@ -6,6 +6,20 @@ SQL Builder
 
 A query builder that allows optimal performance object based query construction.
 
+- [SQL Builder](#sql-builder)
+  - [Installation](#installation)
+  - [Basic common usage syntax](#basic-common-usage-syntax)
+    - [Select query](#select-query)
+    - [Insert query](#insert-query)
+    - [Update query](#update-query)
+    - [Delete query](#delete-query)
+  - [Connect to database](#connect-to-database)
+  - [Build `SELECT` with `WHERE` clause.](#build-select-with-where-clause)
+      - [List of operators.](#list-of-operators)
+  - [Building `SELECT` with `JOIN`](#building-select-with-join)
+  - [SELECT nesting](#select-nesting)
+  - [Executing Stored Procedures](#executing-stored-procedures)
+
 Installation
 ---------------------------------------
 
