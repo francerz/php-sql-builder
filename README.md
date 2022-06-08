@@ -382,6 +382,6 @@ $results = $db->call('procedure_name', 'arg1', 'arg2');
 // Iterating procedure result sets.
 // `$results: SelectResult[]`
 foreach ($results as $i => $selectResult) {
-    echo "Fetched {$selectResult->getNumRows()} rows in {$i} resultset.";
+    echo 'Fetched ' . $selectResult->getNumRows() . ' rows in ' . $i . ' resultset.";
 }
 ```
