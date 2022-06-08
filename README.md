@@ -1,7 +1,7 @@
 SQL Builder
 =======================================
 
-![Packagist](https://img.shields.io/packagist/vpre/francerz/sql-builder)
+![Packagist](https://img.shields.io/packagist/v/francerz/sql-builder)
 ![Build Status](https://github.com/francerz/php-sql-builder/workflows/PHP%20Unit%20Tests/badge.svg)
 
 A query builder that allows optimal performance object based query construction.
@@ -99,7 +99,9 @@ Build `SELECT` with `WHERE` clause.
 Bellow are examples of using `WHERE` clause which aplies to `SELECT`, `UPDATE`
 and `DELETE` queries.
 
-`SELECT * FROM groups WHERE group_id = 10`
+```sql
+SELECT * FROM groups WHERE group_id = 10
+```
 ```php
 // Explicit syntax
 $query = Query::selectFrom('groups')->where()->equals('group_id', 10);
@@ -108,7 +110,9 @@ $query = Query::selectFrom('groups')->where()->equals('group_id', 10);
 $query = Query::selectFrom('groups')->where('group_id', 10);
 ```
 
-`SELECT * FROM groups WHERE group_id IN (10, 20, 30)`
+```sql
+SELECT * FROM groups WHERE group_id IN (10, 20, 30)
+```
 ```php
 // Explicit syntax
 $query = Query::selectFrom('groups')->where()->in('group_id', [10, 20, 30]);
@@ -117,7 +121,9 @@ $query = Query::selectFrom('groups')->where()->in('group_id', [10, 20, 30]);
 $query = Query::selectFrom('groups')->where('group_id', [10, 20, 30]);
 ```
 
-`SELECT * FROM groups WHERE teacher IS NULL`
+```sql
+SELECT * FROM groups WHERE teacher IS NULL
+```
 ```php
 // Explicit syntax
 $query = Query::selectFrom('groups')->where()->null('teacher');
@@ -126,7 +132,9 @@ $query = Query::selectFrom('groups')->where()->null('teacher');
 $query = Query::selectFrom('groups')->where('teacher', 'NULL');
 ```
 
-`SELECT * FROM groups WHERE group_id <= 10 AND subject LIKE '%database%'`
+```sql
+SELECT * FROM groups WHERE group_id <= 10 AND subject LIKE '%database%'
+```
 ```php
 // Explicit syntax
 $query = Query::selectFrom('groups');
@@ -137,7 +145,9 @@ $query = Query::selectFrom('groups');
 $query->where('group_id', '<=', 10)->andLike('subject', '%database%');
 ```
 
-`SELECT * FROM groups WHERE (group_id = 10 OR group_id BETWEEN 20 AND 30)`
+```sql
+SELECT * FROM groups WHERE (group_id = 10 OR group_id BETWEEN 20 AND 30)
+```
 ```php
 $query = Query::selectFrom('groups');
 
@@ -175,7 +185,8 @@ Parenthesis anonymous function only works in the following syntax.
 | `IN`          | `in($op, $array)`             | `andIn($op, $array)`             | `orIn($op, $array)`             |
 | `NOT IN`      | `notIn($op, $array)`          | `andNotIn($op, $array)`          | `orNotIn($op, $array)`          |
 
-> **About `ConditionList` class**  
+> **About `ConditionList` class**
+>
 > The examples of condition list, functions and operators applies in the same
 > way to `WHERE`, `HAVING` and `ON` syntax.
 
@@ -254,7 +265,29 @@ $query->columns([
 ]);
 ```
 
-> **SUPPORTED JOIN TYPES**  
+Join tables and subqueries
+```sql
+-- Gets all groups of active teachers
+SELECT g.group_id, CONCAT(t.given_name, ' ', t.family_name) AS teacher_name
+FROM groups AS g
+INNER JOIN (SELECT * FROM teachers WHERE active = 1) AS t
+ON g.teacher_id = t.teacher_id
+```
+```php
+// Creating subquery object
+$subquery = Query::selectFrom('teachers');
+$subquery->where('active', 1);
+
+$query = Query::selectFrom('groups AS g');
+$query->innerJoin(['t' => $subquery])->on('g.teacher_id', 't.teacher_id');
+$query->columns([
+    'g.group_id',
+    'teacher_name' => "CONCAT(t.given_name, ' ', t.family_name)"
+]);
+```
+
+> **SUPPORTED JOIN TYPES**
+>
 > Query Builder supports many types of `JOIN`:
 > - `innerJoin(table, columns = [])`
 > - `crossJoin(table, columns = [])`
@@ -262,6 +295,7 @@ $query->columns([
 > - `rightJoin(table, columns = [])`
 
 > **NOTE:**
+>
 > Join Syntax is available to `SELECT`, `UPDATE` and `DELETE` sql syntax,
 > however, not all database engines might support it.
 
@@ -333,4 +367,18 @@ Result might be like this:
         ]
     }
 ]
+```
+
+Executing Stored Procedures
+---------------------------------------
+
+```php
+$db = DatabaseManager::connect('school');
+
+// If procedure execute any `SELECT` then a `SelectResult[]` is returned.
+$results = $db->call('procedure_name', 'arg1', 'arg2');
+
+foreach ($results as $i => $selectResult) {
+    echo "Fetched {$selectResult->getNumRows()} rows in {$i} resultset.";
+}
 ```
