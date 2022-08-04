@@ -231,7 +231,8 @@ class DatabaseHandler
         $insertedId = null;
         $success = true;
         if (!empty($inserts)) {
-            $insertQuery = Query::insertInto($query->getTable(), $inserts);
+            $columns = array_merge($query->getKeys(), $query->getColumns());
+            $insertQuery = Query::insertInto($query->getTable(), $inserts, $columns);
             $insertResult = $this->executeInsert($insertQuery);
             $numInserts += $insertResult->getNumRows();
             $insertedId = $insertResult->getInsertedId();
