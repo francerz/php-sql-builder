@@ -28,9 +28,10 @@ class NestMerger
         $query = $nest->getNested()->getSelect();
         $query = $this->placeholdSelect($query, $childRow);
         $mode = $nest->getMode();
+        $className = $nest->getClassName();
 
         $query = static::getMatches($query, $matches);
-        $childIndex = new Index($children->toArray(), $matches);
+        $childIndex = new Index($children->toArray($className), $matches);
         // $parentIndex= new Index($parents->toArray(), array_keys($matches));
 
         foreach ($parents as $parent) {

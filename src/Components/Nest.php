@@ -5,6 +5,7 @@ namespace Francerz\SqlBuilder\Components;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
 use Francerz\SqlBuilder\Nesting\NestMode;
 use Francerz\SqlBuilder\Nesting\RowProxy;
+use stdClass;
 
 class Nest
 {
@@ -13,17 +14,20 @@ class Nest
     private $callback;
     private $rowProxy;
     private $mode;
+    private $className;
 
     public function __construct(
         string $alias,
         callable $callback,
         ?NestedSelect $nested = null,
-        $mode = NestMode::COLLECTION
+        $mode = NestMode::COLLECTION,
+        string $className = stdClass::class
     ) {
         $this->alias = $alias;
         $this->callback = $callback;
         $this->nested = $nested;
         $this->mode = NestMode::coerce($mode);
+        $this->className = $className;
     }
 
     public function init()
@@ -55,5 +59,10 @@ class Nest
     public function getMode()
     {
         return $this->mode;
+    }
+
+    public function getClassName()
+    {
+        return $this->className;
     }
 }
