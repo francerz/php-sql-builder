@@ -3,6 +3,7 @@
 namespace Francerz\SqlBuilder;
 
 use Countable;
+use Francerz\PowerData\Arrays;
 use Francerz\SqlBuilder\Components\Table;
 use Francerz\SqlBuilder\Helpers\ModelHelper;
 
@@ -48,8 +49,23 @@ class InsertQuery implements QueryInterface, Countable
         return count($this->values);
     }
 
+    private static function normalizeColumns(?array $columns = null)
+    {
+        if (is_null($columns)) {
+            return null;
+        }
+
+        $newColumns = [];
+        foreach ($columns as $k => $v) {
+            $k = is_int($k) ? $v : $k;
+            $newColumns[$k] = $v;
+        }
+        return $newColumns;
+    }
+
     public function setValues($values, ?array $columns = null)
     {
+        $columns = static::normalizeColumns($columns);
         if (is_array($values) && count(array_filter(array_keys($values), 'is_int')) > 0) {
             foreach ($values as $row) {
                 $this->setValues($row, $columns);
@@ -62,8 +78,8 @@ class InsertQuery implements QueryInterface, Countable
         }
         $values = ModelHelper::dataAsArray($values);
         if (is_array($columns)) {
-            $columns = array_combine($columns, $columns);
             $values = array_intersect_key($values, $columns);
+            $values = Arrays::replaceKeys($values, $columns);
         }
         $this->values[] = $values;
         $this->columns = array_unique(array_merge($this->columns, array_keys($values)));

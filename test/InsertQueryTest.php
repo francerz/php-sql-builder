@@ -96,4 +96,23 @@ class InsertQueryTest extends TestCase
         );
         $this->assertEquals(['v1' => 80, 'v2' => 3213], $compiled->getValues());
     }
+
+    public function testColumnRename()
+    {
+        $grupo = new stdClass();
+        $grupo->periodo_id = 95;
+        $grupo->id_asignatura = 2342;
+
+        $query = Query::insertInto('grupos', $grupo, ['periodo_id', 'id_asignatura' => 'materia_id']);
+        $compiled = $this->compiler->compileInsert($query);
+
+        $this->assertEquals(
+            'INSERT INTO grupos(periodo_id,materia_id) VALUES (:v1,:v2)',
+            $compiled->getQuery()
+        );
+        $this->assertEquals(
+            ['v1' => 95, 'v2' => 2342],
+            $compiled->getValues()
+        );
+    }
 }
