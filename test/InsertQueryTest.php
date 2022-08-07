@@ -83,15 +83,15 @@ class InsertQueryTest extends TestCase
         $query = Query::insertInto('grupos', $grupo, ['periodo_id', 'materia_id', 'empleado_id']);
 
         $this->assertInstanceOf(InsertQuery::class, $query);
-        $this->assertEquals(['periodo_id', 'materia_id'], $query->getColumns());
+        $this->assertEquals(['periodo_id', 'materia_id', 'empleado_id'], $query->getColumns());
 
         $query = Query::insertInto('grupos', (array)$grupo, ['periodo_id', 'materia_id', 'empleado_id']);
-        $this->assertEquals(['periodo_id', 'materia_id'], $query->getColumns());
+        $this->assertEquals(['periodo_id', 'materia_id', 'empleado_id'], $query->getColumns());
 
         $compiled = $this->compiler->compileInsert($query);
 
         $this->assertEquals(
-            'INSERT INTO grupos(periodo_id,materia_id) VALUES (:v1,:v2)',
+            'INSERT INTO grupos(periodo_id,materia_id,empleado_id) VALUES (:v1,:v2,NULL)',
             $compiled->getQuery()
         );
         $this->assertEquals(['v1' => 80, 'v2' => 3213], $compiled->getValues());
