@@ -203,7 +203,7 @@ class DatabaseHandler
         $index = new Index($query, $keys);
         $selectQuery = Query::selectFrom($query->getTable());
         foreach ($index->getColumns() as $c) {
-            $selectQuery->where($c, $index->getColumnValues($c));
+            $selectQuery->where()->orIn($c, $index->getColumnValues($c));
         }
         $selectResult = $this->executeSelect($selectQuery);
 

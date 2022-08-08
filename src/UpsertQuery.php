@@ -39,7 +39,7 @@ class UpsertQuery implements Iterator, Countable
 
     private static function normalizeColumns(?array $columns = null)
     {
-        if (is_null($columns)) {
+        if (empty($columns)) {
             return null;
         }
 
