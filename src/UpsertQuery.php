@@ -21,9 +21,8 @@ class UpsertQuery implements Iterator, Countable
             $this->setTable($table);
         }
         if (isset($values)) {
-            $this->setValues($values);
+            $this->setValues($values, $columns);
         }
-        $this->columns = $columns ?? [];
         $this->keys = $keys;
     }
 
