@@ -84,7 +84,7 @@ abstract class Query
     {
         return UpdateQuery::createUpdate($table, $data, $matching, $columns);
     }
-    public static function upsert($table, $data = null, array $keys = [], ?array $columns = null)
+    public static function upsert($table, $data = null, array $keys = [], array $columns = [])
     {
         return new UpsertQuery(Table::fromExpression($table), $data, $keys, $columns);
     }

@@ -231,8 +231,7 @@ class DatabaseHandler
         $insertedId = null;
         $success = true;
         if (!empty($inserts)) {
-            $columns = array_merge($query->getKeys(), $query->getColumns());
-            $insertQuery = Query::insertInto($query->getTable(), $inserts, $columns);
+            $insertQuery = Query::insertInto($query->getTable(), $inserts, $query->getColumns());
             $insertResult = $this->executeInsert($insertQuery);
             $numInserts += $insertResult->getNumRows();
             $insertedId = $insertResult->getInsertedId();
@@ -240,7 +239,7 @@ class DatabaseHandler
         }
         if (!empty($updates)) {
             foreach ($updates as $u) {
-                $updateQuery = Query::update($query->getTable(), $u, $query->getKeys(), $query->getColumns());
+                $updateQuery = Query::update($query->getTable(), $u, $query->getKeys(), $query->getUpdateColumns());
                 $updateResult = $this->executeUpdate($updateQuery);
                 $numUpdates += $updateResult->getNumRows();
                 $success &= $updateResult->success();

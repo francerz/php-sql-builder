@@ -15,13 +15,14 @@ class UpsertQuery implements Iterator, Countable
     private $keys = [];
     private $columns = [];
 
-    public function __construct($table = null, $values = null, array $keys = [], ?array $columns = null)
+    public function __construct($table = null, $values = null, array $keys = [], array $columns = [])
     {
         if (isset($table)) {
             $this->setTable($table);
         }
         if (isset($values)) {
-            $this->setValues($values, $columns);
+            $cols = empty($columns) ? [] : array_merge($keys, $columns);
+            $this->setValues($values, $cols);
         }
         $this->keys = $keys;
     }
@@ -36,10 +37,10 @@ class UpsertQuery implements Iterator, Countable
         return $this->table;
     }
 
-    private static function normalizeColumns(?array $columns = null)
+    private static function normalizeColumns(array $columns = [])
     {
         if (empty($columns)) {
-            return null;
+            return [];
         }
 
         $newColumns = [];
@@ -50,7 +51,7 @@ class UpsertQuery implements Iterator, Countable
         return $newColumns;
     }
 
-    public function setValues($values, ?array $columns = null)
+    public function setValues($values, array $columns = [])
     {
         $columns = static::normalizeColumns($columns);
         if (is_array($values) && count(array_filter(array_keys($values), 'is_int')) > 0) {
@@ -60,7 +61,7 @@ class UpsertQuery implements Iterator, Countable
             return;
         }
         $values = ModelHelper::dataAsArray($values);
-        if (is_array($columns)) {
+        if (!empty($columns)) {
             $values = array_intersect_key($values, $columns);
             $values = Arrays::replaceKeys($values, $columns);
         }
@@ -81,6 +82,11 @@ class UpsertQuery implements Iterator, Countable
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    public function getUpdateColumns()
+    {
+        return array_values(array_diff($this->columns, $this->keys));
     }
 
     public function count()
