@@ -216,11 +216,11 @@ class DatabaseHandler
             $filter = array_intersect_key($rowA, $keys);
             $matches = $index[$filter];
             if (count($matches) === 0) {
-                $inserts[] = $rowA;
+                $inserts[] = $row;
                 continue;
             }
             if (array_search($row, $matches) === false) {
-                $updates[] = $rowA;
+                $updates[] = $row;
                 continue;
             }
         }
@@ -245,7 +245,7 @@ class DatabaseHandler
                 $success &= $updateResult->success();
             }
         }
-        return new UpsertResult($numInserts, $numUpdates, $insertedId, true);
+        return new UpsertResult($inserts, $updates, $numInserts, $numUpdates, $insertedId, true);
     }
 
     /**
