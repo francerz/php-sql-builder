@@ -15,6 +15,8 @@ class UpsertResultTest extends TestCase
         $this->assertEquals(['b'], $result->getUpdates());
         $this->assertEquals(3, $result->getNumInserted());
         $this->assertEquals(5, $result->getNumUpdated());
+        $this->assertEquals(3, $result->getInsertRows());
+        $this->assertEquals(5, $result->getUpdateRows());
         $this->assertEquals(8, $result->getNumRows());
         $this->assertEquals(13, $result->getInsertedId());
         $this->assertTrue($result->success());
