@@ -6,32 +6,48 @@ class UpsertResult extends InsertResult
 {
     private $inserts = [];
     private $updates = [];
-    private $insertRows = 0;
-    private $updateRows = 0;
+    private $numInserted = 0;
+    private $numUpdated = 0;
 
     public function __construct(
         array $inserts = [],
         array $updates = [],
-        int $insertRows = 0,
-        int $updateRows = 0,
+        int $numInsertedRows = 0,
+        int $numUpdatedRows = 0,
         $firstId = null,
         bool $success = true
     ) {
-        parent::__construct($insertRows + $updateRows, $firstId, $success);
+        parent::__construct($numInsertedRows + $numUpdatedRows, $firstId, $success);
         $this->inserts = $inserts;
         $this->updates = $updates;
-        $this->insertRows = $insertRows;
-        $this->updateRows = $updateRows;
+        $this->numInserted = $numInsertedRows;
+        $this->numUpdated = $numUpdatedRows;
     }
 
+    /**
+     * @deprecated
+     */
     public function getInsertRows()
     {
-        return $this->insertRows;
+        return $this->numInserted;
     }
 
+    /**
+     * @deprecated
+     */
     public function getUpdateRows()
     {
-        return $this->updateRows;
+        return $this->numUpdated;
+    }
+
+    public function getNumInserted()
+    {
+        return $this->numInserted;
+    }
+
+    public function getNumUpdated()
+    {
+        return $this->numUpdated;
     }
 
     public function getInserts()
