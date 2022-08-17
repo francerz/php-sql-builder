@@ -1,7 +1,10 @@
 <?php
 
+namespace Francerz\SqlBuilder\Tests;
+
 use Francerz\SqlBuilder\Query;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class UpsertQueryTest extends TestCase
 {
