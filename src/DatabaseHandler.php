@@ -199,6 +199,13 @@ class DatabaseHandler
         $keys = $query->getKeys();
         $keys = array_combine($keys, $keys);
 
+        // Creates a transaction to prevent concurrent failures.
+        $transactionStarted = false;
+        if (!$this->inTransaction()) {
+            $this->startTransaction();
+            $transactionStarted = true;
+        }
+
         // Finds all rows that can match.
         $index = new Index($query, $keys);
         $selectQuery = Query::selectFrom($query->getTable());
@@ -244,6 +251,11 @@ class DatabaseHandler
                 $numUpdates += $updateResult->getNumRows();
                 $success &= $updateResult->success();
             }
+        }
+
+        // Commits transaction if this started inside this method.
+        if ($transactionStarted) {
+            $this->commit();
         }
         return new UpsertResult($inserts, $updates, $numInserts, $numUpdates, $insertedId, true);
     }
