@@ -157,4 +157,15 @@ class SelectQueryTest extends TestCase
 
         $this->assertEquals($expected, $compiled->getQuery());
     }
+
+    public function testWhereNot()
+    {
+        $query = Query::selectFrom(['groups']);
+        $query->where()->not('group_id', 1);
+
+        $compiled = $this->compiler->compileSelect($query);
+
+        $expected = "SELECT groups.* FROM groups WHERE NOT group_id = :v1";
+        $this->assertEquals($expected, $compiled->getQuery());
+    }
 }

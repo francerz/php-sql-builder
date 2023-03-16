@@ -348,7 +348,8 @@ class QueryCompiler implements QueryCompilerInterface
 
     protected function compileRelationalExpression(RelationalExpression $expr): string
     {
-        $output = $this->compileComparable($expr->getOperand1());
+        $output = $expr->isNegated() ? 'NOT ' : '';
+        $output .= $this->compileComparable($expr->getOperand1());
         $output .= $this->compileRelationalOperator($expr->getOperator());
         $output .= $this->compileComparable($expr->getOperand2());
         return $output;

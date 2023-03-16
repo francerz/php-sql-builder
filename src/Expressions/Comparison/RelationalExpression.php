@@ -3,6 +3,7 @@
 namespace Francerz\SqlBuilder\Expressions\Comparison;
 
 use Francerz\SqlBuilder\Expressions\ComparableComponentInterface;
+use Francerz\SqlBuilder\Expressions\NegatableInterface;
 use Francerz\SqlBuilder\Expressions\TwoOperandsInterface;
 use Francerz\SqlBuilder\Nesting\NestOperationResolverInterface;
 use Francerz\SqlBuilder\Nesting\NestTranslator;
@@ -14,12 +15,15 @@ use RuntimeException;
 class RelationalExpression implements
     ComparisonOperationInterface,
     TwoOperandsInterface,
+    NegatableInterface,
     NestOperationResolverInterface
 {
 
     private $operand1;
     private $operand2;
     private $operator;
+
+    private $negated = false;
 
     public function __construct(
         ComparableComponentInterface $operand1,
@@ -64,6 +68,16 @@ class RelationalExpression implements
     public function getOperator()
     {
         return $this->operator;
+    }
+
+    public function negate(bool $negate = true)
+    {
+        $this->negated = $negate;
+    }
+
+    public function isNegated(): bool
+    {
+        return $this->negated;
     }
 
     public function requiresTransform(): bool
