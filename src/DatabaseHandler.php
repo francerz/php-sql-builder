@@ -30,6 +30,8 @@ class DatabaseHandler
     private $nestTranslator;
     private $nestMerger;
 
+    private $transactionStack = 0;
+
     public function __construct(DriverInterface $driver)
     {
         $this->driver = $driver;
@@ -269,7 +271,15 @@ class DatabaseHandler
      */
     public function startTransaction()
     {
-        return $this->driver->startTransaction();
+        $tx = true;
+        if ($this->transactionStack == 0) {
+            $tx = $this->driver->startTransaction();
+        }
+        if ($tx) {
+            $this->transactionStack++;
+        }
+        return $tx;
+
     }
 
     /**
@@ -291,7 +301,14 @@ class DatabaseHandler
      */
     public function rollback()
     {
-        return $this->driver->rollback();
+        $rb = true;
+        if ($this->transactionStack > 0) {
+            $rb = $this->driver->rollback();
+        }
+        if ($rb) {
+            $this->transactionStack = 0;
+        }
+        return $rb;
     }
 
     /**
@@ -302,6 +319,13 @@ class DatabaseHandler
      */
     public function commit()
     {
-        return $this->driver->commit();
+        $cm = true;
+        if ($this->transactionStack == 1) {
+            $cm = $this->driver->commit();
+        }
+        if ($cm) {
+            $this->transactionStack = max(0, $this->transactionStack - 1);
+        }
+        return $cm;
     }
 }
