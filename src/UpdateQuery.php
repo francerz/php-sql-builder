@@ -51,6 +51,17 @@ class UpdateQuery implements QueryInterface, LimitableInterface, SortableInterfa
             }, ModelHelper::getDataProperties($data, ModelHelper::PROPERTY_SKIP_KEYS));
         }
 
+        $usedKeys = [];
+        foreach ($matching as $k => $v) {
+            if (is_numeric($k)) {
+                continue;
+            }
+            $key = new Column($k, null, $query->getTable()->getAliasOrName());
+            $query->where()->equals($key, $v);
+            $usedKeys[$k] = null;
+        }
+        $matching = array_diff_key($matching, $usedKeys);
+
         $data = ModelHelper::dataAsArray($data);
         foreach ($data as $k => $v) {
             if (in_array($k, $matching)) {

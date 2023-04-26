@@ -63,4 +63,25 @@ class UpdateQueryTest extends TestCase
         $this->assertTrue(true);
         $this->assertEquals($expected, $actual);
     }
+
+    public function testMatchingValues()
+    {
+        $group = json_decode(json_encode([
+            'group_id' => 3,
+            'year' => 2023,
+            'topic' => 'Data Science'
+        ]));
+        $query = Query::update('groups', $group, ['group_id' => 5, 'year'], ['topic']);
+
+        $compiled = $this->compiler->compileUpdate($query);
+
+        $this->assertEquals(
+            'UPDATE groups SET groups.topic = :v1 WHERE groups.group_id = :v2 AND groups.year = :v3',
+            $compiled->getQuery()
+        );
+        $this->assertEquals(
+            ['v1' => 'Data Science', 'v2' => 5, 'v3' => 2023],
+            $compiled->getValues()
+        );
+    }
 }
