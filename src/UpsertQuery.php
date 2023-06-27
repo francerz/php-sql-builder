@@ -15,13 +15,13 @@ class UpsertQuery implements Iterator, Countable
     private $keys = [];
     private $columns = [];
 
-    public function __construct($table = null, $values = null, array $keys = [], array $columns = [])
+    public function __construct($table = null, $values = null, array $keys = [], ?array $columns = null)
     {
         if (isset($table)) {
             $this->setTable($table);
         }
         if (isset($values)) {
-            $cols = empty($columns) ? [] : array_merge($keys, $columns);
+            $cols = isset($columns) ? array_merge($keys, $columns) : $columns;
             $this->setValues($values, $cols);
         }
         $this->keys = $keys;
@@ -51,9 +51,12 @@ class UpsertQuery implements Iterator, Countable
         return $newColumns;
     }
 
-    public function setValues($values, array $columns = [])
+    public function setValues($values, ?array $columns = null)
     {
-        $columns = static::normalizeColumns($columns);
+        if (is_array($columns) && empty($columns)) {
+            return;
+        }
+        $columns = static::normalizeColumns($columns ?? []);
         if (is_array($values) && count(array_filter(array_keys($values), 'is_int')) > 0) {
             foreach ($values as $row) {
                 $this->setValues($row, $columns);

@@ -202,11 +202,7 @@ class DatabaseHandler
         $keys = array_combine($keys, $keys);
 
         // Creates a transaction to prevent concurrent failures.
-        $transactionStarted = false;
-        if (!$this->inTransaction()) {
-            $this->startTransaction();
-            $transactionStarted = true;
-        }
+        $this->startTransaction();
 
         // Finds all rows that can match.
         $index = new Index($query, $keys);
@@ -246,7 +242,7 @@ class DatabaseHandler
             $insertedId = $insertResult->getInsertedId();
             $success &= $insertResult->success();
         }
-        if (!empty($updates)) {
+        if (!empty($updates) && !empty($query->getUpdateColumns())) {
             foreach ($updates as $u) {
                 $updateQuery = Query::update($query->getTable(), $u, $query->getKeys(), $query->getUpdateColumns());
                 $updateResult = $this->executeUpdate($updateQuery);
@@ -256,9 +252,8 @@ class DatabaseHandler
         }
 
         // Commits transaction if this started inside this method.
-        if ($transactionStarted) {
-            $this->commit();
-        }
+        $this->commit();
+
         return new UpsertResult($inserts, $updates, $numInserts, $numUpdates, $insertedId, true);
     }
 

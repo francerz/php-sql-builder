@@ -29,5 +29,10 @@ class UpsertQueryTest extends TestCase
         $this->assertEquals(['user_id', 'username', 'password', 'enabled'], $query->getColumns());
         $this->assertEquals(['user_id'], $query->getKeys());
         $this->assertEquals(['username', 'password', 'enabled'], $query->getUpdateColumns());
+
+        $query = Query::upsert('users', $obj, ['username', 'enabled'], []);
+        $this->assertEquals(['username', 'enabled'], $query->getColumns());
+        $this->assertEquals(['username', 'enabled'], $query->getKeys());
+        $this->assertEquals([], $query->getUpdateColumns());
     }
 }
