@@ -31,6 +31,7 @@ class DatabaseHandler
     private $nestMerger;
 
     private $transactionStack = 0;
+    private $chunkSize = null;
 
     public function __construct(DriverInterface $driver)
     {
@@ -75,6 +76,11 @@ class DatabaseHandler
     public function allowDeleteWithoutWhere($allow = true)
     {
         $this->allowDeleteWithoutWhere = $allow;
+    }
+
+    public function setChunkSize(?int $chunkSize)
+    {
+        $this->chunkSize = $chunkSize;
     }
 
     public function executeSelect(SelectQuery $query): SelectResult
@@ -236,11 +242,14 @@ class DatabaseHandler
         $insertedId = null;
         $success = true;
         if (!empty($inserts)) {
-            $insertQuery = Query::insertInto($query->getTable(), $inserts, $query->getColumns());
-            $insertResult = $this->executeInsert($insertQuery);
-            $numInserts += $insertResult->getNumRows();
-            $insertedId = $insertResult->getInsertedId();
-            $success &= $insertResult->success();
+            $insertChunks = array_chunk($inserts, $this->chunkSize ?? count($inserts));
+            foreach ($insertChunks as $chunk) {
+                $insertQuery = Query::insertInto($query->getTable(), $chunk, $query->getColumns());
+                $insertResult = $this->executeInsert($insertQuery);
+                $insertedId = $insertedId ?? $insertResult->getInsertedId();
+                $numInserts += $insertResult->getNumRows();
+                $success &= $insertResult->success();
+            }
         }
         if (!empty($updates) && !empty($query->getUpdateColumns())) {
             foreach ($updates as $u) {
