@@ -80,6 +80,9 @@ class DatabaseHandler
 
     public function setChunkSize(?int $chunkSize)
     {
+        if (isset($chunkSize) && $chunkSize < 1) {
+            return;
+        }
         $this->chunkSize = $chunkSize;
     }
 
