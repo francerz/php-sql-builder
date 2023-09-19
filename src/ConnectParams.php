@@ -44,16 +44,21 @@ class ConnectParams
         $hostKey = "DATABASE_{$alias}_HOST";
         $portKey = "DATABASE_{$alias}_PORT";
         $userKey = "DATABASE_{$alias}_USER";
-        $pswdKey = "DATABASE_{$alias}_PSWD";
         $nameKey = "DATABASE_{$alias}_NAME";
         $encdKey = "DATABASE_{$alias}_ENCD";
+        $pswdKey = "DATABASE_{$alias}_PSWD";
+        $pwflKey = "DATABASE_{$alias}_PSWD_FILE";
 
         $host = $env[$hostKey] ?? $driver->getDefaultHost();
         $port = $env[$portKey] ?? $driver->getDefaultPort();
         $user = $env[$userKey] ?? $driver->getDefaultUser();
-        $pswd = $env[$pswdKey] ?? $driver->getDefaultPswd();
         $name = $env[$nameKey] ?? $alias;
         $encd = $env[$encdKey] ?? null;
+
+        $pswd = $env[$pswdKey] ?? $driver->getDefaultPswd();
+        if (!empty($env[$pwflKey]) && file_exists($env[$pwflKey])) {
+            $pswd = file_get_contents($env[$pwflKey]);
+        }
 
         return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd);
     }
