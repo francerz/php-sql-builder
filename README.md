@@ -3,6 +3,8 @@ SQL Builder
 
 ![Packagist](https://img.shields.io/packagist/v/francerz/sql-builder)
 ![Build Status](https://github.com/francerz/php-sql-builder/workflows/PHP%20Unit%20Tests/badge.svg)
+![Packagist Downloads](https://img.shields.io/packagist/dt/francerz/sql-builder)
+![License](https://img.shields.io/github/license/francerz/php-sql-builder?color=%230080FF)
 
 A query builder that allows optimal performance object based query construction.
 
