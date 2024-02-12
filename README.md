@@ -2,11 +2,12 @@ SQL Builder
 =======================================
 
 ![Packagist](https://img.shields.io/packagist/v/francerz/sql-builder)
+![License](https://img.shields.io/github/license/francerz/php-sql-builder?color=%230078D0)
+![Packagist Downloads](https://img.shields.io/packagist/dt/francerz/sql-builder?color=%23E0B000)
 ![Build Status](https://github.com/francerz/php-sql-builder/workflows/PHP%20Unit%20Tests/badge.svg)
-![Packagist Downloads](https://img.shields.io/packagist/dt/francerz/sql-builder)
-![License](https://img.shields.io/github/license/francerz/php-sql-builder?color=%230080FF)
 
-A query builder that allows optimal performance object based query construction.
+A PHP SQL query builder that prioritizes readability and optimal performance
+with object based construction.
 
 Table of contents
 ---------------------------------------
@@ -19,14 +20,14 @@ Table of contents
     - [Insert query ↑](#insert-query-)
     - [Update query ↑](#update-query-)
     - [Delete query ↑](#delete-query-)
-  - [Build SELECT with WHERE or HAVING clause  ↑](#build-select-with-where-or-having-clause--)
+  - [Build SELECT with WHERE or HAVING clause ↑](#build-select-with-where-or-having-clause-)
       - [List of operators ↑](#list-of-operators-)
-  - [Building SELECT with JOIN  ↑](#building-select-with-join--)
+  - [Building SELECT with JOIN ↑](#building-select-with-join-)
     - [SUPPORTED JOIN TYPES](#supported-join-types)
     - [Examples](#examples)
-  - [SELECT nesting  ↑](#select-nesting--)
+  - [SELECT nesting ↑](#select-nesting-)
   - [Transactions ↑](#transactions-)
-  - [Executing Stored Procedures  ↑](#executing-stored-procedures--)
+  - [Executing Stored Procedures ↑](#executing-stored-procedures-)
 
 Installation [↑](#table-of-contents)
 ---------------------------------------
@@ -59,8 +60,6 @@ $_ENV['DATABASE_SCHOOL_PSWD_FILE'] = '/run/secrets/db_school_password';
 
 $db = DatabaseManager::connect('school');
 ```
-
-
 
 Basic common usage syntax [↑](#table-of-contents)
 ---------------------------------------
@@ -120,7 +119,7 @@ $result = $db->executeDelete($query);
 
 ---
 
-Build SELECT with WHERE or HAVING clause  [↑](#table-of-contents)
+Build SELECT with WHERE or HAVING clause [↑](#table-of-contents)
 ---------------------------------------
 
 Bellow are examples of using `WHERE` clause which aplies to `SELECT`, `UPDATE`
@@ -210,13 +209,16 @@ $query->where(function(ConditionList $subwhere) {
 });
 ```
 
-Parenthesis anonymous function only works in the following syntax.
-- `$query->where(function)`
-- `$query->where()->not(function)`
-- `$query->where()->and(function)`
-- `$query->where()->or(function)`
-- `$query->where()->andNot(function)`
-- `$query->where()->orNot(function)`
+> Parenthesis anonymous function works in the following syntax.
+> 
+> ```php
+> $query->where(function($subwhere) { });
+> $query->where->not(function($subwhere) { });
+> $query->where->and(function($subwhere) { });
+> $query->where->or(function($subwhere) { });
+> $query->where->andNot(function($subwhere) { });
+> $query->where->orNot(function($subwhere) { });
+> ```
 
 ---
 
@@ -226,7 +228,7 @@ The library has a complete list of operators that are mostly common to every SQL
 database engine and to facilitate reading, also prefixes the `and` and `or`
 logical operators.
 
-| Operator      | Regular (AND)                 | AND                              | OR                              |
+| SQL Operator  | Regular (AND)                 | AND                              | OR                              |
 | ------------- | ----------------------------- | -------------------------------- | ------------------------------- |
 | `=`           | `equals($op1, $op2)`          | `andEquals($op1, $op2)`          | `orEquals($op1, $op2)`          |
 | `<>` or `!=`  | `notEquals($op1, $op2)`       | `andNotEquals($op1, $op2)`       | `orNotEquals($op1, $op2)`       |
@@ -250,7 +252,7 @@ logical operators.
 
 ---
 
-Building SELECT with JOIN  [↑](#table-of-contents)
+Building SELECT with JOIN [↑](#table-of-contents)
 ---------------------------------------
 
 One of the most common operations in relational databases is merging and
@@ -401,7 +403,7 @@ $query->columns([
 ]);
 ```
 
-SELECT nesting  [↑](#table-of-contents)
+SELECT nesting [↑](#table-of-contents)
 ---------------------------------------
 
 Sometimes database table joining might not be enought for all the data requirements.
@@ -491,7 +493,7 @@ try {
 ```
 
 
-Executing Stored Procedures  [↑](#table-of-contents)
+Executing Stored Procedures [↑](#table-of-contents)
 ---------------------------------------
 
 ```php
