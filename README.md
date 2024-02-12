@@ -242,24 +242,29 @@ The library provides a comprehensive array of operators that are largely
 consistent across various SQL database engines. To enhance readability, it also
 prefixes the `and` and `or` logical operators for clarity.
 
-| Operator         | SQL Operator  | Regular (AND)                 | AND                              | OR                              |
-| ---------------- | ------------- | ----------------------------- | -------------------------------- | ------------------------------- |
-| Comparison       | `=`           | `equals($op1, $op2)`          | `andEquals($op1, $op2)`          | `orEquals($op1, $op2)`          |
-|                  | `<>` or `!=`  | `notEquals($op1, $op2)`       | `andNotEquals($op1, $op2)`       | `orNotEquals($op1, $op2)`       |
-|                  | `<`           | `lessThan($op1, $op2)`        | `andLessThan($op1, $op2)`        | `orLessthan($op1, $op2)`        |
-|                  | `<=`          | `lessEquals($op1, $op2)`      | `andLessEquals($op1, $op2)`      | `orLessEquals($op1, $op2)`      |
-|                  | `>`           | `greaterThan($op1, $op2)`     | `andGreaterThan($op1, $op2)`     | `orGreaterThan($op1, $op2)`     |
-|                  | `>=`          | `greaterEquals($op1, $op2)`   | `andGreaterEquals($op1, $op2)`   | `orGreaterEquals($op1, $op2)`   |
-| Pattern Matching | `LIKE`        | `like($op1, $pattern)`        | `andLike($op1, $pattern)`        | `orLike($op1, $pattern)`        |
-|                  | `NOT LIKE`    | `notLike($op1, $pattern)`     | `andNotLike($op1, $pattern)`     | `orNotLike($op1, $pattern)`     |
-|                  | `REGEXP`      | `regexp($op1, $pattern)`      | `andRegexp($op1, $pattern)`      | `orRegexp($op1, $pattern)`      |
-|                  | `NOT REGEXP`  | `notRegexp($op1, $pattern)`   | `andNotRegexp($op1, $pattern)`   | `orNotRegexp($op1, $pattern)`   |
-| Nullability      | `IS NULL`     | `null($op)`                   | `andNull($op)`                   | `orNull($op)`                   |
-|                  | `IS NOT NULL` | `notNull($op)`                | `andNotNull($op)`                | `orNotNull($op)`                |
-| Range            | `BETWEEN`     | `between($op, $min, $max)`    | `andBetween($op, $min, $max)`    | `orBetween($op, $min, $max)`    |
-|                  | `NOT BETWEEN` | `notBetween($op, $min, $max)` | `andNotBetween($op, $min, $max)` | `orNotBetween($op, $min, $max)` |
-| Membership       | `IN`          | `in($op, $array)`             | `andIn($op, $array)`             | `orIn($op, $array)`             |
-|                  | `NOT IN`      | `notIn($op, $array)`          | `andNotIn($op, $array)`          | `orNotIn($op, $array)`          |
+| SQL Operator  | Regular (AND)                 | AND                              | OR                              |
+| ------------- | ----------------------------- | -------------------------------- | ------------------------------- |
+| Comparison    |                               |                                  |                                 |
+| `=`           | `equals($op1, $op2)`          | `andEquals($op1, $op2)`          | `orEquals($op1, $op2)`          |
+| `<>` or `!=`  | `notEquals($op1, $op2)`       | `andNotEquals($op1, $op2)`       | `orNotEquals($op1, $op2)`       |
+| `<`           | `lessThan($op1, $op2)`        | `andLessThan($op1, $op2)`        | `orLessthan($op1, $op2)`        |
+| `<=`          | `lessEquals($op1, $op2)`      | `andLessEquals($op1, $op2)`      | `orLessEquals($op1, $op2)`      |
+| `>`           | `greaterThan($op1, $op2)`     | `andGreaterThan($op1, $op2)`     | `orGreaterThan($op1, $op2)`     |
+| `>=`          | `greaterEquals($op1, $op2)`   | `andGreaterEquals($op1, $op2)`   | `orGreaterEquals($op1, $op2)`   |
+| Pattern Match |                               |                                  |                                 |
+| `LIKE`        | `like($op1, $pattern)`        | `andLike($op1, $pattern)`        | `orLike($op1, $pattern)`        |
+| `NOT LIKE`    | `notLike($op1, $pattern)`     | `andNotLike($op1, $pattern)`     | `orNotLike($op1, $pattern)`     |
+| `REGEXP`      | `regexp($op1, $pattern)`      | `andRegexp($op1, $pattern)`      | `orRegexp($op1, $pattern)`      |
+| `NOT REGEXP`  | `notRegexp($op1, $pattern)`   | `andNotRegexp($op1, $pattern)`   | `orNotRegexp($op1, $pattern)`   |
+| Nullability   |                               |                                  |                                 |
+| `IS NULL`     | `null($op)`                   | `andNull($op)`                   | `orNull($op)`                   |
+| `IS NOT NULL` | `notNull($op)`                | `andNotNull($op)`                | `orNotNull($op)`                |
+| Range         |                               |                                  |                                 |
+| `BETWEEN`     | `between($op, $min, $max)`    | `andBetween($op, $min, $max)`    | `orBetween($op, $min, $max)`    |
+| `NOT BETWEEN` | `notBetween($op, $min, $max)` | `andNotBetween($op, $min, $max)` | `orNotBetween($op, $min, $max)` |
+| Membership    |                               |                                  |                                 |
+| `IN`          | `in($op, $array)`             | `andIn($op, $array)`             | `orIn($op, $array)`             |
+| `NOT IN`      | `notIn($op, $array)`          | `andNotIn($op, $array)`          | `orNotIn($op, $array)`          |
 
 > **About `ConditionList` class**
 >
