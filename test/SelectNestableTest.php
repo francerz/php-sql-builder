@@ -12,6 +12,7 @@ use Francerz\SqlBuilder\Query;
 use Francerz\SqlBuilder\Results\SelectResult;
 use Francerz\SqlBuilder\SelectQuery;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class SelectNestableTest extends TestCase
 {
@@ -116,5 +117,52 @@ class SelectNestableTest extends TestCase
         $groupsNested = $this->getGroupsNestedResult($query);
 
         $this->assertEquals($groupsNested, $groups);
+    }
+
+    public function getNewGroupsQuery()
+    {
+        $query = Query::selectFrom('groups AS g', ['group_id', 'subject', 'teacher']);
+        $query->where()->in('g.group_id', [3, 7, 11]);
+
+        $studentsQuery = Query::selectFrom('students AS s');
+        $studentsQuery->innerJoin('groups_students AS gs', ['group_id'])
+            ->on('s.student_id', 'gs.student_id');
+        $query->nestMany('Students', $studentsQuery, $row, stdClass::class)
+            ->where('gs.group_id', $row->group_id);
+        return $query;
+    }
+
+    public function testNestMany()
+    {
+        $nestTranslator = new NestTranslator();
+        $compiler = new QueryCompiler();
+        $merger = new NestMerger();
+
+        $query = $this->getNewGroupsQuery();
+        $groups = $this->getGroupsExpectedResult();
+        $nests = $query->getNests();
+        $this->assertCount(1, $nests);
+
+        $nest = $nests[0];
+        if (!$nest instanceof Nest) {
+            return;
+        }
+
+        $nested = $nest->getNested();
+        $nestSelect = $nested->getSelect();
+        $nestTranslate = $nestTranslator->translate($nestSelect, $groups);
+
+        $nestCompiled = $compiler->compileSelect($nestTranslate);
+        $expected = 'SELECT s.*, gs.group_id FROM students AS s INNER JOIN groups_students AS gs ON s.student_id = gs.student_id WHERE gs.group_id IN (:v1, :v2, :v3)';
+        $this->assertEquals($expected, $nestCompiled->getQuery());
+        $this->assertEquals(['v1' => 3, 'v2' => 7, 'v3' => 11], $nestCompiled->getValues());
+
+        $students = $this->getStudentsExpectedResult($nestTranslate);
+
+        $merger->merge($groups, $students, $nest);
+        $groupsNested = $this->getGroupsNestedResult($query);
+
+        $this->assertEquals($groupsNested, $groups);
+
     }
 }

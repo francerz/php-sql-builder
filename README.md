@@ -438,35 +438,60 @@ For this reason there's a syntax that creates the most lightweight and efficient
 way to query nested data, preventing access overhead and reducing processing time.
 
 ```php
+
+// Groups query
+$groupsQuery = Query::selectFrom(
+    'groups',
+    ['group_id', 'teacher_id', 'subject', 'classroom']
+);
+
+// NESTING A COLLECTION OF RESULT OBJECTS
 // Students query
 $studentsQuery = Query::selectFrom(
     'students',
     ['student_id', 'group_id', 'first_name', 'last_name']
 );
-
-// Groups query
-$groupsQuery = Query::selectFrom(
-    'groups',
-    ['group_id', 'subject', 'teacher']
-);
-
 // Nesting students by each group
-$groupsQuery->nest(['Students' => $studentsQuery], function (NestedSelect $nest, RowProxy $row) {
-    $nest->getSelect()->where('s.group_id', $row->group_id);
-});
+$groupsQuery
+    ->nestMany('Students', $studentsQuery, $groupRow, Student::class)
+    ->where('s.group_id', $groupRow->group_id);
+
+// NESTING THE FIRST RESULT OBJECT
+// Teachers Query
+$teachersQuery = Query::selectFrom(
+    'teachers',
+    ['teacher_id', 'first_name', 'last_name']
+);
+// Nest-link teacher by each group
+$groupsQuery
+    ->linkFirst('Teacher', $teachersQuery, $groupRow, Teacher::class)
+    ->where('t.teacher_id', $groupRow->teacher_id);
 
 $db = DatabaseManager::connect('school');
 $result = $db->executeSelect($groupsQuery);
 $groups = $result->toArray();
 ```
 
+> **Old Nest Syntax**  
+> ```php
+> $groupsQuery->nest(['Students' => $studentsQuery], function > (NestedSelect $nest, RowProxy $row) {
+>     $nest->getSelect()->where('s.group_id', $row->group_id);
+> }, NestMode::COLLECTION, Student::class);
+> ```
+
 Result would be like this:
 ```json
 [
     {
         "group_id": 1,
+        "teacher_id": 3,
         "subject": "Programing fundamentals",
-        "teacher": "Rosemary",
+        "classroom": "A113",
+        "Teacher": {
+            "teacher_id": 3,
+            "first_name": "Rosemary",
+            "last_name": "Smith"
+        },
         "Students": [
             {
                 "student_id": 325,
@@ -482,8 +507,14 @@ Result would be like this:
     },
     {
         "group_id": 2,
+        "teacher_id": 75,
         "subject" : "Object Oriented Programming",
-        "teacher": "Steve",
+        "classroom": "G7-R5",
+        "Teacher": {
+            "teacher_id": 75,
+            "first_name": "Steve",
+            "last_name": "Johnson"
+        },
         "Students": [
             {
                 "student_id": 536,

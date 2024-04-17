@@ -5,6 +5,7 @@ namespace Francerz\SqlBuilder\Traits;
 use Francerz\SqlBuilder\Components\Nest;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
 use Francerz\SqlBuilder\Nesting\NestMode;
+use Francerz\SqlBuilder\Nesting\RowProxy;
 use Francerz\SqlBuilder\SelectQuery;
 use stdClass;
 
@@ -41,8 +42,8 @@ trait NestableTrait
         if (!$query instanceof NestedSelect) {
             $query = new NestedSelect($query);
         }
-        $nest = new Nest($alias, $callback, $query, $mode, $className);
-        $nest->init();
+        $nest = new Nest($alias, $query, $mode, $className);
+        call_user_func($callback, $query, $nest->getRowProxy());
         $this->nests[] = $nest;
         return $this;
     }
@@ -50,5 +51,29 @@ trait NestableTrait
     public function getNests()
     {
         return $this->nests;
+    }
+
+    public function nestMany(string $alias, SelectQuery $query, ?RowProxy &$row, string $className = stdClass::class)
+    {
+        $nest = new Nest($alias, new NestedSelect($query), NestMode::COLLECTION, $className);
+        $row = $nest->getRowProxy();
+        $this->nests[] = $nest;
+        return $nest;
+    }
+
+    public function linkFirst(string $alias, SelectQuery $query, ?RowProxy &$row, string $className = stdClass::class)
+    {
+        $nest = new Nest($alias, new NestedSelect($query), NestMode::SINGLE_FIRST, $className);
+        $row = $nest->getRowProxy();
+        $this->nests[] = $nest;
+        return $nest;
+    }
+
+    public function linkLast(string $alias, SelectQuery $query, ?RowProxy &$row, string $className = stdClass::class)
+    {
+        $nest = new Nest($alias, new NestedSelect($query), NestMode::SINGLE_LAST, $className);
+        $row = $nest->getRowProxy();
+        $this->nests[] = $nest;
+        return $nest;
     }
 }

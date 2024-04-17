@@ -2,48 +2,38 @@
 
 namespace Francerz\SqlBuilder\Components;
 
+use Francerz\SqlBuilder\Expressions\Logical\ConditionList;
 use Francerz\SqlBuilder\Nesting\NestedSelect;
 use Francerz\SqlBuilder\Nesting\NestMode;
 use Francerz\SqlBuilder\Nesting\RowProxy;
+use Francerz\SqlBuilder\SelectQuery;
 use stdClass;
 
 class Nest
 {
     private $alias;
     private $nested;
-    private $callback;
+    private $where;
     private $rowProxy;
     private $mode;
     private $className;
 
     public function __construct(
         string $alias,
-        callable $callback,
-        ?NestedSelect $nested = null,
+        NestedSelect $nested,
         $mode = NestMode::COLLECTION,
         string $className = stdClass::class
     ) {
+        $this->rowProxy = new RowProxy();
         $this->alias = $alias;
-        $this->callback = $callback;
         $this->nested = $nested;
         $this->mode = NestMode::coerce($mode);
         $this->className = $className;
     }
 
-    public function init()
-    {
-        $this->rowProxy = new RowProxy();
-        call_user_func($this->callback, $this->nested, $this->rowProxy);
-    }
-
     public function getAlias()
     {
         return $this->alias;
-    }
-
-    public function getCallback()
-    {
-        return $this->callback;
     }
 
     public function getNested()
@@ -64,5 +54,11 @@ class Nest
     public function getClassName()
     {
         return $this->className;
+    }
+
+    public function where()
+    {
+        $args = func_get_args();
+        return call_user_func_array([$this->nested->getSelect(), 'where'], $args);
     }
 }

@@ -26,7 +26,7 @@ class NestMerger
         $childRow = new RowProxy();
         $alias = $nest->getAlias();
         $query = $nest->getNested()->getSelect();
-        $query = $this->placeholdSelect($query, $childRow);
+        $query = static::placeholdSelect($query, $childRow);
         $mode = $nest->getMode();
         $className = $nest->getClassName();
 
@@ -41,8 +41,8 @@ class NestMerger
             foreach ($subchildren as $child) {
                 $childRow->setCurrent($child);
                 if (
-                    $this->mergeConditionList($query->where()) &&
-                    $this->mergeConditionList($query->having())
+                    static::mergeConditionList($query->where()) &&
+                    static::mergeConditionList($query->having())
                 ) {
                     $childs[] = $child;
                     if ($mode->is(NestMode::SINGLE_FIRST)) {
@@ -59,39 +59,39 @@ class NestMerger
         }
     }
 
-    public function placeholdSelect(SelectQuery $query, RowProxy $rowProxy)
+    public static function placeholdSelect(SelectQuery $query, RowProxy $rowProxy)
     {
         $query = clone $query;
-        $query->setWhere($this->placeholdConditionList($query->where(), $rowProxy));
-        $query->setHaving($this->placeholdConditionList($query->having(), $rowProxy));
+        $query->setWhere(static::placeholdConditionList($query->where(), $rowProxy));
+        $query->setHaving(static::placeholdConditionList($query->having(), $rowProxy));
         return $query;
     }
 
-    public function placeholdConditionList(ConditionList $conditions, RowProxy $rowProxy)
+    public static function placeholdConditionList(ConditionList $conditions, RowProxy $rowProxy)
     {
         $newConds = new ConditionList();
         foreach ($conditions as $cond) {
             $cnd = $cond->getCondition();
             if ($cnd instanceof ConditionList) {
-                $this->placeholdConditionList($cnd, $rowProxy);
+                static::placeholdConditionList($cnd, $rowProxy);
             } elseif ($cnd instanceof OneOperandInterface) {
-                $op = $this->placeholdOperand($cnd->getOperand(), $rowProxy);
+                $op = static::placeholdOperand($cnd->getOperand(), $rowProxy);
                 if (!isset($op)) {
                     continue;
                 }
                 $cnd->setOperand($op);
             } elseif ($cnd instanceof TwoOperandsInterface) {
-                $op1 = $this->placeholdOperand($cnd->getOperand1(), $rowProxy);
-                $op2 = $this->placeholdOperand($cnd->getOperand2(), $rowProxy);
+                $op1 = static::placeholdOperand($cnd->getOperand1(), $rowProxy);
+                $op2 = static::placeholdOperand($cnd->getOperand2(), $rowProxy);
                 if (!isset($op1, $op2)) {
                     continue;
                 }
                 $cnd->setOperand1($op1);
                 $cnd->setOperand2($op2);
             } elseif ($cnd instanceof ThreeOperandsInterface) {
-                $op1 = $this->placeholdOperand($cnd->getOperand1(), $rowProxy);
-                $op2 = $this->placeholdOperand($cnd->getOperand2(), $rowProxy);
-                $op3 = $this->placeholdOperand($cnd->getOperand3(), $rowProxy);
+                $op1 = static::placeholdOperand($cnd->getOperand1(), $rowProxy);
+                $op2 = static::placeholdOperand($cnd->getOperand2(), $rowProxy);
+                $op3 = static::placeholdOperand($cnd->getOperand3(), $rowProxy);
                 if (!isset($op1, $op2, $op3)) {
                     continue;
                 }
@@ -104,7 +104,7 @@ class NestMerger
         return $newConds;
     }
 
-    public function placeholdOperand($operand, RowProxy $rowProxy)
+    public static function placeholdOperand($operand, RowProxy $rowProxy)
     {
         if ($operand instanceof ValueProxy) {
             return $operand;
@@ -114,12 +114,12 @@ class NestMerger
         }
     }
 
-    public function mergeConditionList(ConditionList $conditions): bool
+    public static function mergeConditionList(ConditionList $conditions): bool
     {
         $result = true;
         foreach ($conditions as $cond) {
             $cnd = $cond->getCondition();
-            $res = $this->handleBooleanResult($cnd);
+            $res = static::handleBooleanResult($cnd);
             if ($cnd instanceof NegatableInterface && $cnd->isNegated()) {
                 $res = !$res;
             }
@@ -135,10 +135,10 @@ class NestMerger
         return $result;
     }
 
-    public function handleBooleanResult(BooleanResultInterface $bool): bool
+    public static function handleBooleanResult(BooleanResultInterface $bool): bool
     {
         if ($bool instanceof ConditionList) {
-            return $this->mergeConditionList($bool);
+            return static::mergeConditionList($bool);
         } elseif ($bool instanceof NestOperationResolverInterface) {
             return $bool->nestResolve();
         }
