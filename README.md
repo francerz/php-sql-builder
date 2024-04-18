@@ -27,9 +27,8 @@ Table of contents
     - [SUPPORTED JOIN TYPES](#supported-join-types)
     - [Examples](#examples)
   - [SELECT nesting ↑](#select-nesting-)
-    - [Nesting a Collection of Result Objects (`nestMany`)](#nesting-a-collection-of-result-objects-nestmany)
-    - [Nestring the First Result Object (`linkFirst`)](#nestring-the-first-result-object-linkfirst)
-    - [Nesting the last Result Object (`linkLast`)](#nesting-the-last-result-object-linklast)
+    - [Nesting a Collection of Result Objects](#nesting-a-collection-of-result-objects)
+    - [Nesting the First or Last Result Object](#nesting-the-first-or-last-result-object)
   - [Transactions ↑](#transactions-)
   - [Executing Stored Procedures ↑](#executing-stored-procedures-)
 
@@ -440,7 +439,7 @@ due to increased loops and database access roundtrips. To address these
 challenges, a more efficient and lightweight syntax is available for querying
 nested data.
 
-### Nesting a Collection of Result Objects (`nestMany`)
+### Nesting a Collection of Result Objects
 
 The `nestMany` method is used to nest a collection of result objects within each
 row of the primary query's result. In the provided example, this is used to
@@ -451,7 +450,7 @@ suitable when you expect multiple related records for each main record.
 // Primary Query for Groups
 $groupsQuery = Query::selectFrom(
     'groups',
-    ['group_id', 'teacher_id', 'subject', 'classroom']
+    ['group_id', 'subject', 'classroom']
 );
 
 // Query for Students
@@ -463,7 +462,7 @@ $studentsQuery = Query::selectFrom(
 // Nesting students within each group
 $groupsQuery
     ->nestMany('Students', $studentsQuery, $groupRow, Student::class)
-    ->where('s.group_id', $groupRow->group_id);
+    ->where('students.group_id', $groupRow->group_id);
 
 // Connecting to the database and executing the query
 $db = DatabaseManager::connect('school');
@@ -471,39 +470,49 @@ $result = $db->executeSelect($groupsQuery);
 $groups = $result->toArray(Group::class);
 ```
 
-### Nestring the First Result Object (`linkFirst`)
+**Result:**
+
+```json
+[
+    {
+        "group_id": 1,
+        "subject": "Programing fundamentals",
+        "classroom": "A113",
+        "Students": [
+            {
+                "student_id": 325,
+                "first_name": "Charlie",
+                "last_name": "Ortega"
+            },
+            {
+                "student_id": 743,
+                "first_name": "Beth",
+                "last_name": "Wilson"
+            }
+        ]
+    },
+    {
+        "group_id": 2,
+        "subject" : "Object Oriented Programming",
+        "classroom": "G7-R5",
+        "Students": [
+            {
+                "student_id": 536,
+                "first_name": "Dylan",
+                "last_name": "Morrison"
+            }
+        ]
+    }
+]
+```
+
+### Nesting the First or Last Result Object
 
 On the other hand, the `linkFirst` method is employed to link only the first
 result object from a secondary query with each row of the primary query's
 result. In the given code snippet, this is used to link the first teacher to
 each group. This method is beneficial when you want to link a single related
 record to each main record, prioritizing the first match.
-
-```php
-// Primary Query for Groups
-$groupsQuery = Query::selectFrom(
-    'groups',
-    ['group_id', 'teacher_id', 'subject', 'classroom']
-);
-
-// Query for Teachers
-$teachersQuery = Query::selectFrom(
-    'teachers',
-    ['teacher_id', 'first_name', 'last_name']
-);
-
-// Linking the first teacher to each group
-$groupsQuery
-    ->linkFirst('Teacher', $teachersQuery, $groupRow, Teacher::class)
-    ->where('t.teacher_id', $groupRow->teacher_id);
-
-// Connecting to the database and executing the query
-$db = DatabaseManager::connect('school');
-$result = $db->executeSelect($groupsQuery);
-$groups = $result->toArray(Group::class);
-```
-
-### Nesting the last Result Object (`linkLast`)
 
 Additionally, there is the `linkLast` method, which is similar to `linkFirst`
 but instead links the last result object from a secondary query to each row of
@@ -523,10 +532,21 @@ $teachersQuery = Query::selectFrom(
     ['teacher_id', 'first_name', 'last_name']
 );
 
-// Linking the last teacher to each group
+// Linking the first teacher to each group
 $groupsQuery
-    ->linkLast('Teacher', $teachersQuery, $groupRow, Teacher::class)
-    ->where('t.teacher_id', $groupRow->teacher_id);
+    ->linkFirst('Teacher', $teachersQuery, $groupRow, Teacher::class)
+    ->where('teachers.teacher_id', $groupRow->teacher_id);
+
+// Query for Classes
+$classesQuery = Query::selectFrom(
+    'groups_classes',
+    ['class_id', 'group_id', 'topic', 'date']
+)->orderBy('date', 'ASC');
+
+// Linking the last class to each group
+$groups
+    ->linkLast('LastClass', $classesQuery, $groupRow, GroupClass::class)
+    ->where('groups_classes.group_id', $groupRow->group_id);
 
 // Connecting to the database and executing the query
 $db = DatabaseManager::connect('school');
@@ -534,42 +554,26 @@ $result = $db->executeSelect($groupsQuery);
 $groups = $result->toArray(Group::class);
 ```
 
-By choosing the appropriate nesting mode (`nestMany`, `linkFirst`, or
-`linkLast`), you can tailor your queries to efficiently handle nested data based
-on your specific data structure and requirements.
+**Result:**
 
-> **Old Nest Syntax**  
-> ```php
-> $groupsQuery->nest(['Students' => $studentsQuery], function (NestedSelect $nest, RowProxy $row) {
->     $nest->getSelect()->where('s.group_id', $row->group_id);
-> }, NestMode::COLLECTION, Student::class);
-> ```
-
-Result would be like this:
 ```json
 [
     {
         "group_id": 1,
         "teacher_id": 3,
-        "subject": "Programing fundamentals",
+        "subject": "Programming fundamentals",
         "classroom": "A113",
         "Teacher": {
             "teacher_id": 3,
             "first_name": "Rosemary",
             "last_name": "Smith"
         },
-        "Students": [
-            {
-                "student_id": 325,
-                "first_name": "Charlie",
-                "last_name": "Ortega"
-            },
-            {
-                "student_id": 743,
-                "first_name": "Beth",
-                "last_name": "Wilson"
-            }
-        ]
+        "LastClass": {
+            "class_id": 233,
+            "group_id": 1,
+            "topic": "Algorithms",
+            "date": "2024-04-18"
+        }
     },
     {
         "group_id": 2,
@@ -581,16 +585,24 @@ Result would be like this:
             "first_name": "Steve",
             "last_name": "Johnson"
         },
-        "Students": [
-            {
-                "student_id": 536,
-                "first_name": "Dylan",
-                "last_name": "Morrison"
-            }
-        ]
+        "LastClass": null
     }
 ]
 ```
+
+By choosing the appropriate nesting mode (`nestMany`, `linkFirst`, or
+`linkLast`), you can tailor your queries to efficiently handle nested data based
+on your specific data structure and requirements.
+
+> **Legacy old nest syntax**  
+>
+> There is a legacy nest syntax, that stills working underhood.
+>
+> ```php
+> $groupsQuery->nest(['Students' => $studentsQuery], function (NestedSelect $nest, RowProxy $row) {
+>     $nest->getSelect()->where('s.group_id', $row->group_id);
+> }, NestMode::COLLECTION, Student::class);
+> ```
 
 Transactions [↑](#table-of-contents)
 ---------------------------------------
