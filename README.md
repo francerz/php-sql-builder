@@ -27,6 +27,9 @@ Table of contents
     - [SUPPORTED JOIN TYPES](#supported-join-types)
     - [Examples](#examples)
   - [SELECT nesting ↑](#select-nesting-)
+    - [Nesting a Collection of Result Objects (`nestMany`)](#nesting-a-collection-of-result-objects-nestmany)
+    - [Nestring the First Result Object (`linkFirst`)](#nestring-the-first-result-object-linkfirst)
+    - [Nesting the last Result Object (`linkLast`)](#nesting-the-last-result-object-linklast)
   - [Transactions ↑](#transactions-)
   - [Executing Stored Procedures ↑](#executing-stored-procedures-)
 
@@ -428,53 +431,116 @@ $query->columns([
 SELECT nesting [↑](#table-of-contents)
 ---------------------------------------
 
-Sometimes database table joining might not be enought for all the data requirements.
-Is quite often that for each row in a result of a query, another filtered result
-query must be executed.
+In some cases, simple database table joining isn't sufficient for meeting all
+data requirements. It's common to need to execute additional filtered queries
+for each row in the result of a primary query.
 
-This scenario produces excesive complex code to nest each result by each row.
-Also impacts performance by increasing the loops and database access roundtrips.
-For this reason there's a syntax that creates the most lightweight and efficient
-way to query nested data, preventing access overhead and reducing processing time.
+However, this approach often leads to overly complex code and performance issues
+due to increased loops and database access roundtrips. To address these
+challenges, a more efficient and lightweight syntax is available for querying
+nested data.
+
+### Nesting a Collection of Result Objects (`nestMany`)
+
+The `nestMany` method is used to nest a collection of result objects within each
+row of the primary query's result. In the provided example, this is used to
+associate multiple students with their respective groups. This approach is
+suitable when you expect multiple related records for each main record.
 
 ```php
-
-// Groups query
+// Primary Query for Groups
 $groupsQuery = Query::selectFrom(
     'groups',
     ['group_id', 'teacher_id', 'subject', 'classroom']
 );
 
-// NESTING A COLLECTION OF RESULT OBJECTS
-// Students query
+// Query for Students
 $studentsQuery = Query::selectFrom(
     'students',
     ['student_id', 'group_id', 'first_name', 'last_name']
 );
-// Nesting students by each group
+
+// Nesting students within each group
 $groupsQuery
     ->nestMany('Students', $studentsQuery, $groupRow, Student::class)
     ->where('s.group_id', $groupRow->group_id);
 
-// NESTING THE FIRST RESULT OBJECT
-// Teachers Query
+// Connecting to the database and executing the query
+$db = DatabaseManager::connect('school');
+$result = $db->executeSelect($groupsQuery);
+$groups = $result->toArray(Group::class);
+```
+
+### Nestring the First Result Object (`linkFirst`)
+
+On the other hand, the `linkFirst` method is employed to link only the first
+result object from a secondary query with each row of the primary query's
+result. In the given code snippet, this is used to link the first teacher to
+each group. This method is beneficial when you want to link a single related
+record to each main record, prioritizing the first match.
+
+```php
+// Primary Query for Groups
+$groupsQuery = Query::selectFrom(
+    'groups',
+    ['group_id', 'teacher_id', 'subject', 'classroom']
+);
+
+// Query for Teachers
 $teachersQuery = Query::selectFrom(
     'teachers',
     ['teacher_id', 'first_name', 'last_name']
 );
-// Nest-link teacher by each group
+
+// Linking the first teacher to each group
 $groupsQuery
     ->linkFirst('Teacher', $teachersQuery, $groupRow, Teacher::class)
     ->where('t.teacher_id', $groupRow->teacher_id);
 
+// Connecting to the database and executing the query
 $db = DatabaseManager::connect('school');
 $result = $db->executeSelect($groupsQuery);
-$groups = $result->toArray();
+$groups = $result->toArray(Group::class);
 ```
+
+### Nesting the last Result Object (`linkLast`)
+
+Additionally, there is the `linkLast` method, which is similar to `linkFirst`
+but instead links the last result object from a secondary query to each row of
+the primary query's result. This can be useful in scenarios where you want to
+prioritize the most recent or latest related record for each main record.
+
+```php
+// Primary Query for Groups
+$groupsQuery = Query::selectFrom(
+    'groups',
+    ['group_id', 'teacher_id', 'subject', 'classroom']
+);
+
+// Query for Teachers
+$teachersQuery = Query::selectFrom(
+    'teachers',
+    ['teacher_id', 'first_name', 'last_name']
+);
+
+// Linking the last teacher to each group
+$groupsQuery
+    ->linkLast('Teacher', $teachersQuery, $groupRow, Teacher::class)
+    ->where('t.teacher_id', $groupRow->teacher_id);
+
+// Connecting to the database and executing the query
+$db = DatabaseManager::connect('school');
+$result = $db->executeSelect($groupsQuery);
+$groups = $result->toArray(Group::class);
+```
+
+By choosing the appropriate nesting mode (`nestMany`, `linkFirst`, or
+`linkLast`), you can tailor your queries to efficiently handle nested data based
+on your specific data structure and requirements.
 
 > **Old Nest Syntax**  
 > ```php
-> $groupsQuery->nest(['Students' => $studentsQuery], function > (NestedSelect $nest, RowProxy $row) {
+> $groupsQuery->nest(['Students' => $studentsQuery], function (NestedSelect $nest, RowProxy $row) {
 >     $nest->getSelect()->where('s.group_id', $row->group_id);
 > }, NestMode::COLLECTION, Student::class);
 > ```
