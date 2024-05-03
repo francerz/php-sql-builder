@@ -25,9 +25,6 @@
         "francerz/mysql-builder": "MySQL compatible driver.",
         "francerz/sqlsrv-builder": "Microsoft SQL Server compatible driver."
     },
-    "require-dev": {
-        "phpunit/phpunit": "^8.5"
-    },
     "require": {
         "francerz/php-power-data": "^0.1",
         "francerz/enum": "^0.1.1",

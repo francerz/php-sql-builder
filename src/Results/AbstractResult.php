@@ -6,6 +6,7 @@ class AbstractResult implements QueryResultInterface
 {
     protected $query;
     protected $numRows;
+    private $success;
 
     public function __construct(int $numRows = 0, bool $success = true)
     {

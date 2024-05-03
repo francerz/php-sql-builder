@@ -1,0 +1,21 @@
+services:
+  test-php7.2:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile.php72
+  test-php7.4:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile.php74
+  test-php8.0:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile.php80
+  test-php8.1:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile.php81
+  test-php8.2:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile.php82

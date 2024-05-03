@@ -24,37 +24,49 @@ class SelectResult extends AbstractResult implements
         $this->rows = $rows;
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->rows);
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->rows);
     }
+
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->rows);
     }
+
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return key($this->rows) !== null;
     }
+
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->rows);
     }
+
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->rows);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->rows);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
@@ -62,11 +74,13 @@ class SelectResult extends AbstractResult implements
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new LogicException("Read Only access.");
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new LogicException('Read Only access.');
@@ -125,6 +139,7 @@ class SelectResult extends AbstractResult implements
         return $values;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->rows;

@@ -12,9 +12,9 @@ class InsertQueryTest extends TestCase
 {
     private $compiler;
 
-    public function __construct()
+    public function __construct($name = null, array $data = [], $dataName = '')
     {
-        parent::__construct();
+        parent::__construct($name, $data, $dataName);
         $this->compiler = new QueryCompiler();
     }
     public function testInsertQueryAssoc()

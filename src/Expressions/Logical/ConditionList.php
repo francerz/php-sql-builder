@@ -67,41 +67,55 @@ class ConditionList implements
         return $this->negated;
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->conditions);
     }
+
+    #[\ReturnTypeWillChange]
     public function current(): ConditionItem
     {
         return current($this->conditions);
     }
+
+    #[\ReturnTypeWillChange]
     public function next()
     {
         return next($this->conditions);
     }
+
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->conditions);
     }
+
+    #[\ReturnTypeWillChange]
     public function valid(): bool
     {
         return key($this->conditions) !== null;
     }
+
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->conditions);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->conditions);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->conditions[$offset];
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if (!$value instanceof ConditionItem) {
@@ -109,6 +123,8 @@ class ConditionList implements
         }
         $this->conditions[$offset] = $value;
     }
+
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->conditions[$offset]);

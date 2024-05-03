@@ -92,31 +92,37 @@ class UpsertQuery implements Iterator, Countable
         return array_values(array_diff($this->columns, $this->keys));
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         return reset($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->values);
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return key($this->values) !== null;

@@ -1,0 +1,30 @@
+FROM php:7.2-cli
+
+# Install required dependencies
+RUN apt-get update && \
+    apt-get install -y git zip unzip
+
+# Instalar las extensiones de PHP necesarias:
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+ENV COMPOSER_HOME=/root/.composer
+
+# Instalar PHPUnit de manera global
+RUN composer global require phpunit/phpunit && \
+    ln -s ~/.composer/vendor/bin/phpunit /usr/local/bin/phpunit
+
+# Copiar los archivos del proyecto al contenedor
+COPY . /app
+
+# Establecer el directorio de trabajo dentro del contenedor.
+WORKDIR /app
+
+# Install app composer dependencies
+RUN composer install --no-interaction
+
+COPY ./phpunit8-9.xml /app/phpunit.xml
+
+CMD ["phpunit"]

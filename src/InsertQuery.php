@@ -44,6 +44,7 @@ class InsertQuery implements QueryInterface, Countable
         return $this->connection;
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->values);
