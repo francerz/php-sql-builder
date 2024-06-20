@@ -16,6 +16,7 @@ class ConnectParams
     private $port;
     private $database;
     private $encoding;
+    private $instance;
 
     public function __construct(
         DriverInterface $driver,
@@ -24,7 +25,8 @@ class ConnectParams
         ?string $password = null,
         ?string $database = null,
         ?int $port = null,
-        ?string $encoding = null
+        ?string $encoding = null,
+        ?string $instance = null
     ) {
         $this->driver = $driver;
         $this->host = $host;
@@ -33,6 +35,7 @@ class ConnectParams
         $this->database = $database;
         $this->port = $port;
         $this->encoding = $encoding;
+        $this->instance = $instance;
     }
 
     public static function fromEnv(string $alias, ?array $env = null)
@@ -48,19 +51,21 @@ class ConnectParams
         $encdKey = "DATABASE_{$alias}_ENCD";
         $pswdKey = "DATABASE_{$alias}_PSWD";
         $pwflKey = "DATABASE_{$alias}_PSWD_FILE";
+        $instKey = "DATABASE_{$alias}_INST";
 
         $host = $env[$hostKey] ?? $driver->getDefaultHost();
         $port = $env[$portKey] ?? $driver->getDefaultPort();
         $user = $env[$userKey] ?? $driver->getDefaultUser();
         $name = $env[$nameKey] ?? $alias;
         $encd = $env[$encdKey] ?? null;
+        $inst = $env[$instKey] ?? null;
 
         $pswd = $env[$pswdKey] ?? $driver->getDefaultPswd();
         if (!empty($env[$pwflKey]) && file_exists($env[$pwflKey])) {
             $pswd = file_get_contents($env[$pwflKey]);
         }
 
-        return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd);
+        return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd, $inst);
     }
 
     /**
@@ -158,5 +163,15 @@ class ConnectParams
     public function getEncoding(): ?string
     {
         return $this->encoding;
+    }
+
+    public function setInstance(?string $instance)
+    {
+        $this->instance = $instance;
+    }
+
+    public function getInstance(): ?string
+    {
+        return $this->instance;
     }
 }

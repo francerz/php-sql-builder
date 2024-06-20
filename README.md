@@ -53,6 +53,7 @@ Using $_ENV global variable
 ```php
 $_ENV['DATABASE_SCHOOL_DRIVER'] = 'driver';
 $_ENV['DATABASE_SCHOOL_HOST'] = 'host';
+$_ENV['DATABASE_SCHOOL_INST'] = 'instanceName';
 $_ENV['DATABASE_SCHOOL_PORT'] = 'port';
 $_ENV['DATABASE_SCHOOL_USER'] = 'user';
 $_ENV['DATABASE_SCHOOL_PSWD'] = 'password';
