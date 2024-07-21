@@ -49,18 +49,18 @@ Using an URI string
 $db = DatabaseManager::connect('driver://user:password@host:port/database');
 ```
 
-Using $_ENV global variable
+Using environment variable
 ```php
-$_ENV['DATABASE_SCHOOL_DRIVER'] = 'driver';
-$_ENV['DATABASE_SCHOOL_HOST'] = 'host';
-$_ENV['DATABASE_SCHOOL_INST'] = 'instanceName';
-$_ENV['DATABASE_SCHOOL_PORT'] = 'port';
-$_ENV['DATABASE_SCHOOL_USER'] = 'user';
-$_ENV['DATABASE_SCHOOL_PSWD'] = 'password';
-$_ENV['DATABASE_SCHOOL_NAME'] = 'database';
+putenv('DATABASE_SCHOOL_DRIVER', 'driver');
+putenv('DATABASE_SCHOOL_HOST', 'host');
+putenv('DATABASE_SCHOOL_INST', 'instanceName');
+putenv('DATABASE_SCHOOL_PORT', 'port');
+putenv('DATABASE_SCHOOL_USER', 'user');
+putenv('DATABASE_SCHOOL_PSWD', 'password');
+putenv('DATABASE_SCHOOL_NAME', 'database');
 
 // Support to Docker secrets
-$_ENV['DATABASE_SCHOOL_PSWD_FILE'] = '/run/secrets/db_school_password';
+putenv('DATABASE_SCHOOL_PSWD_FILE', '/run/secrets/db_school_password');
 
 $db = DatabaseManager::connect('school');
 ```

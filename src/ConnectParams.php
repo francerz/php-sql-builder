@@ -40,7 +40,7 @@ class ConnectParams
 
     public static function fromEnv(string $alias, ?array $env = null)
     {
-        $env = is_null($env) ? $_ENV : $env;
+        $env = $env ?? getenv();
         $alias = strtoupper($alias);
 
         $driver = DriverManager::fromEnv($alias, $env);
@@ -53,16 +53,16 @@ class ConnectParams
         $pwflKey = "DATABASE_{$alias}_PSWD_FILE";
         $instKey = "DATABASE_{$alias}_INST";
 
-        $host = getenv($hostKey) ?? $driver->getDefaultHost();
-        $port = getenv($portKey) ?? $driver->getDefaultPort();
-        $user = getenv($userKey) ?? $driver->getDefaultUser();
-        $name = getenv($nameKey) ?? $alias;
-        $encd = getenv($encdKey) ?? null;
-        $inst = getenv($instKey) ?? null;
+        $host = $env[$hostKey] ?? $driver->getDefaultHost();
+        $port = $env[$portKey] ?? $driver->getDefaultPort();
+        $user = $env[$userKey] ?? $driver->getDefaultUser();
+        $name = $env[$nameKey] ?? $alias;
+        $encd = $env[$encdKey] ?? null;
+        $inst = $env[$instKey] ?? null;
 
-        $pswd = getenv($pswdKey) ?? $driver->getDefaultPswd();
-        if (!empty(getenv($pwflKey)) && file_exists(getenv($pwflKey))) {
-            $pswd = file_get_contents(getenv($pwflKey));
+        $pswd = $env[$pswdKey] ?? $driver->getDefaultPswd();
+        if (!empty($env[$pwflKey]) && file_exists($env[$pwflKey])) {
+            $pswd = file_get_contents($env[$pwflKey]);
         }
 
         return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd, $inst);

@@ -41,7 +41,7 @@ class DriverManager
 
     public static function fromEnv(string $alias, ?array $env = null)
     {
-        $env = is_null($env) ? $_ENV : $env;
+        $env = $env ?? getenv();
         $alias = strtoupper($alias);
 
         $driverKey = "DATABASE_{$alias}_DRIVER";
