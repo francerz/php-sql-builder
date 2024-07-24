@@ -42,7 +42,7 @@ class ConnectParams
     {
         $alias = strtoupper($alias);
         
-        $driverKey = "DATABASE_{$alias}_HOST";
+        $driverKey = "DATABASE_{$alias}_DRIVER";
         $driverVal = static::getenv($driverKey);
         if (empty($driverVal)) {
             throw new LogicException("Missing environment variable {$driverKey}.");
