@@ -39,12 +39,19 @@ class DriverManager
         return empty($name) ? null : reset($name);
     }
 
+    /**
+     * @deprecated
+     *
+     * @param string $alias
+     * @param array|null $env
+     * @return DriverInterface
+     */
     public static function fromEnv(string $alias, ?array $env = null)
     {
+        $driverKey = "DATABASE_{$alias}_DRIVER";
         $env = $env ?? getenv();
         $alias = strtoupper($alias);
 
-        $driverKey = "DATABASE_{$alias}_DRIVER";
         if (!array_key_exists($driverKey, $env)) {
             throw new LogicException("Missing {$driverKey} setting in `.env` file.");
         }

@@ -38,12 +38,20 @@ class ConnectParams
         $this->instance = $instance;
     }
 
-    public static function fromEnv(string $alias, ?array $env = null)
+    public static function fromEnv(string $alias)
     {
-        $env = $env ?? getenv();
         $alias = strtoupper($alias);
+        
+        $driverKey = "DATABASE_{$alias}_HOST";
+        $driverVal = static::getenv($driverKey);
+        if (empty($driverVal)) {
+            throw new LogicException("Missing environment variable {$driverKey}.");
+        }
+        $driver = DriverManager::getDriver($driverVal);
+        if (empty($driver)) {
+            throw new LogicException("Unknown driver {$driverVal}.");
+        }
 
-        $driver = DriverManager::fromEnv($alias, $env);
         $hostKey = "DATABASE_{$alias}_HOST";
         $portKey = "DATABASE_{$alias}_PORT";
         $userKey = "DATABASE_{$alias}_USER";
@@ -53,19 +61,24 @@ class ConnectParams
         $pwflKey = "DATABASE_{$alias}_PSWD_FILE";
         $instKey = "DATABASE_{$alias}_INST";
 
-        $host = $env[$hostKey] ?? $driver->getDefaultHost();
-        $port = $env[$portKey] ?? $driver->getDefaultPort();
-        $user = $env[$userKey] ?? $driver->getDefaultUser();
-        $name = $env[$nameKey] ?? $alias;
-        $encd = $env[$encdKey] ?? null;
-        $inst = $env[$instKey] ?? null;
+        $host = static::getenv($hostKey) ?? $driver->getDefaultHost();
+        $port = static::getenv($portKey) ?? $driver->getDefaultPort();
+        $user = static::getenv($userKey) ?? $driver->getDefaultUser();
+        $name = static::getenv($nameKey) ?? $alias;
+        $encd = static::getenv($encdKey) ?? null;
+        $inst = static::getenv($instKey) ?? null;
 
-        $pswd = $env[$pswdKey] ?? $driver->getDefaultPswd();
-        if (!empty($env[$pwflKey]) && file_exists($env[$pwflKey])) {
-            $pswd = file_get_contents($env[$pwflKey]);
+        $pswd = static::getenv($pswdKey) ?? $driver->getDefaultPswd();
+        if (!empty(static::getenv($pwflKey)) && file_exists(static::getenv($pwflKey))) {
+            $pswd = file_get_contents(static::getenv($pwflKey));
         }
 
         return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd, $inst);
+    }
+
+    private static function getenv(string $varname, bool $localOnly = false)
+    {
+        return getenv($varname, $localOnly) ?: $_ENV[$varname] ?? null;
     }
 
     /**
