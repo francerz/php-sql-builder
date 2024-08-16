@@ -41,7 +41,7 @@ class ConnectParams
     public static function fromEnv(string $alias)
     {
         $alias = strtoupper($alias);
-        
+
         $driverKey = "DATABASE_{$alias}_DRIVER";
         $driverVal = static::getenv($driverKey);
         if (empty($driverVal)) {
@@ -70,7 +70,7 @@ class ConnectParams
 
         $pswd = static::getenv($pswdKey) ?? $driver->getDefaultPswd();
         if (!empty(static::getenv($pwflKey)) && file_exists(static::getenv($pwflKey))) {
-            $pswd = file_get_contents(static::getenv($pwflKey));
+            $pswd = trim(file_get_contents(static::getenv($pwflKey)));
         }
 
         return new ConnectParams($driver, $host, $user, $pswd, $name, $port, $encd, $inst);
