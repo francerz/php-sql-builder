@@ -263,6 +263,7 @@ prefixes the `and` and `or` logical operators for clarity.
 | `NOT BETWEEN` | `notBetween($op, $min, $max)` | `andNotBetween($op, $min, $max)` | `orNotBetween($op, $min, $max)` |
 | `IN`          | `in($op, $array)`             | `andIn($op, $array)`             | `orIn($op, $array)`             |
 | `NOT IN`      | `notIn($op, $array)`          | `andNotIn($op, $array)`          | `orNotIn($op, $array)`          |
+| `IS NOT NULL` | `hasValue($op)`               | `andHasValue($op)`               | `orHasValue($op)`               |
 
 > **About `ConditionList` class**
 >

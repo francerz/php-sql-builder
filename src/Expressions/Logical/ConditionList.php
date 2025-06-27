@@ -352,6 +352,7 @@ class ConditionList implements
     {
         return $this->add(new ConditionItem($this->genNullExpression($value, $negated), $connector));
     }
+    #endregion
 
     #region NULL with connector and negation
     public function notNull($value)
@@ -376,6 +377,19 @@ class ConditionList implements
     }
     #endregion
 
+    #region HasValue (NOT NULL but better negation readability)
+    public function hasValue($value, $negated = false, $connector = LogicConnectors::AND)
+    {
+        return $this->null($value, !$negated, $connector);
+    }
+    public function andHasValue($value)
+    {
+        return $this->hasValue($value);
+    }
+    public function orHasValue($value)
+    {
+        return $this->hasValue($value, false, LogicConnectors::OR);
+    }
     #endregion
 
     #region Equals OR NULL
