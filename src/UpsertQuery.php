@@ -20,7 +20,7 @@ class UpsertQuery implements Iterator, Countable
         if (isset($table)) {
             $this->setTable($table);
         }
-        if (isset($values)) {
+        if (!empty($values)) {
             $cols = isset($columns) ? array_merge($keys, $columns) : $columns;
             $this->setValues($values, $cols);
         }
