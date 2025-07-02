@@ -378,17 +378,17 @@ class ConditionList implements
     #endregion
 
     #region HasValue (NOT NULL but better negation readability)
-    public function hasValue($value, $negated = false, $connector = LogicConnectors::AND)
+    public function hasValue($value, $hasValue = true, $connector = LogicConnectors::AND)
     {
-        return $this->null($value, !$negated, $connector);
+        return $this->null($value, $hasValue, $connector);
     }
-    public function andHasValue($value)
+    public function andHasValue($value, $hasValue = true)
     {
-        return $this->hasValue($value);
+        return $this->hasValue($value, $hasValue);
     }
-    public function orHasValue($value)
+    public function orHasValue($value, $hasValue = true)
     {
-        return $this->hasValue($value, false, LogicConnectors::OR);
+        return $this->hasValue($value, $hasValue, LogicConnectors::OR);
     }
     #endregion
 
