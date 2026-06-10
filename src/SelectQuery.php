@@ -167,4 +167,16 @@ class SelectQuery implements QueryInterface, LimitableInterface, SortableInterfa
         return $this->actions;
     }
     #endregion
+
+    private $disabledQueryOptimizer = false;
+
+    public function disableQueryOptimizer($disabled = true)
+    {
+        $this->disabledQueryOptimizer = $disabled;
+    }
+
+    public function isQueryOptimizerDisabled()
+    {
+        return $this->disabledQueryOptimizer;
+    }
 }

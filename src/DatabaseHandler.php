@@ -21,8 +21,6 @@ use LogicException;
 
 class DatabaseHandler
 {
-    public const FLAG_DISABLE_OPTIMIZER = 0b00010000;
-
     private $compiler;
     private $driver;
 
@@ -88,9 +86,9 @@ class DatabaseHandler
         $this->chunkSize = $chunkSize;
     }
 
-    public function executeSelect(SelectQuery $query, int $flags = 0): SelectResult
+    public function executeSelect(SelectQuery $query): SelectResult
     {
-        if (($flags & self::FLAG_DISABLE_OPTIMIZER) === 0) {
+        if (!$query->isQueryOptimizerDisabled()) {
             $query = QueryOptimizer::optimizeSelect($query);
         }
         $compiled = $this->compiler->compileSelect($query);
